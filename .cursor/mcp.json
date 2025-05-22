@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "devdocs": {
+      "name": "DevDocs",
+      "type": "sse",
+      "url": "https://devdocs-mcp.cursor.sh",
+      "enabled": true
+    }
+  }
+}
