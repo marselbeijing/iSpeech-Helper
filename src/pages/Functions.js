@@ -3,7 +3,7 @@ import {
   Container,
   Typography,
   Box,
-  Switch,
+  Switch as MuiSwitch,
   Button,
   List,
   ListItem,
@@ -11,18 +11,49 @@ import {
   ListItemSecondaryAction,
   useTheme,
 } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import {
   DarkMode as DarkModeIcon,
   VolumeUp as VolumeIcon,
   Vibration as VibrationIcon,
   Translate as LanguageIcon,
   ArrowBack,
+  Support as SupportIcon,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import { getUserSettings, saveUserSettings } from '../services/storage';
 import { useNavigate } from 'react-router-dom';
+
+const CustomSwitch = styled(MuiSwitch)(({ theme }) => ({
+  width: 52,
+  height: 32,
+  padding: 0,
+  '& .MuiSwitch-switchBase': {
+    padding: 4,
+    '&.Mui-checked': {
+      color: '#111',
+      transform: 'translateX(20px)',
+      '& + .MuiSwitch-track': {
+        backgroundColor: '#bdbdbd',
+        opacity: 1,
+      },
+    },
+  },
+  '& .MuiSwitch-thumb': {
+    width: 24,
+    height: 24,
+    boxShadow: '0px 2px 4px rgba(0,0,0,0.15)',
+    backgroundColor: '#111',
+  },
+  '& .MuiSwitch-track': {
+    borderRadius: 16,
+    border: '1px solid #e0e0e0',
+    backgroundColor: '#bdbdbd',
+    opacity: 1,
+  },
+}));
 
 const Functions = () => {
   const theme = useTheme();
@@ -97,6 +128,19 @@ const Functions = () => {
         // Примечание: язык пока не сохраняется в хранилище
       },
       color: '#f44336',
+      disabled: true,
+      overlayText: 'в процессе разработки',
+    },
+    {
+      title: 'Техподдержка',
+      description: 'Связаться с администратором',
+      icon: <SupportIcon />,
+      onClick: () => {
+        const username = 'MilanPlayBall';
+        const telegramUrl = `https://t.me/${username}`;
+        window.open(telegramUrl, '_blank');
+      },
+      color: '#2196f3',
     },
   ];
 
@@ -198,7 +242,29 @@ const Functions = () => {
                       borderColor: item.color,
                       boxShadow: `0 4px 12px 0 ${item.color}20`,
                     },
+                    position: 'relative',
+                    ...(item.disabled && {
+                      '&::after': {
+                        content: '""',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        borderRadius: 3,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#fff',
+                        fontSize: '0.875rem',
+                        fontWeight: 'bold',
+                        zIndex: 1,
+                      },
+                    }),
                   }}
+                  onClick={item.onClick}
+                  button={!!item.onClick}
                 >
                   <Box
                     sx={{
@@ -209,11 +275,11 @@ const Functions = () => {
                       alignItems: 'center',
                       justifyContent: 'center',
                       mr: 2,
-                      background: `linear-gradient(135deg, ${item.color}20 0%, ${item.color}40 100%)`,
-                      color: item.color,
+                      background: `linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%)`,
+                      color: '#444',
                     }}
                   >
-                    {item.icon}
+                    {React.cloneElement(item.icon, { sx: { fontSize: 28 } })}
                   </Box>
                   <ListItemText 
                     primary={
@@ -222,26 +288,38 @@ const Functions = () => {
                       </Typography>
                     } 
                     secondary={
-                      <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
                         {item.description}
                       </Typography>
                     } 
                   />
-                  <ListItemSecondaryAction>
-                    <Switch
-                      edge="end"
-                      checked={item.value}
-                      onChange={(e) => handleSettingChange(item, e.target.checked)}
+                  {item.disabled && (
+                    <Typography
+                      variant="body1"
                       sx={{
-                        '& .MuiSwitch-switchBase.Mui-checked': {
-                          color: item.color,
-                          '& + .MuiSwitch-track': {
-                            backgroundColor: item.color,
-                          },
-                        },
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        color: '#fff',
+                        fontWeight: 'bold',
+                        zIndex: 2,
+                        fontSize: '1.2rem',
+                        fontFamily: 'Roboto, sans-serif',
                       }}
-                    />
-                  </ListItemSecondaryAction>
+                    >
+                      {item.overlayText}
+                    </Typography>
+                  )}
+                  {!item.disabled && item.value !== undefined && (
+                    <ListItemSecondaryAction>
+                      <CustomSwitch
+                        edge="end"
+                        checked={item.value}
+                        onChange={(e) => handleSettingChange(item, e.target.checked)}
+                      />
+                    </ListItemSecondaryAction>
+                  )}
                 </ListItem>
               </motion.div>
             ))}

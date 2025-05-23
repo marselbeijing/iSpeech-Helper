@@ -40,37 +40,37 @@ const Home = () => {
   const menuItems = [
     {
       title: 'Дыхание',
-      icon: <BreathingIcon sx={{ fontSize: 40, color: '#fff' }} />,
+      icon: <BreathingIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/breathing',
       color: '#FF4A6E',
     },
     {
       title: 'Метроном',
-      icon: <MetronomeIcon sx={{ fontSize: 40, color: '#fff' }} />,
+      icon: <MetronomeIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/metronome',
       color: '#5B7CFF',
     },
     {
       title: 'Плавное чтение',
-      icon: <ReaderIcon sx={{ fontSize: 40, color: '#fff' }} />,
+      icon: <ReaderIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/smooth-reader',
       color: '#32B768',
     },
     {
       title: 'Скороговорка',
-      icon: <TongueTwisterIcon sx={{ fontSize: 40, color: '#fff' }} />,
+      icon: <TongueTwisterIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/tongue-twisters',
       color: '#FFB84A',
     },
     {
       title: 'DAF',
-      icon: <DAFIcon sx={{ fontSize: 40, color: '#fff' }} />,
+      icon: <DAFIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/dafmaf',
       color: '#8B5CF6',
     },
     {
       title: 'Эмоции',
-      icon: <EmotionsIcon sx={{ fontSize: 40, color: '#fff' }} />,
+      icon: <EmotionsIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/emotions',
       color: '#FF6B6B',
     },

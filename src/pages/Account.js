@@ -17,6 +17,7 @@ import { motion } from 'framer-motion';
 import { verifyTelegramAuth, getCurrentUser, logout } from '../services/telegram';
 import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
+import TelegramLogin from '../components/TelegramLogin';
 
 const Account = () => {
   const theme = useTheme();
@@ -172,13 +173,7 @@ const Account = () => {
           </>
         ) : (
           <>
-            <Box sx={{ mb: 3, mt: 2 }}>
-              <TelegramIcon sx={{ fontSize: 64, color: theme.palette.primary.main, mb: 2 }} />
-              <Typography variant="body1" color="text.secondary" mb={2}>
-                Войдите через Telegram, чтобы пользоваться всеми возможностями
-              </Typography>
-              <Box id="telegram-login-widget" sx={{ display: 'flex', justifyContent: 'center' }} />
-            </Box>
+            <TelegramLogin />
           </>
         )}
       </Paper>
