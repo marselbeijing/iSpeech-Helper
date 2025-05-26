@@ -7,6 +7,7 @@ import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
 import WebApp from '@twa-dev/sdk';
+import { Analytics } from '@twa-dev/analytics';
 
 // Components
 import NavigationBar from './components/NavigationBar';
@@ -172,6 +173,8 @@ const App = () => {
       divider: themeMode === 'dark' ? telegramColors.dark.divider : telegramColors.light.divider,
     },
   });
+
+  Analytics.init('eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXJib3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90IiwiYXBwX2RvbWFpbiI6Imh0dHBzOi8vaS1zcGVlY2gtaGVscGVyLTJ1NGQudmVyY2VsLmFwcC8ifQ==!ZkcImen6FpPBw6xfWjRZBKHfMzS80qpeFc/fZ6y+KCA=');
 
   return (
     <ThemeProvider theme={theme}>
