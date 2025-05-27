@@ -123,20 +123,24 @@ const TongueTwisters = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: theme.palette.background.default
+      backgroundColor: theme.palette.background.default,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
     }}>
       <Container maxWidth="sm" sx={{ 
         height: '100%', 
         display: 'flex', 
         flexDirection: 'column',
         overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
+        p: { xs: 1, sm: 2 }
       }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
           <Box
             sx={{
@@ -146,13 +150,9 @@ const TongueTwisters = () => {
                 ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)' 
                 : 'linear-gradient(135deg, #fffefb 0%, #fffde4 100%)',
               border: `1px solid ${theme.palette.divider}`,
-              mb: 3,
-              width: '90%',
-              maxWidth: '100%',
-              minWidth: '280px',
-              height: 'auto',
-              minHeight: '540px',
-              maxHeight: '700px',
+              width: '100%',
+              height: '100%',
+              maxHeight: '100vh',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
@@ -166,8 +166,8 @@ const TongueTwisters = () => {
                 width: '100%',
                 background: 'linear-gradient(90deg, #2196f3 0%, #1e88e5 100%)',
                 borderRadius: 2,
-                mb: 2,
-                py: 2,
+                mb: { xs: 1, sm: 2 },
+                py: { xs: 1.5, sm: 2 },
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -182,6 +182,7 @@ const TongueTwisters = () => {
                   fontWeight: 'bold',
                   textShadow: '0 2px 8px rgba(0,0,0,0.15)',
                   m: 0,
+                  fontSize: { xs: '1.25rem', sm: '1.5rem' }
                 }}
               >
                 Скороговорки
@@ -191,23 +192,31 @@ const TongueTwisters = () => {
               value={level}
               onChange={(_, v) => setLevel(v)}
               variant="fullWidth"
-              sx={{ mb: 2, width: '100%' }}
+              sx={{ mb: { xs: 1, sm: 2 }, width: '100%' }}
             >
               {levels.map(l => (
-                <Tab key={l.value} value={l.value} label={l.label} sx={{ fontWeight: 600 }} />
+                <Tab 
+                  key={l.value} 
+                  value={l.value} 
+                  label={l.label} 
+                  sx={{ 
+                    fontWeight: 600,
+                    fontSize: { xs: '0.875rem', sm: '1rem' }
+                  }} 
+                />
               ))}
             </Tabs>
             
-            <Box sx={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: 0 }}>
+            <Box sx={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: 0, p: { xs: 1, sm: 2 } }}>
               <Box
                 sx={{
-                  p: 1.5,
+                  p: { xs: 1, sm: 1.5 },
                   borderRadius: 4,
                   background: theme.palette.mode === 'dark' ? '#2d2d2d' : '#fff',
                   boxShadow: theme.palette.mode === 'dark' 
                     ? '0 4px 24px 0 rgba(0,0,0,0.3)' 
                     : '0 4px 24px 0 rgba(60,60,120,0.10)',
-                  fontSize: 15,
+                  fontSize: { xs: 14, sm: 15 },
                   color: theme.palette.text.primary,
                   fontWeight: 500,
                   textAlign: 'center',
@@ -218,7 +227,7 @@ const TongueTwisters = () => {
                   justifyContent: 'center',
                   alignItems: 'center',
                   lineHeight: 1.5,
-                  maxHeight: 180,
+                  maxHeight: { xs: '40vh', sm: 180 },
                   overflowY: 'auto',
                   width: '100%',
                   margin: '0 auto',
@@ -257,24 +266,31 @@ const TongueTwisters = () => {
             <Typography
               variant="caption"
               align="center"
-              sx={{ mb: 2, mt: 2, display: 'block', color: theme.palette.text.primary, fontWeight: 500 }}
+              sx={{ 
+                mb: { xs: 1, sm: 2 }, 
+                mt: { xs: 1, sm: 2 }, 
+                display: 'block', 
+                color: theme.palette.text.primary, 
+                fontWeight: 500,
+                fontSize: { xs: '0.75rem', sm: '0.875rem' }
+              }}
             >
               Тренируйте дикцию и артикуляцию, повторяя скороговорки вслух.
               <br /><br />
               Повторите 3–5 раз, стараясь не сбиваться с ритма.
             </Typography>
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%', mb: 1 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 1, sm: 1.5 }, width: '100%', mb: { xs: 0.5, sm: 1 } }}>
               <Button
                 variant="contained"
                 color="primary"
                 onClick={() => getRandomTwister()}
                 sx={{
-                  py: 1,
-                  px: 2.5,
+                  py: { xs: 0.75, sm: 1 },
+                  px: { xs: 2, sm: 2.5 },
                   borderRadius: 30,
                   fontWeight: 500,
-                  fontSize: '0.95rem',
+                  fontSize: { xs: '0.875rem', sm: '0.95rem' },
                   minWidth: 0,
                   width: 'auto',
                   alignSelf: 'center',
@@ -292,11 +308,11 @@ const TongueTwisters = () => {
                 startIcon={<ArrowBack />}
                 onClick={handleBackClick}
                 sx={{
-                  py: 1,
-                  px: 2.5,
+                  py: { xs: 0.75, sm: 1 },
+                  px: { xs: 2, sm: 2.5 },
                   borderRadius: 30,
                   fontWeight: 500,
-                  fontSize: '0.95rem',
+                  fontSize: { xs: '0.875rem', sm: '0.95rem' },
                   minWidth: 0,
                   width: 'auto',
                   alignSelf: 'center',

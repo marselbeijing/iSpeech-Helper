@@ -92,28 +92,33 @@ const EmotionsTrainer = () => {
       left: 0,
       right: 0,
       bottom: 0,
-      backgroundColor: theme.palette.background.default
+      backgroundColor: theme.palette.background.default,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
     }}>
       <Container maxWidth="sm" sx={{ 
         height: '100%', 
         display: 'flex', 
         flexDirection: 'column',
         overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
+        p: { xs: 1, sm: 2 }
       }}>
         <Paper
           elevation={0}
           sx={{
-            borderRadius: '24px',
+            borderRadius: { xs: '0px', sm: '24px' },
             p: { xs: 2, sm: 4 },
             background: theme.palette.mode === 'dark'
               ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
               : 'linear-gradient(135deg, #fffefb 0%, #fffde4 100%)',
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-            maxWidth: 420,
-            mx: 'auto',
             width: '100%',
+            height: '100%',
             textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
           {/* Синий заголовок */}
@@ -121,121 +126,150 @@ const EmotionsTrainer = () => {
             sx={{
               backgroundColor: theme.palette.primary.main,
               color: 'white',
-              borderRadius: '16px',
+              borderRadius: { xs: '12px', sm: '16px' },
               textAlign: 'center',
-              mb: 3,
-              py: 2,
+              mb: { xs: 2, sm: 3 },
+              py: { xs: 1.5, sm: 2 },
             }}
           >
-            <Typography variant="h5" fontWeight="bold">
+            <Typography 
+              variant="h5" 
+              fontWeight="bold"
+              sx={{
+                fontSize: { xs: '1.25rem', sm: '1.5rem' }
+              }}
+            >
               {t('emotions_trainer_title')}
             </Typography>
           </Box>
 
           {/* Всегда показываем тренажёр */}
           {currentEmotion && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              alignItems: 'center', 
+              mb: { xs: 2, sm: 3 },
+              flex: 1
+            }}>
               <Box
                 sx={{
-                  width: 120,
-                  height: 120,
+                  width: { xs: 100, sm: 120 },
+                  height: { xs: 100, sm: 120 },
                   borderRadius: '50%',
                   background: currentEmotion.color,
                   color: 'white',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  mb: 2,
+                  mb: { xs: 1.5, sm: 2 },
                   boxShadow: `0 4px 16px 0 ${currentEmotion.color}40`,
-                  fontSize: 64,
+                  '& > svg': {
+                    fontSize: { xs: 40, sm: 48 }
+                  }
                 }}
               >
                 {currentEmotion.icon}
               </Box>
-              <Typography variant="h6" fontWeight="bold" sx={{ color: currentEmotion.color, mb: 1 }}>
+              <Typography 
+                variant="h6" 
+                fontWeight="bold" 
+                sx={{ 
+                  color: currentEmotion.color, 
+                  mb: 1,
+                  fontSize: { xs: '1.1rem', sm: '1.25rem' }
+                }}
+              >
                 {currentEmotion.name}
               </Typography>
               <Typography
                 variant="body1"
                 sx={{
                   fontWeight: 500,
-                  fontSize: '1.1rem',
+                  fontSize: { xs: '1rem', sm: '1.1rem' },
                   lineHeight: 1.6,
-                  px: 1,
-                  py: 2,
+                  px: { xs: 1, sm: 2 },
+                  py: { xs: 1.5, sm: 2 },
                   borderRadius: 2,
                   backgroundColor: theme.palette.mode === 'dark'
                     ? 'rgba(255, 255, 255, 0.05)'
                     : 'rgba(0, 0, 0, 0.03)',
                   boxShadow: '0 2px 8px 0 rgba(60,60,120,0.06)',
-                  mb: 2,
+                  mb: { xs: 1.5, sm: 2 },
+                  mx: { xs: 1, sm: 2 }
                 }}
               >
                 "{currentPhrase}"
               </Typography>
             </Box>
           )}
-          <Button
-            variant="contained"
-            onClick={handleNextClick}
-            startIcon={<Refresh />}
-            sx={{
-              borderRadius: 30,
-              px: 2.5,
-              py: 1,
-              fontWeight: 500,
-              fontSize: '0.95rem',
-              minWidth: 0,
-              width: 'auto',
-              alignSelf: 'center',
-              background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
-              color: '#fff',
-              boxShadow: '0 8px 32px 0 rgba(255, 74, 110, 0.3)',
-              mb: 2,
-              '&:hover': {
-                background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
-              },
-            }}
-          >
-            {t('next_phrase')}
-          </Button>
-          {/* Короткая инструкция */}
-          <Typography
-            variant="caption"
-            align="center"
-            sx={{
-              display: 'block',
-              color: theme.palette.text.primary,
-              fontWeight: 500,
-              mb: 2,
-            }}
-          >
-            {t('emotions_trainer_instruction')}
-          </Typography>
-          <Button
-            variant="contained"
-            onClick={handleBackClick}
-            startIcon={<ArrowBack />}
-            sx={{
-              borderRadius: 30,
-              px: 2.5,
-              py: 1,
-              fontWeight: 500,
-              fontSize: '0.95rem',
-              minWidth: 0,
-              width: 'auto',
-              alignSelf: 'center',
-              background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
-              color: '#fff',
-              boxShadow: '0 8px 32px 0 rgba(255, 74, 110, 0.3)',
-              mt: 1.5,
-              '&:hover': {
-                background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
-              },
-            }}
-          >
-            {t('back')}
-          </Button>
+          
+          <Box sx={{ mt: 'auto', pt: { xs: 1, sm: 2 } }}>
+            <Button
+              variant="contained"
+              onClick={handleNextClick}
+              startIcon={<Refresh />}
+              sx={{
+                borderRadius: 30,
+                px: { xs: 2, sm: 2.5 },
+                py: { xs: 0.75, sm: 1 },
+                fontWeight: 500,
+                fontSize: { xs: '0.875rem', sm: '0.95rem' },
+                minWidth: 0,
+                width: 'auto',
+                alignSelf: 'center',
+                background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
+                color: '#fff',
+                boxShadow: '0 8px 32px 0 rgba(255, 74, 110, 0.3)',
+                mb: { xs: 1.5, sm: 2 },
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
+                },
+              }}
+            >
+              {t('next_phrase')}
+            </Button>
+            
+            <Typography
+              variant="caption"
+              align="center"
+              sx={{
+                display: 'block',
+                color: theme.palette.text.primary,
+                fontWeight: 500,
+                mb: { xs: 1.5, sm: 2 },
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                px: { xs: 1, sm: 2 }
+              }}
+            >
+              {t('emotions_trainer_instruction')}
+            </Typography>
+            
+            <Button
+              variant="contained"
+              onClick={handleBackClick}
+              startIcon={<ArrowBack />}
+              sx={{
+                borderRadius: 30,
+                px: { xs: 2, sm: 2.5 },
+                py: { xs: 0.75, sm: 1 },
+                fontWeight: 500,
+                fontSize: { xs: '0.875rem', sm: '0.95rem' },
+                minWidth: 0,
+                width: 'auto',
+                alignSelf: 'center',
+                background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
+                color: '#fff',
+                boxShadow: '0 8px 32px 0 rgba(255, 74, 110, 0.3)',
+                mt: { xs: 1, sm: 1.5 },
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
+                },
+              }}
+            >
+              {t('back')}
+            </Button>
+          </Box>
         </Paper>
       </Container>
     </Box>
