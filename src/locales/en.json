@@ -35,7 +35,7 @@
   "main_subtitle": "Your assistant for improving speech and diction",
   "breathing": "Breathing",
   "metronome": "Reading with Metronome",
-  "smooth_reader": "Smooth reading",
+  "smooth_reading": "Smooth reading",
   "tongue_twisters": "Tongue twister",
   "dafmaf": "DAF/MAF",
   "emotions": "Emotions",
@@ -107,5 +107,10 @@
   "affirmation_23": "I am a confident and engaging speaker. My words flow with ease and grace. I express my thoughts with clarity and precision. My voice carries warmth and authority. I connect with others through meaningful dialogue. I am developing my personal communication style. My words create lasting impact.",
   "affirmation_24": "My speech is a powerful tool for connection. I choose my words with care and intention. I express myself with clarity and conviction. My voice projects confidence and warmth. I engage others through authentic dialogue. I am developing my unique speaking style. My words inspire positive change.",
   "affirmation_25": "I am becoming a master of verbal expression. My words flow naturally and effortlessly. I articulate my thoughts with precision and grace. My voice resonates with confidence and warmth. I connect with others through compelling storytelling. I am developing my distinctive speaking style.",
-  "authorized_telegram": "You are authorized via Telegram"
+  "authorized_telegram": "You are authorized via Telegram",
+  "smooth_reading_instruction": "Read the text slowly and smoothly, following the highlighting",
+  "speed": "Speed",
+  "smooth_reader_repeat": "Repeat 3–5 times, trying to keep the rhythm.",
+  "random_text": "Random text",
+  "smooth_reader_title": "Smooth Reader"
 } 
