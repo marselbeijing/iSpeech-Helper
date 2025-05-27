@@ -245,7 +245,31 @@ const Functions = () => {
               </Typography>
             </Box>
 
-            <List sx={{ width: '100%', px: 1 }}>
+            {/* Кнопка назад */}
+            <Button
+              variant="contained"
+              startIcon={<ArrowBack />}
+              onClick={handleBack}
+              sx={{
+                py: 1,
+                px: 2.5,
+                borderRadius: 30,
+                fontWeight: 500,
+                fontSize: '0.95rem',
+                minWidth: 0,
+                width: 'auto',
+                alignSelf: 'center',
+                backgroundColor: '#ff3366',
+                '&:hover': {
+                  backgroundColor: '#e0294d',
+                },
+                mb: 3,
+              }}
+            >
+              {t('back')}
+            </Button>
+
+            <List sx={{ width: '100%', p: 0 }}>
               {menuItems.map((item, index) => (
                 <motion.div
                   key={item.title}
@@ -310,31 +334,6 @@ const Functions = () => {
                 </motion.div>
               ))}
             </List>
-
-            {/* Кнопка назад */}
-            <Button
-              variant="contained"
-              startIcon={<ArrowBack />}
-              onClick={handleBack}
-              sx={{
-                py: 1,
-                px: 2.5,
-                borderRadius: 30,
-                fontWeight: 500,
-                fontSize: '0.95rem',
-                minWidth: 0,
-                width: 'auto',
-                alignSelf: 'center',
-                backgroundColor: '#ff3366',
-                '&:hover': {
-                  backgroundColor: '#e0294d',
-                },
-                mt: 'auto',
-                mb: 2,
-              }}
-            >
-              {t('back')}
-            </Button>
           </Box>
         </motion.div>
       </Container>
