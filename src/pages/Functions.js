@@ -133,19 +133,6 @@ const Functions = () => {
         setSettings(newSettings);
       },
       color: '#f44336',
-      disabled: true,
-      overlayText: 'в процессе разработки',
-    },
-    {
-      title: 'Техподдержка',
-      description: 'Связаться с администратором',
-      icon: <SupportIcon />,
-      onClick: () => {
-        const username = 'MilanPlayBall';
-        const telegramUrl = `https://t.me/${username}`;
-        window.open(telegramUrl, '_blank');
-      },
-      color: '#2196f3',
     },
     {
       title: t('support'),
