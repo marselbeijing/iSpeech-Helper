@@ -66,7 +66,7 @@ const TelegramLogin = ({ onAuth }) => {
   if (tgUser) {
     return (
       <div style={{ textAlign: 'center', margin: 24 }}>
-        <h2>Вы авторизованы через Telegram</h2>
+        <h2>{t('authorized_telegram')}</h2>
         <div style={{ margin: 16 }}>
           <img src={tgUser.photo_url} alt="avatar" style={{ width: 64, height: 64, borderRadius: 32 }} />
         </div>
