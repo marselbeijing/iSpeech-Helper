@@ -298,6 +298,81 @@ const Account = () => {
           >
             {t('about')}
           </Button>
+
+          {/* Блок подписок */}
+          <Box
+            sx={{
+              p: { xs: 2, sm: 3 },
+              borderRadius: { xs: 2, sm: 3 },
+              background: theme.palette.mode === 'dark'
+                ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
+                : 'linear-gradient(135deg, #fffefb 0%, #fffde4 100%)',
+              border: `1px solid ${theme.palette.divider}`,
+              mt: 3,
+              width: '100%',
+              maxWidth: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                mb: 2,
+                color: theme.palette.primary.main,
+                fontWeight: 'bold',
+              }}
+            >
+              {t('premium')}
+            </Typography>
+
+            <Box sx={{
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              gap: 2,
+              width: '100%',
+              justifyContent: 'center',
+            }}>
+              {/* Месячная подписка */}
+              <Box
+                sx={{
+                  p: 2,
+                  borderRadius: 2,
+                  border: '1px solid',
+                  borderColor: theme.palette.divider,
+                  width: { xs: '100%', sm: '30%' },
+                  textAlign: 'center',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: { xs: 'auto', sm: 240 },
+                  justifyContent: 'space-between',
+                  '&:hover': {
+                    transform: 'translateY(-5px)',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                  },
+                }}
+              >
+                <Box>
+                  <Typography variant="h6" sx={{ mb: 1 }}>{t('month')}</Typography>
+                  <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    300 <StarIcon />
+                  </Typography>
+                </Box>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  disabled={isPurchasing || !user}
+                  sx={{ mt: 2 }}
+                  onClick={() => user && handlePurchase('MONTHLY')}
+                >
+                  {isPurchasing ? t('processing') : t('buy')}
+                </Button>
+              </Box>
+            </Box>
+          </Box>
         </Paper>
 
         <Modal
@@ -383,162 +458,6 @@ const Account = () => {
             </Paper>
           </Fade>
         </Modal>
-
-        {/* Блок подписок */}
-        <Box
-          sx={{
-            p: 3,
-            borderRadius: 3,
-            background: theme.palette.mode === 'dark'
-              ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
-              : 'linear-gradient(135deg, #fffefb 0%, #fffde4 100%)',
-            border: `1px solid ${theme.palette.divider}`,
-            mt: 2,
-            width: '100%',
-            maxWidth: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            mx: 0,
-          }}
-        >
-          <Typography
-            variant="h6"
-            sx={{
-              mb: 2,
-              color: theme.palette.primary.main,
-              fontWeight: 'bold',
-            }}
-          >
-            {t('premium')}
-          </Typography>
-
-          <Box sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
-            gap: 2,
-            width: '100%',
-            justifyContent: 'center',
-          }}>
-            {/* Месячная подписка */}
-            <Box
-              sx={{
-                p: 2,
-                borderRadius: 2,
-                border: '1px solid',
-                borderColor: theme.palette.divider,
-                width: { xs: '100%', sm: '30%' },
-                textAlign: 'center',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                height: 240,
-                justifyContent: 'space-between',
-                '&:hover': {
-                  transform: 'translateY(-5px)',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                },
-              }}
-            >
-              <Box>
-                <Typography variant="h6" sx={{ mb: 1 }}>{t('month')}</Typography>
-                <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  300 <StarIcon />
-                </Typography>
-              </Box>
-              <Button
-                variant="contained"
-                fullWidth
-                disabled={isPurchasing || !user}
-                sx={{ mt: 2 }}
-                onClick={() => user && handlePurchase('MONTHLY')}
-              >
-                {isPurchasing ? t('processing') : t('buy')}
-              </Button>
-            </Box>
-
-            {/* Квартальная подписка */}
-            <Box
-              sx={{
-                p: 2,
-                borderRadius: 2,
-                border: '1px solid',
-                borderColor: theme.palette.divider,
-                width: { xs: '100%', sm: '30%' },
-                textAlign: 'center',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                height: 240,
-                justifyContent: 'space-between',
-                '&:hover': {
-                  transform: 'translateY(-5px)',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                },
-              }}
-            >
-              <Box>
-                <Typography variant="h6" sx={{ mb: 1 }}>{t('quarter')}</Typography>
-                <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  720 <StarIcon />
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
-                  {t('discount_20')}
-                </Typography>
-              </Box>
-              <Button
-                variant="contained"
-                fullWidth
-                disabled={isPurchasing || !user}
-                sx={{ mt: 2 }}
-                onClick={() => user && handlePurchase('QUARTERLY')}
-              >
-                {isPurchasing ? t('processing') : t('buy')}
-              </Button>
-            </Box>
-
-            {/* Годовая подписка */}
-            <Box
-              sx={{
-                p: 2,
-                borderRadius: 2,
-                border: '1px solid',
-                borderColor: theme.palette.divider,
-                width: { xs: '100%', sm: '30%' },
-                textAlign: 'center',
-                transition: 'all 0.3s ease',
-                display: 'flex',
-                flexDirection: 'column',
-                height: 240,
-                justifyContent: 'space-between',
-                '&:hover': {
-                  transform: 'translateY(-5px)',
-                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                },
-              }}
-            >
-              <Box>
-                <Typography variant="h6" sx={{ mb: 1 }}>{t('year')}</Typography>
-                <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  2160 <StarIcon />
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
-                  {t('discount_40')}
-                </Typography>
-              </Box>
-              <Button
-                variant="contained"
-                fullWidth
-                disabled={isPurchasing || !user}
-                sx={{ mt: 2 }}
-                onClick={() => user && handlePurchase('YEARLY')}
-              >
-                {isPurchasing ? t('processing') : t('buy')}
-              </Button>
-            </Box>
-          </Box>
-        </Box>
       </Container>
     </Box>
   );
