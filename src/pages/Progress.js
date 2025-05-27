@@ -29,19 +29,25 @@ const Progress = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4, minHeight: '100vh' }}>
+    <Container maxWidth="md" sx={{ 
+      py: { xs: 0, sm: 4 }, 
+      minHeight: '100vh',
+      px: { xs: 0, sm: 2 }
+    }}>
       {/* Основной контейнер */}
       <Paper
         elevation={0}
         sx={{
-          borderRadius: '24px',
-          padding: '24px',
+          borderRadius: { xs: 0, sm: '24px' },
+          padding: { xs: '16px', sm: '24px' },
           backgroundColor: theme.palette.background.paper,
-          boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-          marginBottom: '20px',
+          boxShadow: { xs: 'none', sm: '0 4px 20px rgba(0,0,0,0.08)' },
+          marginBottom: { xs: 0, sm: '20px' },
           width: '100%',
-          maxWidth: '500px',
+          maxWidth: '100%',
+          height: { xs: '100vh', sm: 'auto' },
           mx: 'auto',
+          overflowY: 'auto',
         }}
       >
         {/* Заголовок внутри основного блока */}
