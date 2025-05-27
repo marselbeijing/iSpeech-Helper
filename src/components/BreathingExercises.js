@@ -119,29 +119,30 @@ const BreathingExercises = () => {
         display: 'flex', 
         flexDirection: 'column',
         overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
+        p: { xs: 0, sm: 2 }
       }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          style={{ width: '100%' }}
+          style={{ width: '100%', height: '100%' }}
         >
           <Box
             sx={{
               p: { xs: 1.5, sm: 2 },
-              borderRadius: 3,
+              borderRadius: { xs: 0, sm: 3 },
               background: theme.palette.mode === 'dark' 
                 ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)' 
                 : 'linear-gradient(135deg, #fffefb 0%, #fffde4 100%)',
-              border: `1px solid ${theme.palette.divider}`,
-              mb: 3,
-              width: '90%',
+              border: { xs: 'none', sm: `1px solid ${theme.palette.divider}` },
+              mb: { xs: 0, sm: 3 },
+              width: '100%',
               maxWidth: '100%',
               minWidth: '280px',
-              height: 'auto',
-              minHeight: '540px',
-              maxHeight: '700px',
+              height: { xs: '100vh', sm: 'auto' },
+              minHeight: { xs: '100vh', sm: '540px' },
+              maxHeight: { xs: '100vh', sm: '700px' },
               overflowY: 'auto',
               display: 'flex',
               flexDirection: 'column',
