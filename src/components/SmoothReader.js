@@ -154,30 +154,36 @@ const SmoothReader = () => {
         display: 'flex', 
         flexDirection: 'column',
         overflow: 'hidden',
-        position: 'relative'
+        position: 'relative',
+        p: { xs: 0, sm: 2 }
       }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}
         >
           <Box
             sx={{
               p: { xs: 1.5, sm: 2 },
-              borderRadius: 3,
+              borderRadius: { xs: 0, sm: 3 },
               background: theme.palette.mode === 'dark' 
                 ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)' 
                 : 'linear-gradient(135deg, #fffefb 0%, #fffde4 100%)',
-              border: `1px solid ${theme.palette.divider}`,
-              mb: 3,
-              width: '90%',
+              border: { xs: 'none', sm: `1px solid ${theme.palette.divider}` },
+              mb: { xs: 0, sm: 3 },
+              width: '100%',
               maxWidth: '100%',
               minWidth: '280px',
+              height: { xs: '100vh', sm: 'auto' },
+              minHeight: { xs: '100vh', sm: '540px' },
+              maxHeight: { xs: '100vh', sm: '700px' },
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'flex-start',
+              mx: 'auto',
+              flex: 1
             }}
           >
             <Box
@@ -255,7 +261,7 @@ const SmoothReader = () => {
                 fontWeight: 500,
                 textAlign: 'center',
                 minHeight: 40,
-                maxHeight: 180,
+                maxHeight: { xs: '35vh', sm: 180 },
                 overflowY: 'auto',
                 display: 'flex',
                 flexWrap: 'wrap',
@@ -266,6 +272,8 @@ const SmoothReader = () => {
                 userSelect: 'none',
                 letterSpacing: '-0.01em',
                 wordBreak: 'break-word',
+                width: '100%',
+                flex: { xs: 1, sm: 'none' }
               }}
               ref={textBoxRef}
             >
