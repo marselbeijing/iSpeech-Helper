@@ -168,7 +168,7 @@ const Account = () => {
       width: '100%',
       backgroundColor: theme.palette.background.default,
       overflowY: 'auto',
-      paddingBottom: '72px',
+      paddingBottom: { xs: 0, sm: '72px' },
       display: 'flex',
       flexDirection: 'column',
     }}>
@@ -176,24 +176,26 @@ const Account = () => {
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-        py: 2,
+        py: { xs: 0, sm: 2 },
+        px: { xs: 0, sm: 2 },
         flex: 1,
         width: '100%',
       }}>
         <Paper
           elevation={0}
           sx={{
-            p: 3,
-            borderRadius: 3,
+            p: { xs: 2, sm: 3 },
+            borderRadius: { xs: 0, sm: 3 },
             background: theme.palette.background.paper,
-            border: '1px solid',
+            border: { xs: 'none', sm: '1px solid' },
             borderColor: theme.palette.mode === 'dark'
               ? 'rgba(255, 255, 255, 0.1)'
               : 'rgba(0, 0, 0, 0.05)',
             width: '100%',
             maxWidth: '100%',
             mx: 0,
-            mb: 2,
+            mb: { xs: 0, sm: 2 },
+            minHeight: { xs: '100vh', sm: 'auto' },
           }}
         >
           {user ? (
