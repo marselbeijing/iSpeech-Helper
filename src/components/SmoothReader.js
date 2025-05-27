@@ -138,30 +138,23 @@ const SmoothReader = () => {
   };
 
   return (
-    <Box sx={{ 
-      height: '100vh', 
-      width: '100%', 
-      overflow: 'hidden',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
+    <Box sx={{
+      minHeight: '100vh',
+      width: '100%',
+      overflowY: 'auto',
       backgroundColor: theme.palette.background.default
     }}>
-      <Container maxWidth="sm" sx={{ 
-        height: '100%', 
-        display: 'flex', 
+      <Container maxWidth="sm" sx={{
+        minHeight: '100vh',
+        display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden',
-        position: 'relative',
         p: { xs: 0, sm: 2 }
       }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}
+          style={{ width: '100%', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
         >
           <Box
             sx={{
