@@ -57,35 +57,6 @@ const CustomSwitch = styled(MuiSwitch)(({ theme }) => ({
   },
 }));
 
-const CustomSwitch = styled(MuiSwitch)(({ theme }) => ({
-  width: 52,
-  height: 32,
-  padding: 0,
-  '& .MuiSwitch-switchBase': {
-    padding: 4,
-    '&.Mui-checked': {
-      color: '#111',
-      transform: 'translateX(20px)',
-      '& + .MuiSwitch-track': {
-        backgroundColor: '#bdbdbd',
-        opacity: 1,
-      },
-    },
-  },
-  '& .MuiSwitch-thumb': {
-    width: 24,
-    height: 24,
-    boxShadow: '0px 2px 4px rgba(0,0,0,0.15)',
-    backgroundColor: '#111',
-  },
-  '& .MuiSwitch-track': {
-    borderRadius: 16,
-    border: '1px solid #e0e0e0',
-    backgroundColor: '#bdbdbd',
-    opacity: 1,
-  },
-}));
-
 const Functions = () => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -282,106 +253,9 @@ const Functions = () => {
                   m: 0,
                 }}
               >
-<<<<<<< HEAD
                 {t('settings')}
               </Typography>
             </Box>
-=======
-                <ListItem
-                  sx={{
-                    mb: 2,
-                    py: 2,
-                    borderRadius: 3,
-                    bgcolor: theme.palette.mode === 'dark' ? 'rgba(30, 30, 30, 0.8)' : 'background.paper',
-                    border: `1px solid ${theme.palette.divider}`,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      borderColor: item.color,
-                      boxShadow: `0 4px 12px 0 ${item.color}20`,
-                    },
-                    position: 'relative',
-                    ...(item.disabled && {
-                      '&::after': {
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                        borderRadius: 3,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#fff',
-                        fontSize: '0.875rem',
-                        fontWeight: 'bold',
-                        zIndex: 1,
-                      },
-                    }),
-                  }}
-                  onClick={item.onClick}
-                  button={!!item.onClick}
-                >
-                  <Box
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      mr: 2,
-                      background: `linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%)`,
-                      color: '#444',
-                    }}
-                  >
-                    {React.cloneElement(item.icon, { sx: { fontSize: 28 } })}
-                  </Box>
-                  <ListItemText 
-                    primary={
-                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: theme.palette.text.primary }}>
-                        {item.title}
-                      </Typography>
-                    } 
-                    secondary={
-                      <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
-                        {item.description}
-                      </Typography>
-                    } 
-                  />
-                  {item.disabled && (
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        color: '#fff',
-                        fontWeight: 'bold',
-                        zIndex: 2,
-                        fontSize: '1.2rem',
-                        fontFamily: 'Roboto, sans-serif',
-                      }}
-                    >
-                      {item.overlayText}
-                    </Typography>
-                  )}
-                  {!item.disabled && item.value !== undefined && (
-                    <ListItemSecondaryAction>
-                      <CustomSwitch
-                        edge="end"
-                        checked={item.value}
-                        onChange={(e) => handleSettingChange(item, e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  )}
-                </ListItem>
-              </motion.div>
-            ))}
-          </List>
->>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
 
             <List sx={{ width: '100%', px: 1 }}>
               {menuItems.map((item, index) => (
