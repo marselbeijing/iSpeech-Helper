@@ -23,6 +23,7 @@ import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import TelegramLogin from '../components/TelegramLogin';
 import { checkSubscriptionStatus, purchaseSubscription } from '../services/subscription';
+import { useTranslation } from 'react-i18next';
 
 const StarIcon = () => (
   <span style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }}>
@@ -34,6 +35,7 @@ const StarIcon = () => (
 
 const Account = () => {
   const theme = useTheme();
+  const { t } = useTranslation();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
@@ -167,12 +169,16 @@ const Account = () => {
       backgroundColor: theme.palette.background.default,
       overflowY: 'auto',
       paddingBottom: '72px',
+      display: 'flex',
+      flexDirection: 'column',
     }}>
       <Container maxWidth="sm" sx={{
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-        py: 4,
+        py: 2,
+        flex: 1,
+        width: '100%',
       }}>
         <Paper
           elevation={0}
@@ -184,10 +190,10 @@ const Account = () => {
             borderColor: theme.palette.mode === 'dark'
               ? 'rgba(255, 255, 255, 0.1)'
               : 'rgba(0, 0, 0, 0.05)',
-            width: '90%',
+            width: '100%',
             maxWidth: '100%',
-            minWidth: '280px',
-            mx: 'auto',
+            mx: 0,
+            mb: 2,
           }}
         >
           {user ? (
@@ -219,20 +225,20 @@ const Account = () => {
                     sx={{ mb: 0.5 }}
                   >
                     {subscription.isActive 
-                      ? `Премиум подписка активна до ${new Date(subscription.expiresAt).toLocaleDateString()}`
-                      : 'У вас нет активной подписки'}
+                      ? t('premium_active', { date: new Date(subscription.expiresAt).toLocaleDateString() })
+                      : t('no_active_subscription')}
                   </Typography>
                 </Box>
               )}
 
               <Box sx={{ mt: 2, mb: 3 }}>
                 <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-                  Статистика
+                  {t('statistics')}
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3 }}>
                   <Box>
                     <Typography variant="caption" color="text.secondary">
-                      Упражнений
+                      {t('exercises')}
                     </Typography>
                     <Typography variant="h6" color="primary.main">
                       0
@@ -240,7 +246,7 @@ const Account = () => {
                   </Box>
                   <Box>
                     <Typography variant="caption" color="text.secondary">
-                      Минут практики
+                      {t('minutes')}
                     </Typography>
                     <Typography variant="h6" color="secondary.main">
                       0
@@ -251,7 +257,7 @@ const Account = () => {
               <Button
                 variant="contained"
                 color="error"
-                startIcon={<LogoutIcon />}
+                startIcon={<LogoutIcon fontSize="small" />}
                 onClick={handleLogout}
                 sx={{
                   borderRadius: 30,
@@ -263,7 +269,7 @@ const Account = () => {
                   boxShadow: '0 4px 12px rgba(0, 0, 0, 0.10)',
                 }}
               >
-                Выйти
+                {t('logout')}
               </Button>
             </>
           ) : (
@@ -288,7 +294,7 @@ const Account = () => {
               },
             }}
           >
-            О приложении
+            {t('about')}
           </Button>
         </Paper>
 
@@ -323,10 +329,10 @@ const Account = () => {
                   top: 8,
                 }}
               >
-                <CloseIcon />
+                <CloseIcon fontSize="small" />
               </IconButton>
               <Typography variant="h6" gutterBottom>
-                О приложении
+                {t('about')}
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
                 iSpeech Helper — это специализированное приложение для помощи людям с речевыми расстройствами. Оно разработано для улучшения дикции, артикуляции и общего качества речи через комплекс специальных упражнений.
@@ -385,15 +391,14 @@ const Account = () => {
               ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
               : 'linear-gradient(135deg, #fffefb 0%, #fffde4 100%)',
             border: `1px solid ${theme.palette.divider}`,
-            mt: 3,
-            width: '90%',
+            mt: 2,
+            width: '100%',
             maxWidth: '100%',
-            minWidth: '280px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'flex-start',
-            mx: 'auto',
+            mx: 0,
           }}
         >
           <Typography
@@ -404,7 +409,7 @@ const Account = () => {
               fontWeight: 'bold',
             }}
           >
-            Премиум подписка
+            {t('premium')}
           </Typography>
 
           <Box sx={{
@@ -435,7 +440,7 @@ const Account = () => {
               }}
             >
               <Box>
-                <Typography variant="h6" sx={{ mb: 1 }}>Месяц</Typography>
+                <Typography variant="h6" sx={{ mb: 1 }}>{t('month')}</Typography>
                 <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   300 <StarIcon />
                 </Typography>
@@ -447,7 +452,7 @@ const Account = () => {
                 sx={{ mt: 2 }}
                 onClick={() => user && handlePurchase('MONTHLY')}
               >
-                {isPurchasing ? 'Обработка...' : 'Купить'}
+                {isPurchasing ? t('processing') : t('buy')}
               </Button>
             </Box>
 
@@ -472,12 +477,12 @@ const Account = () => {
               }}
             >
               <Box>
-                <Typography variant="h6" sx={{ mb: 1 }}>Квартал</Typography>
+                <Typography variant="h6" sx={{ mb: 1 }}>{t('quarter')}</Typography>
                 <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   720 <StarIcon />
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
-                  Скидка 20%
+                  {t('discount_20')}
                 </Typography>
               </Box>
               <Button
@@ -487,7 +492,7 @@ const Account = () => {
                 sx={{ mt: 2 }}
                 onClick={() => user && handlePurchase('QUARTERLY')}
               >
-                {isPurchasing ? 'Обработка...' : 'Купить'}
+                {isPurchasing ? t('processing') : t('buy')}
               </Button>
             </Box>
 
@@ -512,12 +517,12 @@ const Account = () => {
               }}
             >
               <Box>
-                <Typography variant="h6" sx={{ mb: 1 }}>Год</Typography>
+                <Typography variant="h6" sx={{ mb: 1 }}>{t('year')}</Typography>
                 <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   2160 <StarIcon />
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
-                  Скидка 40%
+                  {t('discount_40')}
                 </Typography>
               </Box>
               <Button
@@ -527,7 +532,7 @@ const Account = () => {
                 sx={{ mt: 2 }}
                 onClick={() => user && handlePurchase('YEARLY')}
               >
-                {isPurchasing ? 'Обработка...' : 'Купить'}
+                {isPurchasing ? t('processing') : t('buy')}
               </Button>
             </Box>
           </Box>

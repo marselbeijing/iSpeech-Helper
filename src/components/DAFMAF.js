@@ -15,6 +15,7 @@ import { vibrate } from '../services/vibration';
 import { commonStyles } from '../styles/TelegramStyles';
 import { styled } from '@mui/material/styles';
 import { updateProgress } from '../services/storage';
+import { useTranslation } from 'react-i18next';
 
 const CustomThumb = styled('span')(({ theme }) => ({
   width: 24,
@@ -47,6 +48,8 @@ const DAFMAF = () => {
   const gainNodeRef = useRef(null);
   const noiseSourceRef = useRef(null);
   const noiseGainRef = useRef(null);
+
+  const { t } = useTranslation();
 
   // Генерация буфера белого шума
   const createWhiteNoiseBuffer = (audioCtx) => {
@@ -323,7 +326,7 @@ const DAFMAF = () => {
                   m: 0,
                 }}
               >
-                DAF/MAF
+                {t('dafmaf_title')}
               </Typography>
             </Box>
 
@@ -336,7 +339,7 @@ const DAFMAF = () => {
                 mb: 1, 
                 fontWeight: 700 
               }}>
-                Используйте наушники. Настройте параметры и нажмите старт.
+                {t('dafmaf_instruction_main')}
               </Typography>
               <Typography variant="body2" sx={{ 
                 textAlign: 'center', 
@@ -344,9 +347,11 @@ const DAFMAF = () => {
                 fontSize: 13, 
                 mb: 1 
               }}>
-                1. Наденьте наушники.<br/>
-                2. Говорите в микрофон — вы услышите свой голос с задержкой (DAF) или с наложением шума (MAF).<br/>
-                3. Меняйте параметры для подбора комфортного режима.
+                {t('dafmaf_instruction_1')}
+                <br/>
+                {t('dafmaf_instruction_2')}
+                <br/>
+                {t('dafmaf_instruction_3')}
               </Typography>
             </Box>
 
@@ -364,7 +369,7 @@ const DAFMAF = () => {
                 }}
               >
                 <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                  Требуется доступ к микрофону. Разрешите доступ в настройках браузера.
+                  {t('dafmaf_mic_error')}
                 </Typography>
               </Box>
             )}
@@ -378,7 +383,7 @@ const DAFMAF = () => {
                 fontSize: 13,
                 color: theme.palette.mode === 'dark' ? '#fff' : 'inherit'
               }}>
-                Задержка (мс): {delay}
+                {t('dafmaf_delay')}: {delay}
               </Typography>
               <Slider
                 value={delay}
@@ -396,7 +401,7 @@ const DAFMAF = () => {
                 fontSize: 13,
                 color: theme.palette.mode === 'dark' ? '#fff' : 'inherit'
               }}>
-                Громкость: {volume.toFixed(1)}
+                {t('dafmaf_volume')}: {volume.toFixed(1)}
               </Typography>
               <Slider
                 value={volume}
@@ -415,7 +420,7 @@ const DAFMAF = () => {
                 fontSize: 13,
                 color: theme.palette.mode === 'dark' ? '#fff' : 'inherit'
               }}>
-                Громкость шума: {noiseVolume.toFixed(1)}
+                {t('dafmaf_noise_volume')}: {noiseVolume.toFixed(1)}
               </Typography>
               <Slider
                 value={noiseVolume}
@@ -435,44 +440,43 @@ const DAFMAF = () => {
             </Box>
 
             {/* Кнопки старт/стоп и MAF в одной строке с подписями */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 2, mb: 1 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 3, mb: 1 }}>
+              {/* DAF кнопка */}
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button
                     onClick={handleDAFToggle}
                     sx={{
-                      width: 72,
-                      height: 72,
+                      width: 80,
+                      height: 80,
                       minWidth: 0,
                       p: 0,
                       borderRadius: '50%',
                       background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
                       color: '#fff',
                       boxShadow: '0 4px 16px rgba(255, 51, 102, 0.4)',
-                      fontSize: 32,
+                      fontSize: 36,
                       mb: 0.5,
                       '&:hover': {
                         background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
                       },
                     }}
                   >
-                    {isPlaying ? <StopCircle sx={{ fontSize: 36 }} /> : <PlayArrow sx={{ fontSize: 36 }} />}
+                    {isPlaying ? <StopCircle sx={{ fontSize: 44 }} /> : <PlayArrow sx={{ fontSize: 44 }} />}
                   </Button>
                 </motion.div>
-                <Typography variant="caption" sx={{ 
-                  mt: 0.5, 
-                  fontSize: 11, 
-                  color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.7)' : '#888', 
-                  textAlign: 'center' 
-                }}>DAF</Typography>
+                <Typography variant="caption" sx={{ mt: 0.5, fontSize: 14, color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.85)' : '#888', textAlign: 'center', fontWeight: 600 }}>
+                  {isPlaying ? t('dafmaf_stop') : t('dafmaf_start')}
+                </Typography>
               </Box>
+              {/* MAF кнопка */}
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button
                     onClick={handleMAFToggle}
                     sx={{
-                      width: 72,
-                      height: 72,
+                      width: 80,
+                      height: 80,
                       minWidth: 0,
                       p: 0,
                       borderRadius: '50%',
@@ -483,7 +487,7 @@ const DAFMAF = () => {
                       boxShadow: isMAFEnabled
                         ? '0 4px 16px 0 #32b76840'
                         : '0 4px 16px 0 #ff336640',
-                      fontSize: 32,
+                      fontSize: 36,
                       mb: 0.5,
                       transition: 'all 0.2s',
                       '&:hover': {
@@ -496,15 +500,12 @@ const DAFMAF = () => {
                       },
                     }}
                   >
-                    <Headphones sx={{ fontSize: 36 }} />
+                    <Headphones sx={{ fontSize: 40 }} />
                   </Button>
                 </motion.div>
-                <Typography variant="caption" sx={{ 
-                  mt: 0.5, 
-                  fontSize: 11, 
-                  color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.7)' : '#888', 
-                  textAlign: 'center' 
-                }}>MAF</Typography>
+                <Typography variant="caption" sx={{ mt: 0.5, fontSize: 14, color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.85)' : '#888', textAlign: 'center', fontWeight: 600 }}>
+                  {t('dafmaf_maf')}
+                </Typography>
               </Box>
             </Box>
 
@@ -531,7 +532,7 @@ const DAFMAF = () => {
                 },
               }}
             >
-              Назад
+              {t('back')}
             </Button>
           </Box>
         </motion.div>

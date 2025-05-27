@@ -10,11 +10,13 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { getUserStats, updateProgress } from '../services/storage';
 import { ArrowBack } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 const ProgressCounter = ({ showDetails = false }) => {
   const theme = useTheme();
   const [stats, setStats] = useState(null);
   const [animateCount, setAnimateCount] = useState(false);
+  const { t } = useTranslation();
   
   useEffect(() => {
     // Загрузка статистики при монтировании
@@ -115,27 +117,6 @@ const ProgressCounter = ({ showDetails = false }) => {
           </Box>
         </Box>
         
-        {/* Бейдж с количеством упражнений */}
-        <Badge
-          badgeContent={stats.totalExercises}
-          color="secondary"
-          overlap="circular"
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right',
-          }}
-          sx={{
-            position: 'absolute',
-            bottom: showDetails ? 5 : 0,
-            right: showDetails ? 5 : 0,
-            '& .MuiBadge-badge': {
-              fontSize: showDetails ? '0.9rem' : '0.7rem',
-              padding: showDetails ? '8px 12px' : '6px 10px',
-              borderRadius: '20px',
-            },
-          }}
-        />
-        
         {/* Дополнительная информация, если showDetails = true */}
         {showDetails && (
           <Box sx={{ mt: 2 }}>
@@ -159,7 +140,7 @@ const ProgressCounter = ({ showDetails = false }) => {
               >
                 <Box>
                   <Typography variant="caption" color="text.secondary">
-                    Упражнений
+                    {t('exercises')}
                   </Typography>
                   <Typography variant="h6" color="primary.main">
                     {stats.totalExercises}
@@ -168,7 +149,7 @@ const ProgressCounter = ({ showDetails = false }) => {
                 
                 <Box>
                   <Typography variant="caption" color="text.secondary">
-                    Серия дней
+                    {t('days_in_a_row')}
                   </Typography>
                   <Typography variant="h6" color="secondary.main">
                     {stats.currentStreak}
@@ -177,7 +158,7 @@ const ProgressCounter = ({ showDetails = false }) => {
                 
                 <Box>
                   <Typography variant="caption" color="text.secondary">
-                    Достижения
+                    {t('achievements')}
                   </Typography>
                   <Typography variant="h6" color="success.main">
                     {completedAchievements}/{stats.achievements.length}

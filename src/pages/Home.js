@@ -21,10 +21,12 @@ import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import { commonStyles } from '../styles/TelegramStyles';
 import BackgroundAnimation from '../components/BackgroundAnimation';
+import { useTranslation } from 'react-i18next';
 
 const Home = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const { t } = useTranslation();
 
   // Блокировка прокрутки на странице
   React.useEffect(() => {
@@ -39,37 +41,37 @@ const Home = () => {
 
   const menuItems = [
     {
-      title: 'Дыхание',
+      title: t('breathing'),
       icon: <BreathingIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/breathing',
       color: '#FF4A6E',
     },
     {
-      title: 'Метроном',
+      title: t('metronome'),
       icon: <MetronomeIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/metronome',
       color: '#5B7CFF',
     },
     {
-      title: 'Плавное чтение',
+      title: t('smooth_reader'),
       icon: <ReaderIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/smooth-reader',
       color: '#32B768',
     },
     {
-      title: 'Скороговорка',
+      title: t('tongue_twisters'),
       icon: <TongueTwisterIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/tongue-twisters',
       color: '#FFB84A',
     },
     {
-      title: 'DAF/MAF',
+      title: t('dafmaf'),
       icon: <DAFIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/dafmaf',
       color: '#8B5CF6',
     },
     {
-      title: 'Эмоции',
+      title: t('emotions'),
       icon: <EmotionsIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/emotions',
       color: '#FF6B6B',
@@ -187,7 +189,7 @@ const Home = () => {
                   lineHeight: 1.4,
                 }}
               >
-                Ваш помощник для улучшения речи и дикции
+                {t('main_subtitle')}
               </Typography>
             </Paper>
           </motion.div>

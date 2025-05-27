@@ -26,6 +26,7 @@ import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import { getUserSettings, saveUserSettings } from '../services/storage';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const CustomSwitch = styled(MuiSwitch)(({ theme }) => ({
   width: 52,
@@ -59,11 +60,13 @@ const CustomSwitch = styled(MuiSwitch)(({ theme }) => ({
 const Functions = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { i18n, t } = useTranslation();
+  const savedLang = localStorage.getItem('lang') || 'ru';
   const [settings, setSettings] = useState({
     darkMode: false,
     soundEffects: true,
     vibration: true,
-    language: 'ru',
+    language: savedLang,
   });
 
   useEffect(() => {
@@ -74,14 +77,14 @@ const Functions = () => {
         darkMode: savedSettings.darkMode || false,
         soundEffects: savedSettings.soundEnabled || true,
         vibration: savedSettings.vibrationEnabled || true,
-        language: 'ru', // По умолчанию русский
+        language: localStorage.getItem('lang') || 'ru', // Используем сохраненный язык
       });
     }
   }, []);
 
-  const menuItems = [
+  const menuItems = React.useMemo(() => [
     {
-      title: 'Темная тема',
+      title: t('dark_theme'),
       description: '',
       icon: <DarkModeIcon sx={{ fontSize: 25 }} />,
       value: settings.darkMode,
@@ -103,7 +106,7 @@ const Functions = () => {
       color: '#9c27b0',
     },
     {
-      title: 'Звуковые эффекты',
+      title: t('sound_effects'),
       description: '',
       icon: <VolumeIcon sx={{ fontSize: 25 }} />,
       value: settings.soundEffects,
@@ -118,22 +121,21 @@ const Functions = () => {
       color: '#4caf50',
     },
     {
-      title: 'Сменить язык',
+      title: t('change_language'),
       description: '',
       icon: <LanguageIcon sx={{ fontSize: 25 }} />,
       value: settings.language === 'en',
       onChange: (value) => {
         const newLanguage = value ? 'en' : 'ru';
+        i18n.changeLanguage(newLanguage);
+        localStorage.setItem('lang', newLanguage);
         const newSettings = { ...settings, language: newLanguage };
         setSettings(newSettings);
-        // Примечание: язык пока не сохраняется в хранилище
       },
       color: '#f44336',
-      disabled: true,
-      overlayText: 'в процессе разработки',
     },
     {
-      title: 'Техподдержка',
+      title: t('support'),
       description: '',
       icon: <SupportIcon sx={{ fontSize: 25 }} />,
       onClick: () => {
@@ -143,7 +145,7 @@ const Functions = () => {
       },
       color: '#2196f3',
     },
-  ];
+  ], [t, i18n, settings]);
 
   const handleSettingChange = (item, value) => {
     if (settings.soundEffects) {
@@ -156,6 +158,14 @@ const Functions = () => {
     playSound('click');
     vibrate('click');
     navigate('/');
+  };
+
+  // Обработчик изменения языка
+  const handleLanguageChange = () => {
+    const newLang = settings.language === 'ru' ? 'en' : 'ru';
+    setSettings(prev => ({ ...prev, language: newLang }));
+    localStorage.setItem('lang', newLang);
+    i18n.changeLanguage(newLang);
   };
 
   return (
@@ -230,7 +240,7 @@ const Functions = () => {
                   m: 0,
                 }}
               >
-                Настройки
+                {t('settings')}
               </Typography>
             </Box>
 
@@ -255,25 +265,6 @@ const Functions = () => {
                         boxShadow: `0 4px 12px 0 ${item.color}20`,
                       },
                       position: 'relative',
-                      ...(item.disabled && {
-                        '&::after': {
-                          content: '""',
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                          borderRadius: 3,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: '#fff',
-                          fontSize: '0.875rem',
-                          fontWeight: 'bold',
-                          zIndex: 1,
-                        },
-                      }),
                     }}
                     onClick={item.onClick}
                     button={!!item.onClick}
@@ -305,25 +296,6 @@ const Functions = () => {
                         </Typography>
                       } 
                     />
-                    {item.disabled && (
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)',
-                          color: '#fff',
-                          fontWeight: 'bold',
-                          zIndex: 2,
-                          fontSize: '0.9rem',
-                          fontFamily: 'Roboto, sans-serif',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {item.overlayText}
-                      </Typography>
-                    )}
                     {!item.disabled && item.value !== undefined && (
                       <ListItemSecondaryAction>
                         <CustomSwitch
@@ -360,7 +332,7 @@ const Functions = () => {
                 mb: 2,
               }}
             >
-              Назад
+              {t('back')}
             </Button>
           </Box>
         </motion.div>

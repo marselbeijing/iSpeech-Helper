@@ -7,7 +7,9 @@ import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
 import WebApp from '@twa-dev/sdk';
-import { Analytics } from '@twa-dev/analytics';
+import telegramAnalytics from '@telegram-apps/analytics';
+import './i18n';
+import { useTranslation } from 'react-i18next';
 
 // Components
 import NavigationBar from './components/NavigationBar';
@@ -47,10 +49,10 @@ const AnimatedRoutes = () => {
 // Функция для проверки доступности функций Telegram WebApp
 const isTelegramFeatureSupported = (feature) => {
   try {
-    if (!WebApp.isExpanded) return false;
+    if (!window.Telegram?.WebApp?.isExpanded) return false;
     
     // Получение версии WebApp
-    const versionStr = WebApp.version || '';
+    const versionStr = window.Telegram.WebApp.version || '';
     const versionParts = versionStr.split('.');
     const majorVersion = parseInt(versionParts[0], 10) || 0;
     
@@ -70,39 +72,40 @@ const isTelegramFeatureSupported = (feature) => {
 
 // Main App component
 const App = () => {
+  const { t, i18n } = useTranslation();
   const [darkMode, setDarkMode] = useState(false);
   const [themeMode, setThemeMode] = useState('light');
   
   useEffect(() => {
     // Определение режима темы из Telegram WebApp
     try {
-      if (WebApp.isExpanded) {
+      if (window.Telegram?.WebApp?.isExpanded) {
         // Если используем Telegram Mini App
-        const colorScheme = WebApp.colorScheme;
+        const colorScheme = window.Telegram.WebApp.colorScheme;
         setThemeMode(colorScheme);
         setDarkMode(colorScheme === 'dark');
         
         // Настраиваем общие стили для Telegram Mini App (только если поддерживается)
         if (isTelegramFeatureSupported('headerColor')) {
-          WebApp.setHeaderColor(colorScheme === 'dark' ? '#17212B' : '#FFFFFF');
+          window.Telegram.WebApp.setHeaderColor(colorScheme === 'dark' ? '#17212B' : '#FFFFFF');
         }
         
         if (isTelegramFeatureSupported('backgroundColor')) {
-          WebApp.setBackgroundColor(colorScheme === 'dark' ? '#1F2936' : '#F0F2F5');
+          window.Telegram.WebApp.setBackgroundColor(colorScheme === 'dark' ? '#1F2936' : '#F0F2F5');
         }
         
         // Подписываемся на изменения темы в Telegram
-        WebApp.onEvent('themeChanged', () => {
-          const newColorScheme = WebApp.colorScheme;
+        window.Telegram.WebApp.onEvent('themeChanged', () => {
+          const newColorScheme = window.Telegram.WebApp.colorScheme;
           setThemeMode(newColorScheme);
           setDarkMode(newColorScheme === 'dark');
           
           if (isTelegramFeatureSupported('headerColor')) {
-            WebApp.setHeaderColor(newColorScheme === 'dark' ? '#17212B' : '#FFFFFF');
+            window.Telegram.WebApp.setHeaderColor(newColorScheme === 'dark' ? '#17212B' : '#FFFFFF');
           }
           
           if (isTelegramFeatureSupported('backgroundColor')) {
-            WebApp.setBackgroundColor(newColorScheme === 'dark' ? '#1F2936' : '#F0F2F5');
+            window.Telegram.WebApp.setBackgroundColor(newColorScheme === 'dark' ? '#1F2936' : '#F0F2F5');
           }
         });
       } else {
@@ -174,7 +177,12 @@ const App = () => {
     },
   });
 
-  Analytics.init('eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXJib3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90IiwiYXBwX2RvbWFpbiI6Imh0dHBzOi8vaS1zcGVlY2gtaGVscGVyLTJ1NGQudmVyY2VsLmFwcC8ifQ==!ZkcImen6FpPBw6xfWjRZBKHfMzS80qpeFc/fZ6y+KCA=');
+  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+    telegramAnalytics.init({
+      token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXJib3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90IiwiYXBwX2RvbWFpbiI6Imh0dHBzOi8vaS1zcGVlY2gtaGVscGVyLTJ1NGQudmVyY2VsLmFwcC8ifQ==!ZkcImen6FpPBw6xfWjRZBKHfMzS80qpeFc/fZ6y+KCA=',
+      appName: 'ispeech_helper'
+    });
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -186,7 +194,6 @@ const App = () => {
           flexDirection: 'column',
           background: theme.palette.background.default,
           transition: 'background 0.3s ease',
-          // Убедимся, что контент не перекрывается с навбаром
           paddingBottom: '56px',
         }}
       >

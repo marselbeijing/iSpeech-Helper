@@ -20,31 +20,12 @@ import {
   SentimentDissatisfied,
   Refresh,
 } from '@mui/icons-material';
-
-const emotions = [
-  { name: 'Радость', icon: <SentimentVerySatisfied sx={{ fontSize: 48 }} />, color: '#32B768' },
-  { name: 'Спокойствие', icon: <SentimentSatisfied sx={{ fontSize: 48 }} />, color: '#5B7CFF' },
-  { name: 'Грусть', icon: <SentimentDissatisfied sx={{ fontSize: 48 }} />, color: '#8B5CF6' },
-  { name: 'Злость', icon: <SentimentVeryDissatisfied sx={{ fontSize: 48 }} />, color: '#FF4A6E' },
-  { name: 'Удивление', icon: <EmojiEmotions sx={{ fontSize: 48 }} />, color: '#FFB84A' },
-];
-
-const phrases = [
-  'В этом году будет отличный урожай яблок',
-  'Он опоздал на встречу на целый час',
-  'Посмотри, какая красивая бабочка!',
-  'Вчера я получил неожиданное письмо',
-  'Автобус не пришел, придется идти пешком',
-  'Мне сказали, что вы давно меня ждете',
-  'Я не могу найти свои ключи',
-  'Это самый вкусный торт, который я пробовал',
-  'Через час начнется дождь',
-  'Она не ответила на мое сообщение',
-];
+import { useTranslation } from 'react-i18next';
 
 const EmotionsTrainer = () => {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [currentEmotion, setCurrentEmotion] = useState(null);
   const [currentPhrase, setCurrentPhrase] = useState('');
   const [isStarted, setIsStarted] = useState(true);
@@ -79,6 +60,27 @@ const EmotionsTrainer = () => {
     vibrate('click');
     navigate('/');
   };
+
+  const emotions = [
+    { name: t('emotion_joy'), icon: <SentimentVerySatisfied sx={{ fontSize: 48 }} />, color: '#32B768' },
+    { name: t('emotion_calm'), icon: <SentimentSatisfied sx={{ fontSize: 48 }} />, color: '#5B7CFF' },
+    { name: t('emotion_sad'), icon: <SentimentDissatisfied sx={{ fontSize: 48 }} />, color: '#8B5CF6' },
+    { name: t('emotion_angry'), icon: <SentimentVeryDissatisfied sx={{ fontSize: 48 }} />, color: '#FF4A6E' },
+    { name: t('emotion_surprised'), icon: <EmojiEmotions sx={{ fontSize: 48 }} />, color: '#FFB84A' },
+  ];
+
+  const phrases = [
+    t('emotion_phrase_1'),
+    t('emotion_phrase_2'),
+    t('emotion_phrase_3'),
+    t('emotion_phrase_4'),
+    t('emotion_phrase_5'),
+    t('emotion_phrase_6'),
+    t('emotion_phrase_7'),
+    t('emotion_phrase_8'),
+    t('emotion_phrase_9'),
+    t('emotion_phrase_10'),
+  ];
 
   return (
     <Box sx={{ 
@@ -126,7 +128,7 @@ const EmotionsTrainer = () => {
             }}
           >
             <Typography variant="h5" fontWeight="bold">
-              Тренажер эмоций
+              {t('emotions_trainer_title')}
             </Typography>
           </Box>
 
@@ -195,7 +197,7 @@ const EmotionsTrainer = () => {
               },
             }}
           >
-            Следующая фраза
+            {t('next_phrase')}
           </Button>
           {/* Короткая инструкция */}
           <Typography
@@ -208,7 +210,7 @@ const EmotionsTrainer = () => {
               mb: 2,
             }}
           >
-            Выберите эмоцию, прочитайте фразу вслух, стараясь выразить указанное чувство голосом. Меняйте фразы и тренируйтесь с разными эмоциями.
+            {t('emotions_trainer_instruction')}
           </Typography>
           <Button
             variant="contained"
@@ -232,7 +234,7 @@ const EmotionsTrainer = () => {
               },
             }}
           >
-            Назад
+            {t('back')}
           </Button>
         </Paper>
       </Container>

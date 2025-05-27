@@ -14,6 +14,7 @@ import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import { useNavigate } from 'react-router-dom';
 import { updateProgress } from '../services/storage';
+import { useTranslation } from 'react-i18next';
 
 const BreathingExercises = () => {
   const theme = useTheme();
@@ -21,13 +22,14 @@ const BreathingExercises = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentPhase, setCurrentPhase] = useState('inhale'); // inhale, hold, exhale, rest
   const [totalCycles] = useState(5);
+  const { t } = useTranslation();
 
   const phases = useMemo(() => ({
-    inhale: { duration: 4, label: 'Вдох' },
-    hold: { duration: 4, label: 'Задержка' },
-    exhale: { duration: 6, label: 'Выдох' },
+    inhale: { duration: 4, label: t('breathing_inhale') },
+    hold: { duration: 4, label: t('breathing_hold') },
+    exhale: { duration: 6, label: t('breathing_exhale') },
     rest: { duration: 0, label: '' }, // Скрытая фаза отдыха
-  }), []);
+  }), [t]);
 
   useEffect(() => {
     let timer;
@@ -172,7 +174,7 @@ const BreathingExercises = () => {
                   m: 0,
                 }}
               >
-                Дыхательное упражнение
+                {t('breathing_exercise_title')}
               </Typography>
             </Box>
 
@@ -187,7 +189,7 @@ const BreathingExercises = () => {
                       letterSpacing: 1, 
                       color: theme.palette.mode === 'dark' ? '#fff' : '#222'
                     }}>
-                      ВДОХ
+                      {t('breathing_inhale')}
                     </Typography>
                     <Box
                       sx={{
@@ -236,7 +238,7 @@ const BreathingExercises = () => {
                       mb: 0.2, 
                       pr: '30px'
                     }}>
-                      ЗАДЕРЖКА
+                      {t('breathing_hold')}
                     </Typography>
                     <Box
                       sx={{
@@ -283,7 +285,7 @@ const BreathingExercises = () => {
                       letterSpacing: 1, 
                       color: theme.palette.mode === 'dark' ? '#fff' : '#222'
                     }}>
-                      ВЫДОХ
+                      {t('breathing_exhale')}
                     </Typography>
                     <Box
                       sx={{
@@ -423,7 +425,7 @@ const BreathingExercises = () => {
                         textShadow: theme.palette.mode === 'dark' ? '0 1px 4px rgba(0,0,0,0.5)' : 'none',
                       }}
                     >
-                      Нажмите "Старт"
+                      {t('breathing_press_start')}
                     </Typography>
                   ) : (
                     <Typography 
@@ -479,26 +481,26 @@ const BreathingExercises = () => {
                 mb: 0,
                 color: theme.palette.text.primary
               }}>
-                1. Вдохните через нос на 4 секунды.
+                {t('breathing_instruction_1')}
               </Typography>
               <Typography variant="body1" sx={{ 
                 mb: 0,
                 color: theme.palette.text.primary 
               }}>
-                2. Задержите дыхание на 4 секунды.
+                {t('breathing_instruction_2')}
               </Typography>
               <Typography variant="body1" sx={{ 
                 mb: 0,
                 color: theme.palette.text.primary 
               }}>
-                3. Выдохните через рот на 6 секунд.
+                {t('breathing_instruction_3')}
               </Typography>
               <Typography variant="body1" fontWeight="medium" sx={{ 
                 mb: 2, 
                 mt: 1,
                 color: theme.palette.text.primary 
               }}>
-                Повторите 5 раз.
+                {t('breathing_repeat')}
               </Typography>
             </Box>
 
@@ -524,7 +526,7 @@ const BreathingExercises = () => {
                 mt: 1,
               }}
             >
-              Назад
+              {t('back')}
             </Button>
           </Box>
         </motion.div>

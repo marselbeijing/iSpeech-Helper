@@ -14,11 +14,13 @@ import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import ProgressCounter from '../components/ProgressCounter';
 import { getUserStats } from '../services/storage';
+import { useTranslation } from 'react-i18next';
 
 const Progress = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const progressData = getUserStats();
+  const { t } = useTranslation();
   
   const handleBack = () => {
     playSound('click');
@@ -59,7 +61,7 @@ const Progress = () => {
           <ProgressCounter showDetails={true} />
           <Box sx={{ mt: 4, width: '100%' }}>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center', mb: 2 }}>
-              Статистика
+              {t('statistics')}
             </Typography>
             <Box sx={{ 
               display: 'grid', 
@@ -80,7 +82,7 @@ const Progress = () => {
                   {progressData.totalExercises}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Упражнений
+                  {t('exercises')}
                 </Typography>
               </Paper>
               
@@ -97,7 +99,7 @@ const Progress = () => {
                   {Math.floor(progressData.totalExercises * 4.5)}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Минут практики
+                  {t('minutes')}
                 </Typography>
               </Paper>
               
@@ -114,7 +116,7 @@ const Progress = () => {
                   {progressData.currentStreak}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Дней подряд
+                  {t('days_in_a_row')}
                 </Typography>
               </Paper>
               
@@ -131,12 +133,12 @@ const Progress = () => {
                   {progressData.bestStreak}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
-                  Лучшая серия
+                  {t('best_streak')}
                 </Typography>
               </Paper>
             </Box>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mt: 3, textAlign: 'center', mb: 2 }}>
-              Достижения
+              {t('achievements')}
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               {progressData.achievements.map((achievement) => (
@@ -185,10 +187,10 @@ const Progress = () => {
                           : (theme.palette.mode === 'dark' ? theme.palette.grey[100] : theme.palette.text.primary),
                       }}
                     >
-                      {achievement.name}
+                      {t(achievement.name)}
                     </Typography>
                     <Typography variant="body2" sx={{ color: theme.palette.mode === 'dark' ? theme.palette.grey[300] : 'text.secondary' }}>
-                      {achievement.description}
+                      {t(achievement.description)}
                     </Typography>
                   </Box>
                 </Paper>
@@ -218,7 +220,7 @@ const Progress = () => {
               },
             }}
           >
-            Назад
+            {t('back')}
           </Button>
         </Box>
       </Paper>

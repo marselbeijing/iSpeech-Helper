@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const getTelegramUser = () => {
   if (
@@ -17,6 +18,7 @@ const TelegramLogin = () => {
   const [showWidget, setShowWidget] = useState(false);
   const [tgUser, setTgUser] = useState(null);
   const widgetRef = useRef(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const user = getTelegramUser();
@@ -73,7 +75,7 @@ const TelegramLogin = () => {
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <h2>Войти через Telegram</h2>
+      <h2>{t('sign_in_telegram')}</h2>
       {!showWidget && (
         <Button
           variant="contained"
@@ -93,7 +95,7 @@ const TelegramLogin = () => {
             },
           }}
         >
-          Войти через Telegram
+          {t('sign_in_telegram')}
         </Button>
       )}
       <div ref={widgetRef} id="telegram-login-widget" style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }} />

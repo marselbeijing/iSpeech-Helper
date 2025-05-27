@@ -26,9 +26,9 @@ const DEFAULT_STATS = {
   nextLevelExp: 100,
   lastExerciseDate: null,
   achievements: [
-    { name: 'Первые шаги', description: 'Выполнено 10 упражнений', completed: false },
-    { name: 'Неделя практики', description: '7 дней подряд', completed: false },
-    { name: 'Мастер слова', description: 'Выполнено 100 упражнений', completed: false },
+    { name: 'achievement_first_steps', description: 'achievement_first_steps_desc', completed: false },
+    { name: 'achievement_week', description: 'achievement_week_desc', completed: false },
+    { name: 'achievement_word_master', description: 'achievement_word_master_desc', completed: false },
   ],
 };
 
