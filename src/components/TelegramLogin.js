@@ -1,9 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-<<<<<<< HEAD
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-=======
->>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
 
 const getTelegramUser = () => {
   if (
@@ -17,31 +14,26 @@ const getTelegramUser = () => {
   return null;
 };
 
-<<<<<<< HEAD
-const TelegramLogin = () => {
-  const [showWidget, setShowWidget] = useState(false);
-  const [tgUser, setTgUser] = useState(null);
-  const widgetRef = useRef(null);
-  const { t } = useTranslation();
-=======
 const TelegramLogin = ({ onAuth }) => {
   const [showWidget, setShowWidget] = useState(false);
   const [tgUser, setTgUser] = useState(null);
   const widgetRef = useRef(null);
->>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
+  const { t } = useTranslation();
 
   useEffect(() => {
     const user = getTelegramUser();
     if (user) {
       setTgUser(user);
-<<<<<<< HEAD
-=======
       if (onAuth) onAuth(user);
->>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
       return;
     }
     setTgUser(null);
-  }, []);
+  }, [onAuth]);
+
+  const handleTelegramAuth = useCallback((user) => {
+    alert('Вы успешно авторизованы через Telegram!');
+    if (onAuth) onAuth(user);
+  }, [onAuth]);
 
   useEffect(() => {
     if (!showWidget || tgUser) return;
@@ -63,23 +55,13 @@ const TelegramLogin = ({ onAuth }) => {
       widgetDiv.appendChild(script);
     }
 
-    window.onTelegramAuth = (user) => {
-      alert('Вы успешно авторизованы через Telegram!');
-<<<<<<< HEAD
-=======
-      if (onAuth) onAuth(user);
->>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
-    };
+    window.onTelegramAuth = handleTelegramAuth;
 
     return () => {
       if (widgetDiv) widgetDiv.innerHTML = '';
       delete window.onTelegramAuth;
     };
-<<<<<<< HEAD
-  }, [showWidget, tgUser]);
-=======
-  }, [showWidget, tgUser, onAuth]);
->>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
+  }, [showWidget, tgUser, handleTelegramAuth]);
 
   if (tgUser) {
     return (
@@ -97,19 +79,12 @@ const TelegramLogin = ({ onAuth }) => {
 
   return (
     <div style={{ textAlign: 'center' }}>
-<<<<<<< HEAD
       <h2>{t('sign_in_telegram')}</h2>
       {!showWidget && (
         <Button
           variant="contained"
           onClick={() => setShowWidget(true)}
           sx={{
-=======
-      <h2>Войти через Telegram</h2>
-      {!showWidget && (
-        <button
-          style={{
->>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
             background: '#229ED9',
             color: 'white',
             border: 'none',
@@ -118,7 +93,6 @@ const TelegramLogin = ({ onAuth }) => {
             fontSize: 18,
             cursor: 'pointer',
             margin: '24px 0',
-<<<<<<< HEAD
             textTransform: 'none',
             '&:hover': {
               background: '#1E8BC3',
@@ -127,13 +101,6 @@ const TelegramLogin = ({ onAuth }) => {
         >
           {t('sign_in_telegram')}
         </Button>
-=======
-          }}
-          onClick={() => setShowWidget(true)}
-        >
-          Войти через Telegram
-        </button>
->>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
       )}
       <div ref={widgetRef} id="telegram-login-widget" style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }} />
     </div>
