@@ -22,6 +22,7 @@ import { verifyTelegramAuth, getCurrentUser, logout } from '../services/telegram
 import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import TelegramLogin from '../components/TelegramLogin';
+<<<<<<< HEAD
 import { checkSubscriptionStatus, purchaseSubscription } from '../services/subscription';
 import { useTranslation } from 'react-i18next';
 
@@ -32,6 +33,8 @@ const StarIcon = () => (
     </svg>
   </span>
 );
+=======
+>>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
 
 const Account = () => {
   const theme = useTheme();
@@ -321,6 +324,7 @@ const Account = () => {
                 bgcolor: 'background.paper',
               }}
             >
+<<<<<<< HEAD
               <IconButton
                 onClick={() => setIsInfoOpen(false)}
                 sx={{
@@ -539,6 +543,18 @@ const Account = () => {
         </Box>
       </Container>
     </Box>
+=======
+              Выйти
+            </Button>
+          </>
+        ) : (
+          <>
+            <TelegramLogin />
+          </>
+        )}
+      </Paper>
+    </Container>
+>>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
   );
 };
 

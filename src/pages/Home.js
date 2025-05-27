@@ -41,37 +41,61 @@ const Home = () => {
 
   const menuItems = [
     {
+<<<<<<< HEAD
       title: t('breathing'),
+=======
+      title: 'Дыхание',
+>>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
       icon: <BreathingIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/breathing',
       color: '#FF4A6E',
     },
     {
+<<<<<<< HEAD
       title: t('metronome'),
+=======
+      title: 'Метроном',
+>>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
       icon: <MetronomeIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/metronome',
       color: '#5B7CFF',
     },
     {
+<<<<<<< HEAD
       title: t('smooth_reader'),
+=======
+      title: 'Плавное чтение',
+>>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
       icon: <ReaderIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/smooth-reader',
       color: '#32B768',
     },
     {
+<<<<<<< HEAD
       title: t('tongue_twisters'),
+=======
+      title: 'Скороговорка',
+>>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
       icon: <TongueTwisterIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/tongue-twisters',
       color: '#FFB84A',
     },
     {
+<<<<<<< HEAD
       title: t('dafmaf'),
+=======
+      title: 'DAF',
+>>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
       icon: <DAFIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/dafmaf',
       color: '#8B5CF6',
     },
     {
+<<<<<<< HEAD
       title: t('emotions'),
+=======
+      title: 'Эмоции',
+>>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
       icon: <EmotionsIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/emotions',
       color: '#FF6B6B',

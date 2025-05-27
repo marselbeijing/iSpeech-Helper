@@ -16,6 +16,7 @@
 .env.test.local
 .env.production.local
 .env
+<<<<<<< HEAD
 
 # logs
 npm-debug.log*
@@ -45,3 +46,6 @@ yarn-error.log*
 
 # Yarn Integrity file
 .yarn-integrity 
+=======
+ 
+>>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
