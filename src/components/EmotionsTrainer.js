@@ -150,7 +150,8 @@ const EmotionsTrainer = () => {
               flexDirection: 'column', 
               alignItems: 'center', 
               mb: { xs: 2, sm: 3 },
-              flex: 1
+              flex: 1,
+              mt: { xs: 4, sm: 6 }
             }}>
               <Box
                 sx={{
@@ -204,7 +205,7 @@ const EmotionsTrainer = () => {
             </Box>
           )}
           
-          <Box sx={{ mt: 'auto', pt: { xs: 1, sm: 2 } }}>
+          <Box sx={{ mb: { xs: 3, sm: 4 }, pt: { xs: 1, sm: 2 } }}>
             <Button
               variant="contained"
               onClick={handleNextClick}
@@ -244,7 +245,6 @@ const EmotionsTrainer = () => {
             >
               {t('emotions_trainer_instruction')}
             </Typography>
-            
             <Button
               variant="contained"
               onClick={handleBackClick}
