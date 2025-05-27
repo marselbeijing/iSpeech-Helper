@@ -280,7 +280,7 @@ const TongueTwisters = () => {
               Повторите 3–5 раз, стараясь не сбиваться с ритма.
             </Typography>
 
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 1, sm: 1.5 }, width: '100%', mb: { xs: 0.5, sm: 1 } }}>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 1, sm: 1.5 }, width: '100%', mb: { xs: 8, sm: 2 } }}>
               <Button
                 variant="contained"
                 color="primary"
