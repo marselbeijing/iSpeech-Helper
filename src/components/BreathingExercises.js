@@ -237,7 +237,7 @@ const BreathingExercises = () => {
                       letterSpacing: 1, 
                       color: theme.palette.mode === 'dark' ? '#fff' : '#222',
                       mb: 0.2, 
-                      pr: '30px'
+                      textAlign: 'center'
                     }}>
                       {t('breathing_hold')}
                     </Typography>
