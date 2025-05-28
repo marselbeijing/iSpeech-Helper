@@ -143,10 +143,18 @@ const App = () => {
   });
 
   if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
-    telegramAnalytics.init({
-      token: 'eyJhcHBfbmFtZSI6ImlTcGVlY2hIZWxwZXJfYm90IiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9pU3BlZWNoSGVscGVyX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2ktc3BlZWNoLWhlbHBlci11Y2U0LnZlcmNlbC5hcHAvIn0=!rmWeWQKlEYYorNKO49l8AL7WSeLbpZ0PyIBhypoMJyw=',
-      appName: 'ispeech_helper'
-    });
+    console.log('Initializing Telegram Analytics...');
+    try {
+      telegramAnalytics.init({
+        token: 'eyJhcHBfbmFtZSI6ImlTcGVlY2hIZWxwZXJfYm90IiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9pU3BlZWNoSGVscGVyX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2ktc3BlZWNoLWhlbHBlci11Y2U0LnZlcmNlbC5hcHAvIn0=!rmWeWQKlEYYorNKO49l8AL7WSeLbpZ0PyIBhypoMJyw=',
+        appName: 'ispeech_helper'
+      });
+      console.log('Telegram Analytics initialized successfully');
+    } catch (error) {
+      console.error('Error initializing Telegram Analytics:', error);
+    }
+  } else {
+    console.log('Telegram WebApp not available for analytics');
   }
 
   return (
