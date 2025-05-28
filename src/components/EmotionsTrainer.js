@@ -149,9 +149,9 @@ const EmotionsTrainer = () => {
               display: 'flex', 
               flexDirection: 'column', 
               alignItems: 'center', 
-              mb: { xs: 4, sm: 5 },
+              mb: { xs: 2, sm: 3 },
               flex: 1,
-              mt: { xs: 2, sm: 3 }
+              mt: { xs: 1, sm: 2 }
             }}>
               <Box
                 sx={{
@@ -205,7 +205,7 @@ const EmotionsTrainer = () => {
             </Box>
           )}
           
-          <Box sx={{ mb: { xs: 2, sm: 3 } }}>
+          <Box sx={{ mb: { xs: 1, sm: 2 } }}>
             <Button
               variant="contained"
               onClick={handleNextClick}
@@ -222,7 +222,7 @@ const EmotionsTrainer = () => {
                 background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
                 color: '#fff',
                 boxShadow: '0 8px 32px 0 rgba(255, 74, 110, 0.3)',
-                mb: { xs: 1.5, sm: 2 },
+                mb: { xs: 1, sm: 1.5 },
                 '&:hover': {
                   background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
                 },
@@ -238,7 +238,7 @@ const EmotionsTrainer = () => {
                 display: 'block',
                 color: theme.palette.text.primary,
                 fontWeight: 500,
-                mb: { xs: 1.5, sm: 2 },
+                mb: { xs: 1, sm: 1.5 },
                 fontSize: { xs: '0.75rem', sm: '0.875rem' },
                 px: { xs: 1, sm: 2 }
               }}
