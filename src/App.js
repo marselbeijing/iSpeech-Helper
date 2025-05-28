@@ -50,20 +50,7 @@ const AnimatedRoutes = () => {
 const isTelegramFeatureSupported = (feature) => {
   try {
     if (!window.Telegram?.WebApp?.isExpanded) return false;
-    
-    // Получение версии WebApp
-    const versionStr = window.Telegram.WebApp.version || '';
-    const versionParts = versionStr.split('.');
-    const majorVersion = parseInt(versionParts[0], 10) || 0;
-    
-    // Проверка функций по версии
-    switch (feature) {
-      case 'headerColor':
-      case 'backgroundColor':
-        return majorVersion >= 7; // Эти функции поддерживаются с версии 7.0
-      default:
-        return false;
-    }
+    return true;
   } catch (e) {
     console.warn(`Error checking Telegram feature support: ${e.message}`);
     return false;
@@ -76,76 +63,54 @@ const App = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [themeMode, setThemeMode] = useState('light');
   
+  const updateTheme = (isDark) => {
+    setDarkMode(isDark);
+    setThemeMode(isDark ? 'dark' : 'light');
+    
+    if (window.Telegram?.WebApp?.isExpanded && isTelegramFeatureSupported()) {
+      window.Telegram.WebApp.setHeaderColor(isDark ? '#17212B' : '#FFFFFF');
+      window.Telegram.WebApp.setBackgroundColor(isDark ? '#1F2936' : '#F0F2F5');
+    }
+  };
+  
   useEffect(() => {
-    // Определение режима темы из Telegram WebApp
     try {
       if (window.Telegram?.WebApp?.isExpanded) {
-        // Если используем Telegram Mini App
         const colorScheme = window.Telegram.WebApp.colorScheme;
-        setThemeMode(colorScheme);
-        setDarkMode(colorScheme === 'dark');
+        updateTheme(colorScheme === 'dark');
         
-        // Настраиваем общие стили для Telegram Mini App (только если поддерживается)
-        if (isTelegramFeatureSupported('headerColor')) {
-          window.Telegram.WebApp.setHeaderColor(colorScheme === 'dark' ? '#17212B' : '#FFFFFF');
-        }
-        
-        if (isTelegramFeatureSupported('backgroundColor')) {
-          window.Telegram.WebApp.setBackgroundColor(colorScheme === 'dark' ? '#1F2936' : '#F0F2F5');
-        }
-        
-        // Подписываемся на изменения темы в Telegram
         window.Telegram.WebApp.onEvent('themeChanged', () => {
           const newColorScheme = window.Telegram.WebApp.colorScheme;
-          setThemeMode(newColorScheme);
-          setDarkMode(newColorScheme === 'dark');
-          
-          if (isTelegramFeatureSupported('headerColor')) {
-            window.Telegram.WebApp.setHeaderColor(newColorScheme === 'dark' ? '#17212B' : '#FFFFFF');
-          }
-          
-          if (isTelegramFeatureSupported('backgroundColor')) {
-            window.Telegram.WebApp.setBackgroundColor(newColorScheme === 'dark' ? '#1F2936' : '#F0F2F5');
-          }
+          updateTheme(newColorScheme === 'dark');
         });
       } else {
-        // Загружаем настройки пользователя для обычного веб-режима
         const settings = getUserSettings();
         if (settings && typeof settings.darkMode === 'boolean') {
-          setDarkMode(settings.darkMode);
-          setThemeMode(settings.darkMode ? 'dark' : 'light');
+          updateTheme(settings.darkMode);
         }
       }
     } catch (error) {
       console.warn('Telegram WebApp not available, using system settings:', error);
-      
-      // Загружаем настройки пользователя при монтировании
       const settings = getUserSettings();
       if (settings && typeof settings.darkMode === 'boolean') {
-        setDarkMode(settings.darkMode);
-        setThemeMode(settings.darkMode ? 'dark' : 'light');
+        updateTheme(settings.darkMode);
       }
     }
     
-    // Добавляем слушатель для изменения настроек хранилища
     const handleStorageChange = () => {
       const updatedSettings = getUserSettings();
       if (updatedSettings && typeof updatedSettings.darkMode === 'boolean') {
-        setDarkMode(updatedSettings.darkMode);
-        setThemeMode(updatedSettings.darkMode ? 'dark' : 'light');
+        updateTheme(updatedSettings.darkMode);
+      }
+    };
+    
+    const handleCustomThemeChange = (event) => {
+      if (event.detail && typeof event.detail.darkMode === 'boolean') {
+        updateTheme(event.detail.darkMode);
       }
     };
     
     window.addEventListener('storage', handleStorageChange);
-    
-    // Пользовательское событие для обновления темы
-    const handleCustomThemeChange = (event) => {
-      if (event.detail && typeof event.detail.darkMode === 'boolean') {
-        setDarkMode(event.detail.darkMode);
-        setThemeMode(event.detail.darkMode ? 'dark' : 'light');
-      }
-    };
-    
     window.addEventListener('themeChanged', handleCustomThemeChange);
     
     return () => {
