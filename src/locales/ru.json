@@ -35,7 +35,7 @@
   "main_subtitle": "Ваш помощник для улучшения речи и дикции",
   "breathing": "Дыхание",
   "metronome": "Чтение с метрономом",
-  "smooth_reading": "Плавное чтение",
+  "smooth_reader": "Плавное чтение",
   "tongue_twisters": "Скороговорка",
   "dafmaf": "DAF/MAF",
   "emotions": "Эмоции",
@@ -112,5 +112,5 @@
   "speed": "Скорость",
   "smooth_reader_repeat": "Повторите 3–5 раз, стараясь сохранять ритм.",
   "random_text": "Случайный текст",
-  "smooth_reader_title": "Плавное Чтение"
+  "smooth_reader_title": "Плавное чтение"
 } 

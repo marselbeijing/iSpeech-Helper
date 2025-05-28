@@ -255,7 +255,7 @@ const TongueTwisters = () => {
                 mb: { xs: 1, sm: 2 },
                 py: { xs: 1.5, sm: 2 },
                 display: 'flex',
-                justifyContent: 'space-between',
+                justifyContent: 'center',
                 alignItems: 'center',
                 boxShadow: '0 2px 8px 0 rgba(0,0,0,0.08)',
                 px: 2
@@ -269,7 +269,9 @@ const TongueTwisters = () => {
                   fontWeight: 'bold',
                   textShadow: '0 2px 8px rgba(0,0,0,0.15)',
                   m: 0,
-                  fontSize: { xs: '1.25rem', sm: '1.5rem' }
+                  fontSize: { xs: '1.25rem', sm: '1.5rem' },
+                  width: '100%',
+                  textAlign: 'center'
                 }}
               >
                 {i18n.language === 'ru' ? 'Скороговорки' : 'Tongue Twisters'}
