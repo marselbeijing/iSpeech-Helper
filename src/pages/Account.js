@@ -296,7 +296,7 @@ const Account = () => {
               },
             }}
           >
-            {t('about')}
+            {t('about_app')}
           </Button>
 
           {/* Блок подписок */}
@@ -489,51 +489,31 @@ const Account = () => {
                 <CloseIcon fontSize="small" />
               </IconButton>
               <Typography variant="h6" gutterBottom>
-                {t('about')}
+                {t('about_app')}
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
-                iSpeech Helper — это специализированное приложение для помощи людям с речевыми расстройствами. Оно разработано для улучшения дикции, артикуляции и общего качества речи через комплекс специальных упражнений.
+                iSpeech Helper is a specialized application designed to assist people with speech disorders. It is developed to improve diction, articulation, and overall speech quality through a set of specialized exercises.
               </Typography>
               <Typography variant="subtitle2" gutterBottom sx={{ mt: 2, color: 'primary.main' }}>
-                Основные функции:
+                Key Features:
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
-                1. Дыхательные упражнения — помогают контролировать дыхание во время речи. Регулярные занятия улучшают выносливость и стабильность голоса.
-              </Typography>
-              <Typography variant="body2" color="text.secondary" paragraph>
-                2. Тренажер эмоций — учит выражать различные эмоции через голос. Упражнения включают чтение текста с разной интонацией и эмоциональной окраской.
-              </Typography>
-              <Typography variant="body2" color="text.secondary" paragraph>
-                3. Плавное чтение — помогает развить беглость речи. Текст появляется постепенно, что способствует более размеренному и четкому произношению.
-              </Typography>
-              <Typography variant="body2" color="text.secondary" paragraph>
-                4. Метроном — тренирует ритмичность речи. Помогает поддерживать постоянный темп и паузы между словами.
-              </Typography>
-              <Typography variant="body2" color="text.secondary" paragraph>
-                5. Скороговорки — улучшают артикуляцию и четкость произношения сложных звуковых сочетаний.
+                • Breathing exercises for better speech control
+                • Tongue twisters for articulation practice
+                • Emotion training for expressive speech
+                • Smooth reading exercises
+                • Metronome-assisted reading
+                • DAF/MAF techniques for speech rate control
               </Typography>
               <Typography variant="subtitle2" gutterBottom sx={{ mt: 2, color: 'primary.main' }}>
-                Специальные функции:
+                Benefits:
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph>
-                DAF (Delayed Auditory Feedback) — задержка слуховой обратной связи. Эта функция создает небольшую задержку между вашей речью и тем, как вы её слышите. Это помогает замедлить речь и сделать её более контролируемой. Рекомендуется начинать с задержки 50-100 мс и постепенно увеличивать до 200 мс.
-              </Typography>
-              <Typography variant="body2" color="text.secondary" paragraph>
-                MAF (Masking Auditory Feedback) — маскировка слуховой обратной связи. Эта функция добавляет белый шум или другие звуки во время вашей речи, что помогает снизить заикание и улучшить контроль над речью. Начните с низкого уровня шума (20-30%) и постепенно увеличивайте до комфортного уровня.
-              </Typography>
-              <Typography variant="subtitle2" gutterBottom sx={{ mt: 2, color: 'primary.main' }}>
-                Как пользоваться:
-              </Typography>
-              <Typography variant="body2" color="text.secondary" paragraph>
-                • Начните с дыхательных упражнений для разминки
-                • Выберите любой раздел и следуйте инструкциям на экране
-                • При использовании DAF/MAF начните с минимальных настроек
-                • Регулярно занимайтесь, начиная с 5-10 минут в день
-                • Отслеживайте прогресс в разделе статистики
-                • Используйте настройки для персонализации опыта
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 2, fontStyle: 'italic' }}>
-                Для достижения наилучших результатов рекомендуется заниматься ежедневно и постепенно увеличивать продолжительность занятий. При использовании DAF/MAF важно найти комфортные настройки, при которых речь становится более плавной и контролируемой.
+                • Regular practice leads to noticeable improvement in speech clarity
+                • Personalized exercise selection based on individual needs
+                • Progress tracking and achievement system
+                • User-friendly interface suitable for all ages
+                • Available in multiple languages
               </Typography>
             </Paper>
           </Fade>
