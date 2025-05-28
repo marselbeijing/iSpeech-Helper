@@ -261,7 +261,7 @@ const EmotionsTrainer = () => {
                 background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
                 color: '#fff',
                 boxShadow: '0 8px 32px 0 rgba(255, 74, 110, 0.3)',
-                mt: { xs: 1, sm: 1.5 },
+                mt: { xs: 0.5, sm: 1 },
                 '&:hover': {
                   background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
                 },
