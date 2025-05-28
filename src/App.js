@@ -146,7 +146,7 @@ const App = () => {
     console.log('Initializing Telegram Analytics...');
     try {
       telegramAnalytics.init({
-        token: 'eyJhcHBfbmFtZSI6ImlTcGVlY2hIZWxwZXJfYm90IiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9pU3BlZWNoSGVscGVyX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2ktc3BlZWNoLWhlbHBlci11Y2U0LnZlcmNlbC5hcHAvIn0=!rmWeWQKlEYYorNKO49l8AL7WSeLbpZ0PyIBhypoMJyw=',
+        token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=!j9+Ln94Vror//YszMapC2bBcM7JNJ3tyOVLFnAUI7xg=',
         appName: 'iSpeech Helper'
       });
       console.log('Telegram Analytics initialized successfully');
