@@ -115,10 +115,13 @@ const EmotionsTrainer = () => {
               : 'linear-gradient(135deg, #fffefb 0%, #fffde4 100%)',
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
             width: '100%',
-            height: '100%',
+            height: 'auto',
+            minHeight: { xs: 'auto', sm: '600px' },
+            maxHeight: { xs: 'calc(100vh - 32px)', sm: '700px' },
             textAlign: 'center',
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            mb: { xs: 2, sm: 3 }
           }}
         >
           {/* Синий заголовок */}
@@ -149,24 +152,24 @@ const EmotionsTrainer = () => {
               display: 'flex', 
               flexDirection: 'column', 
               alignItems: 'center', 
-              mb: { xs: 1, sm: 2 },
+              mb: { xs: 4, sm: 5 },
               flex: 1,
-              mt: { xs: 0.5, sm: 1 }
+              mt: { xs: 2, sm: 3 }
             }}>
               <Box
                 sx={{
-                  width: { xs: 90, sm: 120 },
-                  height: { xs: 90, sm: 120 },
+                  width: { xs: 100, sm: 120 },
+                  height: { xs: 100, sm: 120 },
                   borderRadius: '50%',
                   background: currentEmotion.color,
                   color: 'white',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  mb: { xs: 1, sm: 2 },
+                  mb: { xs: 1.5, sm: 2 },
                   boxShadow: `0 4px 16px 0 ${currentEmotion.color}40`,
                   '& > svg': {
-                    fontSize: { xs: 36, sm: 48 }
+                    fontSize: { xs: 40, sm: 48 }
                   }
                 }}
               >
@@ -177,8 +180,8 @@ const EmotionsTrainer = () => {
                 fontWeight="bold" 
                 sx={{ 
                   color: currentEmotion.color, 
-                  mb: 0.5,
-                  fontSize: { xs: '1rem', sm: '1.25rem' }
+                  mb: 1,
+                  fontSize: { xs: '1.1rem', sm: '1.25rem' }
                 }}
               >
                 {currentEmotion.name}
@@ -187,16 +190,16 @@ const EmotionsTrainer = () => {
                 variant="body1"
                 sx={{
                   fontWeight: 500,
-                  fontSize: { xs: '0.9rem', sm: '1.1rem' },
-                  lineHeight: 1.5,
+                  fontSize: { xs: '1rem', sm: '1.1rem' },
+                  lineHeight: 1.6,
                   px: { xs: 1, sm: 2 },
-                  py: { xs: 1, sm: 2 },
+                  py: { xs: 1.5, sm: 2 },
                   borderRadius: 2,
                   backgroundColor: theme.palette.mode === 'dark'
                     ? 'rgba(255, 255, 255, 0.05)'
                     : 'rgba(0, 0, 0, 0.03)',
                   boxShadow: '0 2px 8px 0 rgba(60,60,120,0.06)',
-                  mb: { xs: 1, sm: 2 },
+                  mb: { xs: 1.5, sm: 2 },
                   mx: { xs: 1, sm: 2 }
                 }}
               >
@@ -205,7 +208,7 @@ const EmotionsTrainer = () => {
             </Box>
           )}
           
-          <Box sx={{ mb: { xs: 0.5, sm: 1 } }}>
+          <Box sx={{ mb: { xs: 2, sm: 3 } }}>
             <Button
               variant="contained"
               onClick={handleNextClick}
@@ -222,7 +225,7 @@ const EmotionsTrainer = () => {
                 background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
                 color: '#fff',
                 boxShadow: '0 8px 32px 0 rgba(255, 74, 110, 0.3)',
-                mb: { xs: 0.75, sm: 1 },
+                mb: { xs: 1.5, sm: 2 },
                 '&:hover': {
                   background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
                 },
@@ -238,8 +241,8 @@ const EmotionsTrainer = () => {
                 display: 'block',
                 color: theme.palette.text.primary,
                 fontWeight: 500,
-                mb: { xs: 0.75, sm: 1 },
-                fontSize: { xs: '0.7rem', sm: '0.875rem' },
+                mb: { xs: 1.5, sm: 2 },
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
                 px: { xs: 1, sm: 2 }
               }}
             >
@@ -261,7 +264,7 @@ const EmotionsTrainer = () => {
                 background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
                 color: '#fff',
                 boxShadow: '0 8px 32px 0 rgba(255, 74, 110, 0.3)',
-                mt: { xs: 0.25, sm: 0.5 },
+                mt: { xs: 1, sm: 1.5 },
                 '&:hover': {
                   background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
                 },
