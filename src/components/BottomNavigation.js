@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles';
 import HomeIcon from '@mui/icons-material/Home';
 import FunctionsIcon from '@mui/icons-material/Apps';
 import AccountIcon from '@mui/icons-material/Person';
+import { useTranslation } from 'react-i18next';
 
 const StyledBottomNavigation = styled(BottomNavigation)({
   position: 'fixed',
@@ -19,6 +20,7 @@ const StyledBottomNavigation = styled(BottomNavigation)({
 function NavigationBar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const [value, setValue] = React.useState(location.pathname);
 
   const handleChange = (event, newValue) => {
@@ -33,17 +35,17 @@ function NavigationBar() {
       showLabels
     >
       <BottomNavigationAction
-        label="Главная"
+        label={t('home')}
         value="/"
         icon={<HomeIcon />}
       />
       <BottomNavigationAction
-        label="Функции"
+        label={t('functions')}
         value="/functions"
         icon={<FunctionsIcon />}
       />
       <BottomNavigationAction
-        label="Аккаунт"
+        label={t('account')}
         value="/account"
         icon={<AccountIcon />}
       />
