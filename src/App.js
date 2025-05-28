@@ -144,7 +144,7 @@ const App = () => {
 
   if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
     telegramAnalytics.init({
-      token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXJib3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90IiwiYXBwX2RvbWFpbiI6Imh0dHBzOi8vaS1zcGVlY2gtaGVscGVyLTJ1NGQudmVyY2VsLmFwcC8ifQ==!ZkcImen6FpPBw6xfWjRZBKHfMzS80qpeFc/fZ6y+KCA=',
+      token: 'eyJhcHBfbmFtZSI6ImlTcGVlY2hIZWxwZXJfYm90IiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9pU3BlZWNoSGVscGVyX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2ktc3BlZWNoLWhlbHBlci11Y2U0LnZlcmNlbC5hcHAvIn0=!rmWeWQKlEYYorNKO49l8AL7WSeLbpZ0PyIBhypoMJyw=',
       appName: 'ispeech_helper'
     });
   }
