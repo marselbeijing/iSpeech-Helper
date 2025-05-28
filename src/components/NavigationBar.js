@@ -28,10 +28,10 @@ const NavigationBar = () => {
   };
 
   const navItems = [
-    { value: '/', icon: <HomeIcon />, label: 'Главная' },
-    { value: '/progress', icon: <ProgressIcon />, label: 'Прогресс' },
-    { value: '/functions', icon: <SettingsIcon />, label: 'Настройки' },
-    { value: '/account', icon: <PersonIcon />, label: 'Аккаунт' },
+    { value: '/', icon: <HomeIcon />, label: 'Home' },
+    { value: '/progress', icon: <ProgressIcon />, label: 'Progress' },
+    { value: '/functions', icon: <SettingsIcon />, label: 'Functions' },
+    { value: '/account', icon: <PersonIcon />, label: 'Account' },
   ];
 
   return (
