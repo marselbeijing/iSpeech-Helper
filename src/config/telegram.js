@@ -1,44 +1,45 @@
 import WebApp from '@twa-dev/sdk';
 
 // Инициализация Telegram WebApp
-export const initTelegramApp = () => {
+export const initTelegramWebApp = () => {
   try {
-    if (isTelegramWebApp()) {
-      WebApp.ready();
-      WebApp.expand();
+    if (window.Telegram && window.Telegram.WebApp) {
+      // Расширяем на весь экран
+      window.Telegram.WebApp.expand();
+      
+      // Устанавливаем версию
+      const version = window.Telegram.WebApp.version;
+      console.log('Telegram WebApp version:', version);
+      
+      return true;
     }
+    return false;
   } catch (error) {
     console.error('Error initializing Telegram WebApp:', error);
+    return false;
+  }
+};
+
+// Проверка доступности функций Telegram WebApp
+export const isTelegramWebAppAvailable = () => {
+  try {
+    return window.Telegram && window.Telegram.WebApp;
+  } catch (error) {
+    console.error('Error checking Telegram WebApp:', error);
+    return false;
   }
 };
 
 // Получение данных пользователя
-export const getUserData = () => {
+export const getTelegramUser = () => {
   try {
-    if (isTelegramWebApp()) {
-      return {
-        id: WebApp.initDataUnsafe?.user?.id,
-        username: WebApp.initDataUnsafe?.user?.username,
-        firstName: WebApp.initDataUnsafe?.user?.first_name,
-        lastName: WebApp.initDataUnsafe?.user?.last_name,
-        languageCode: WebApp.initDataUnsafe?.user?.language_code,
-        photoUrl: WebApp.initDataUnsafe?.user?.photo_url,
-      };
+    if (isTelegramWebAppAvailable() && window.Telegram.WebApp.initDataUnsafe) {
+      return window.Telegram.WebApp.initDataUnsafe.user;
     }
     return null;
   } catch (error) {
-    console.error('Error getting user data:', error);
+    console.error('Error getting Telegram user:', error);
     return null;
-  }
-};
-
-// Проверка, запущено ли приложение в Telegram
-export const isTelegramWebApp = () => {
-  try {
-    return window.Telegram?.WebApp !== undefined;
-  } catch (error) {
-    console.error('Error checking Telegram WebApp:', error);
-    return false;
   }
 };
 

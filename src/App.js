@@ -46,17 +46,6 @@ const AnimatedRoutes = () => {
   );
 };
 
-// Функция для проверки доступности функций Telegram WebApp
-const isTelegramFeatureSupported = (feature) => {
-  try {
-    if (!window.Telegram?.WebApp?.isExpanded) return false;
-    return true;
-  } catch (e) {
-    console.warn(`Error checking Telegram feature support: ${e.message}`);
-    return false;
-  }
-};
-
 // Main App component
 const App = () => {
   const { t, i18n } = useTranslation();
@@ -74,49 +63,61 @@ const App = () => {
   };
   
   useEffect(() => {
-    try {
-      if (window.Telegram?.WebApp?.isExpanded) {
-        const colorScheme = window.Telegram.WebApp.colorScheme;
-        updateTheme(colorScheme === 'dark');
-        
-        window.Telegram.WebApp.onEvent('themeChanged', () => {
-          const newColorScheme = window.Telegram.WebApp.colorScheme;
-          updateTheme(newColorScheme === 'dark');
-        });
-      } else {
-        const settings = getUserSettings();
-        if (settings && typeof settings.darkMode === 'boolean') {
-          updateTheme(settings.darkMode);
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    // Функция для проверки доступности функций Telegram WebApp
+    const isTelegramWebAppAvailable = () => {
+      return window.Telegram && window.Telegram.WebApp;
+    };
+
+    // Функция для установки цветов
+    const setColors = () => {
+      if (isTelegramWebAppAvailable()) {
+        try {
+          // Используем новые методы для установки цветов
+          window.Telegram.WebApp.setHeaderColor(isDark ? '#17212B' : '#FFFFFF');
+          window.Telegram.WebApp.setBackgroundColor(isDark ? '#1F2936' : '#F0F2F5');
+        } catch (error) {
+          console.warn('Error setting Telegram WebApp colors:', error);
         }
       }
-    } catch (error) {
-      console.warn('Telegram WebApp not available, using system settings:', error);
-      const settings = getUserSettings();
-      if (settings && typeof settings.darkMode === 'boolean') {
-        updateTheme(settings.darkMode);
+    };
+
+    // Установка начальных цветов
+    setColors();
+
+    // Обработка изменения темы
+    if (isTelegramWebAppAvailable()) {
+      try {
+        const colorScheme = window.Telegram.WebApp.colorScheme;
+        setDarkMode(colorScheme === 'dark');
+        setThemeMode(colorScheme === 'dark' ? 'dark' : 'light');
+        setColors();
+
+        window.Telegram.WebApp.onEvent('themeChanged', () => {
+          try {
+            const newColorScheme = window.Telegram.WebApp.colorScheme;
+            setDarkMode(newColorScheme === 'dark');
+            setThemeMode(newColorScheme === 'dark' ? 'dark' : 'light');
+            setColors();
+          } catch (error) {
+            console.warn('Error handling theme change:', error);
+          }
+        });
+      } catch (error) {
+        console.warn('Error setting up theme listener:', error);
       }
+    } else {
+      // Если Telegram WebApp недоступен, используем системные настройки
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      setDarkMode(mediaQuery.matches);
+      setThemeMode(mediaQuery.matches ? 'dark' : 'light');
+
+      mediaQuery.addEventListener('change', (e) => {
+        setDarkMode(e.matches);
+        setThemeMode(e.matches ? 'dark' : 'light');
+      });
     }
-    
-    const handleStorageChange = () => {
-      const updatedSettings = getUserSettings();
-      if (updatedSettings && typeof updatedSettings.darkMode === 'boolean') {
-        updateTheme(updatedSettings.darkMode);
-      }
-    };
-    
-    const handleCustomThemeChange = (event) => {
-      if (event.detail && typeof event.detail.darkMode === 'boolean') {
-        updateTheme(event.detail.darkMode);
-      }
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('themeChanged', handleCustomThemeChange);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('themeChanged', handleCustomThemeChange);
-    };
   }, []);
   
   // Создаем тему на основе настроек
@@ -142,20 +143,31 @@ const App = () => {
     },
   });
 
-  if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
-    console.log('Initializing Telegram Analytics...');
-    try {
-      telegramAnalytics.init({
-        token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=!j9+Ln94Vror//YszMapC2bBcM7JNJ3tyOVLFnAUI7xg=',
-        appName: 'iSpeech Helper'
-      });
-      console.log('Telegram Analytics initialized successfully');
-    } catch (error) {
-      console.error('Error initializing Telegram Analytics:', error);
+  // Инициализация аналитики
+  useEffect(() => {
+    if (window.Telegram && window.Telegram.WebApp) {
+      try {
+        // Проверяем доступность аналитики
+        if (window.Telegram.WebApp.initData) {
+          // Инициализация аналитики
+          console.log('Analytics initialized');
+          try {
+            telegramAnalytics.init({
+              token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=!j9+Ln94Vror//YszMapC2bBcM7JNJ3tyOVLFnAUI7xg=',
+              appName: 'iSpeech Helper'
+            });
+            console.log('Telegram Analytics initialized successfully');
+          } catch (error) {
+            console.error('Error initializing Telegram Analytics:', error);
+          }
+        } else {
+          console.log('Telegram WebApp analytics not available');
+        }
+      } catch (error) {
+        console.warn('Error initializing analytics:', error);
+      }
     }
-  } else {
-    console.log('Telegram WebApp not available for analytics');
-  }
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
