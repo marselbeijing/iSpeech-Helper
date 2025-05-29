@@ -35,19 +35,24 @@ function NavigationBar() {
       showLabels
     >
       <BottomNavigationAction
-        label={t('home')}
-        value="/"
-        icon={<HomeIcon />}
-      />
-      <BottomNavigationAction
-        label={t('functions')}
-        value="/functions"
-        icon={<FunctionsIcon />}
-      />
-      <BottomNavigationAction
-        label={t('account')}
-        value="/account"
-        icon={<AccountIcon />}
+  label="Home"
+  value="/"
+  icon={<HomeIcon />}
+/>
+<BottomNavigationAction
+  label="Functions"
+  value="/functions"
+  icon={<FunctionsIcon />}
+/>
+<BottomNavigationAction
+  label="Progress"
+  value="/progress"
+  icon={<ProgressIcon />}
+/>
+<BottomNavigationAction
+  label="Account"
+  value="/account"
+  icon={<AccountIcon />}
       />
     </StyledBottomNavigation>
   );
