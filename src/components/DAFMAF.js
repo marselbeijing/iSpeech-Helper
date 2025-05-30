@@ -16,6 +16,7 @@ import { commonStyles } from '../styles/TelegramStyles';
 import { styled } from '@mui/material/styles';
 import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
+import PageContainer from './PageContainer';
 
 const CustomThumb = styled('span')(({ theme }) => ({
   width: 24,
@@ -256,290 +257,237 @@ const DAFMAF = () => {
   }, [isPlaying, cleanupAudio]);
 
   return (
-    <Box sx={{ 
-      height: '100vh', 
-      width: '100%', 
-      overflow: 'hidden',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: theme.palette.background.default
-    }}>
-      <Container maxWidth="sm" sx={{ 
-        height: '100%', 
-        display: 'flex', 
-        flexDirection: 'column',
-        overflow: 'hidden',
-        position: 'relative',
-        p: { xs: 0, sm: 2 }
-      }}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          style={{ width: '100%', height: '100%' }}
+    <PageContainer>
+      <Box
+        sx={{
+          width: '100%',
+          background: 'linear-gradient(90deg, #2196f3 0%, #1e88e5 100%)',
+          borderRadius: 2,
+          mb: 2,
+          py: 2,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          boxShadow: '0 2px 8px 0 rgba(0,0,0,0.08)',
+        }}
+      >
+        <Typography 
+          variant="h5" 
+          align="center" 
+          sx={{ 
+            color: '#fff',
+            fontWeight: 'bold',
+            textShadow: '0 2px 8px rgba(0,0,0,0.15)',
+            m: 0,
+          }}
         >
-          <Box
-            sx={{
-              p: { xs: 1.5, sm: 2 },
-              borderRadius: { xs: 0, sm: 3 },
-              background: theme.palette.mode === 'dark' 
-                ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)' 
-                : 'linear-gradient(135deg, #fffefb 0%, #fffde4 100%)',
-              border: { xs: 'none', sm: `1px solid ${theme.palette.divider}` },
-              mb: { xs: 0, sm: 3 },
-              width: '100%',
-              maxWidth: '100%',
-              minWidth: '280px',
-              height: { xs: '100vh', sm: 'auto' },
-              minHeight: { xs: '100vh', sm: '540px' },
-              maxHeight: { xs: '100vh', sm: '700px' },
-              overflowY: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-              mx: 'auto',
-            }}
-          >
-            {/* Синий заголовок */}
-            <Box
-              sx={{
-                width: '100%',
-                background: 'linear-gradient(90deg, #2196f3 0%, #1e88e5 100%)',
-                borderRadius: 2,
-                mb: 2,
-                py: 2,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                boxShadow: '0 2px 8px 0 rgba(0,0,0,0.08)',
-              }}
-            >
-              <Typography 
-                variant="h5" 
-                align="center" 
-                sx={{ 
-                  color: '#fff',
-                  fontWeight: 'bold',
-                  textShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  m: 0,
-                }}
-              >
-                {t('dafmaf_title')}
-              </Typography>
-            </Box>
+          {t('dafmaf_title')}
+        </Typography>
+      </Box>
 
-            {/* Информация */}
-            <Box sx={{ width: '100%', mb: 2 }}>
-              <Typography variant="body2" sx={{ 
-                textAlign: 'center', 
-                color: theme.palette.mode === 'dark' ? '#fff' : '#222', 
-                fontSize: 13, 
-                mb: 1, 
-                fontWeight: 700 
-              }}>
-                {t('dafmaf_instruction_main')}
-              </Typography>
-              <Typography variant="body2" sx={{ 
-                textAlign: 'center', 
-                color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.7)' : '#222', 
-                fontSize: 13, 
-                mb: 1 
-              }}>
-                {t('dafmaf_instruction_1')}
-                <br/>
-                {t('dafmaf_instruction_2')}
-                <br/>
-                {t('dafmaf_instruction_3')}
-              </Typography>
-            </Box>
+      <Box sx={{ width: '100%', mb: 2 }}>
+        <Typography variant="body2" sx={{ 
+          textAlign: 'center', 
+          color: theme.palette.mode === 'dark' ? '#fff' : '#222', 
+          fontSize: 13, 
+          mb: 1, 
+          fontWeight: 700 
+        }}>
+          {t('dafmaf_instruction_main')}
+        </Typography>
+        <Typography variant="body2" sx={{ 
+          textAlign: 'center', 
+          color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.7)' : '#222', 
+          fontSize: 13, 
+          mb: 1 
+        }}>
+          {t('dafmaf_instruction_1')}
+          <br/>
+          {t('dafmaf_instruction_2')}
+          <br/>
+          {t('dafmaf_instruction_3')}
+        </Typography>
+      </Box>
 
-            {/* Ошибка микрофона */}
-            {micPermissionError && (
-              <Box 
-                sx={{ 
-                  p: 2, 
-                  mb: 2, 
-                  borderRadius: 2, 
-                  bgcolor: 'error.light',
-                  color: 'error.contrastText',
-                  textAlign: 'center',
-                  width: '100%',
-                }}
-              >
-                <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
-                  {t('dafmaf_mic_error')}
-                </Typography>
-              </Box>
-            )}
+      {/* Ошибка микрофона */}
+      {micPermissionError && (
+        <Box 
+          sx={{ 
+            p: 2, 
+            mb: 2, 
+            borderRadius: 2, 
+            bgcolor: 'error.light',
+            color: 'error.contrastText',
+            textAlign: 'center',
+            width: '100%',
+          }}
+        >
+          <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+            {t('dafmaf_mic_error')}
+          </Typography>
+        </Box>
+      )}
 
-            {/* Слайдеры */}
-            <Box sx={{ width: '60%', mb: 2, mx: 'auto' }}>
-              <Typography variant="subtitle1" sx={{ 
-                mb: 1, 
-                fontWeight: 'medium', 
-                textAlign: 'center', 
-                fontSize: 13,
-                color: theme.palette.mode === 'dark' ? '#fff' : 'inherit'
-              }}>
-                {t('dafmaf_delay')}: {delay}
-              </Typography>
-              <Slider
-                value={delay}
-                onChange={handleDelayChange}
-                min={50}
-                max={300}
-                valueLabelDisplay="auto"
-                sx={{ ...commonStyles.slider(theme, theme.palette.primary.main), mb: 2 }}
-                slots={{ thumb: CustomThumb }}
-              />
-              <Typography variant="subtitle1" sx={{ 
-                mb: 1, 
-                fontWeight: 'medium', 
-                textAlign: 'center', 
-                fontSize: 13,
-                color: theme.palette.mode === 'dark' ? '#fff' : 'inherit'
-              }}>
-                {t('dafmaf_volume')}: {volume.toFixed(1)}
-              </Typography>
-              <Slider
-                value={volume}
-                onChange={handleVolumeChange}
-                min={0}
-                max={2}
-                step={0.1}
-                valueLabelDisplay="auto"
-                sx={{ ...commonStyles.slider(theme, theme.palette.primary.main), mb: 2 }}
-                slots={{ thumb: CustomThumb }}
-              />
-              <Typography variant="subtitle1" sx={{ 
-                mb: 1, 
-                fontWeight: 'medium', 
-                textAlign: 'center', 
-                fontSize: 13,
-                color: theme.palette.mode === 'dark' ? '#fff' : 'inherit'
-              }}>
-                {t('dafmaf_noise_volume')}: {noiseVolume.toFixed(1)}
-              </Typography>
-              <Slider
-                value={noiseVolume}
-                onChange={handleNoiseVolumeChange}
-                min={0}
-                max={1}
-                step={0.1}
-                valueLabelDisplay="auto"
-                sx={{
-                  ...commonStyles.slider(theme, isMAFEnabled ? theme.palette.success.main : theme.palette.primary.main),
-                  mb: 2,
-                  opacity: isPlaying && isMAFEnabled ? 1 : 0.6,
-                }}
-                disabled={!(isPlaying && isMAFEnabled)}
-                slots={{ thumb: CustomThumb }}
-              />
-            </Box>
+      {/* Слайдеры */}
+      <Box sx={{ width: '60%', mb: 2, mx: 'auto' }}>
+        <Typography variant="subtitle1" sx={{ 
+          mb: 1, 
+          fontWeight: 'medium', 
+          textAlign: 'center', 
+          fontSize: 13,
+          color: theme.palette.mode === 'dark' ? '#fff' : 'inherit'
+        }}>
+          {t('dafmaf_delay')}: {delay}
+        </Typography>
+        <Slider
+          value={delay}
+          onChange={handleDelayChange}
+          min={50}
+          max={300}
+          valueLabelDisplay="auto"
+          sx={{ ...commonStyles.slider(theme, theme.palette.primary.main), mb: 2 }}
+          slots={{ thumb: CustomThumb }}
+        />
+        <Typography variant="subtitle1" sx={{ 
+          mb: 1, 
+          fontWeight: 'medium', 
+          textAlign: 'center', 
+          fontSize: 13,
+          color: theme.palette.mode === 'dark' ? '#fff' : 'inherit'
+        }}>
+          {t('dafmaf_volume')}: {volume.toFixed(1)}
+        </Typography>
+        <Slider
+          value={volume}
+          onChange={handleVolumeChange}
+          min={0}
+          max={2}
+          step={0.1}
+          valueLabelDisplay="auto"
+          sx={{ ...commonStyles.slider(theme, theme.palette.primary.main), mb: 2 }}
+          slots={{ thumb: CustomThumb }}
+        />
+        <Typography variant="subtitle1" sx={{ 
+          mb: 1, 
+          fontWeight: 'medium', 
+          textAlign: 'center', 
+          fontSize: 13,
+          color: theme.palette.mode === 'dark' ? '#fff' : 'inherit'
+        }}>
+          {t('dafmaf_noise_volume')}: {noiseVolume.toFixed(1)}
+        </Typography>
+        <Slider
+          value={noiseVolume}
+          onChange={handleNoiseVolumeChange}
+          min={0}
+          max={1}
+          step={0.1}
+          valueLabelDisplay="auto"
+          sx={{
+            ...commonStyles.slider(theme, isMAFEnabled ? theme.palette.success.main : theme.palette.primary.main),
+            mb: 2,
+            opacity: isPlaying && isMAFEnabled ? 1 : 0.6,
+          }}
+          disabled={!(isPlaying && isMAFEnabled)}
+          slots={{ thumb: CustomThumb }}
+        />
+      </Box>
 
-            {/* Кнопки старт/стоп и MAF в одной строке с подписями */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 3, mb: 1 }}>
-              {/* DAF кнопка */}
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button
-                    onClick={handleDAFToggle}
-                    sx={{
-                      width: 80,
-                      height: 80,
-                      minWidth: 0,
-                      p: 0,
-                      borderRadius: '50%',
-                      background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
-                      color: '#fff',
-                      boxShadow: '0 4px 16px rgba(255, 51, 102, 0.4)',
-                      fontSize: 36,
-                      mb: 0.5,
-                      '&:hover': {
-                        background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
-                      },
-                    }}
-                  >
-                    {isPlaying ? <StopCircle sx={{ fontSize: 44 }} /> : <PlayArrow sx={{ fontSize: 44 }} />}
-                  </Button>
-                </motion.div>
-                <Typography variant="caption" sx={{ mt: 0.5, fontSize: 14, color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.85)' : '#888', textAlign: 'center', fontWeight: 600 }}>
-                  {isPlaying ? t('dafmaf_stop') : t('dafmaf_start')}
-                </Typography>
-              </Box>
-              {/* MAF кнопка */}
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button
-                    onClick={handleMAFToggle}
-                    sx={{
-                      width: 80,
-                      height: 80,
-                      minWidth: 0,
-                      p: 0,
-                      borderRadius: '50%',
-                      background: isMAFEnabled
-                        ? 'linear-gradient(135deg, #32b768 0%, #43e97b 100%)'
-                        : 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
-                      color: '#fff',
-                      boxShadow: isMAFEnabled
-                        ? '0 4px 16px 0 #32b76840'
-                        : '0 4px 16px 0 #ff336640',
-                      fontSize: 36,
-                      mb: 0.5,
-                      transition: 'all 0.2s',
-                      '&:hover': {
-                        background: isMAFEnabled
-                          ? 'linear-gradient(135deg, #43e97b 0%, #32b768 100%)'
-                          : 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
-                        boxShadow: isMAFEnabled
-                          ? '0 8px 32px 0 #32b76860'
-                          : '0 8px 32px 0 #ff336660',
-                      },
-                    }}
-                  >
-                    <Headphones sx={{ fontSize: 40 }} />
-                  </Button>
-                </motion.div>
-                <Typography variant="caption" sx={{ mt: 0.5, fontSize: 14, color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.85)' : '#888', textAlign: 'center', fontWeight: 600 }}>
-                  {t('dafmaf_maf')}
-                </Typography>
-              </Box>
-            </Box>
-
-            {/* Кнопка назад */}
+      {/* Кнопки старт/стоп и MAF в одной строке с подписями */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 3, mb: 1 }}>
+        {/* DAF кнопка */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
-              variant="contained"
-              startIcon={<ArrowBack />}
-              onClick={handleBackClick}
+              onClick={handleDAFToggle}
               sx={{
-                ...commonStyles.primaryButton(theme),
-                backgroundColor: '#ff3366',
-                color: '#fff',
-                borderRadius: 30,
-                fontWeight: 500,
-                fontSize: '0.95rem',
+                width: 80,
+                height: 80,
                 minWidth: 0,
-                width: 'auto',
-                alignSelf: 'center',
-                mt: 1,
-                px: 3,
-                py: 1.2,
+                p: 0,
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
+                color: '#fff',
+                boxShadow: '0 4px 16px rgba(255, 51, 102, 0.4)',
+                fontSize: 36,
+                mb: 0.5,
                 '&:hover': {
-                  backgroundColor: '#e0294d',
+                  background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
                 },
               }}
             >
-              {t('back')}
+              {isPlaying ? <StopCircle sx={{ fontSize: 44 }} /> : <PlayArrow sx={{ fontSize: 44 }} />}
             </Button>
-          </Box>
-        </motion.div>
-      </Container>
-    </Box>
+          </motion.div>
+          <Typography variant="caption" sx={{ mt: 0.5, fontSize: 14, color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.85)' : '#888', textAlign: 'center', fontWeight: 600 }}>
+            {isPlaying ? t('dafmaf_stop') : t('dafmaf_start')}
+          </Typography>
+        </Box>
+        {/* MAF кнопка */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button
+              onClick={handleMAFToggle}
+              sx={{
+                width: 80,
+                height: 80,
+                minWidth: 0,
+                p: 0,
+                borderRadius: '50%',
+                background: isMAFEnabled
+                  ? 'linear-gradient(135deg, #32b768 0%, #43e97b 100%)'
+                  : 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
+                color: '#fff',
+                boxShadow: isMAFEnabled
+                  ? '0 4px 16px 0 #32b76840'
+                  : '0 4px 16px 0 #ff336640',
+                fontSize: 36,
+                mb: 0.5,
+                transition: 'all 0.2s',
+                '&:hover': {
+                  background: isMAFEnabled
+                    ? 'linear-gradient(135deg, #43e97b 0%, #32b768 100%)'
+                    : 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
+                  boxShadow: isMAFEnabled
+                    ? '0 8px 32px 0 #32b76860'
+                    : '0 8px 32px 0 #ff336660',
+                },
+              }}
+            >
+              <Headphones sx={{ fontSize: 40 }} />
+            </Button>
+          </motion.div>
+          <Typography variant="caption" sx={{ mt: 0.5, fontSize: 14, color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.85)' : '#888', textAlign: 'center', fontWeight: 600 }}>
+            {t('dafmaf_maf')}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Кнопка назад */}
+      <Button
+        variant="contained"
+        startIcon={<ArrowBack />}
+        onClick={handleBackClick}
+        sx={{
+          backgroundColor: '#ff3366',
+          color: '#fff',
+          borderRadius: 30,
+          fontWeight: 500,
+          fontSize: '0.95rem',
+          minWidth: 0,
+          width: 'auto',
+          alignSelf: 'center',
+          mt: 1,
+          px: 3,
+          py: 1.2,
+          '&:hover': {
+            backgroundColor: '#e0294d',
+          },
+        }}
+      >
+        {t('back')}
+      </Button>
+    </PageContainer>
   );
 };
 
