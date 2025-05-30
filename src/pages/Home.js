@@ -102,7 +102,7 @@ const Home = () => {
       height: '100vh',
       maxHeight: '100vh',
       background: theme.palette.background.default,
-      overflow: 'hidden',
+      overflowY: 'auto',
       display: 'flex',
       flexDirection: 'column',
       pb: 7,
@@ -130,7 +130,7 @@ const Home = () => {
         position: 'relative',
         zIndex: 2,
         width: '100%',
-        height: '100%',
+        minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
       }}>
@@ -138,11 +138,11 @@ const Home = () => {
           ...commonStyles.pageContainer,
           py: 2,
           flex: 1,
-          overflow: 'hidden',
+          overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
           position: 'relative',
-          height: 'calc(100vh - 56px)',
+          minHeight: 'calc(100vh - 56px)',
           background: 'transparent',
         }}>
           <motion.div
