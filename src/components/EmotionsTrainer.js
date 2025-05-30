@@ -151,6 +151,26 @@ const EmotionsTrainer = () => {
           >
             {currentEmotion.name}
           </Typography>
+          <Button
+            variant="outlined"
+            onClick={handleNextClick}
+            startIcon={<Refresh />}
+            sx={{
+              mt: 1,
+              borderRadius: 30,
+              fontWeight: 500,
+              fontSize: { xs: '0.85rem', sm: '0.95rem' },
+              color: currentEmotion.color,
+              borderColor: currentEmotion.color,
+              '&:hover': {
+                background: currentEmotion.color,
+                color: '#fff',
+                borderColor: currentEmotion.color,
+              },
+            }}
+          >
+            {t('next_emotion')}
+          </Button>
         </Box>
       )}
 

@@ -118,6 +118,17 @@ const App = () => {
         setThemeMode(e.matches ? 'dark' : 'light');
       });
     }
+
+    // Слушаем событие themeChanged для мгновенного обновления темы
+    const handleThemeChanged = (e) => {
+      const { darkMode } = e.detail || {};
+      updateTheme(!!darkMode);
+    };
+    window.addEventListener('themeChanged', handleThemeChanged);
+    // При размонтировании удаляем обработчик
+    return () => {
+      window.removeEventListener('themeChanged', handleThemeChanged);
+    };
   }, []);
   
   // Создаем тему на основе настроек

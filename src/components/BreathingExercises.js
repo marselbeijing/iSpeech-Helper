@@ -278,6 +278,113 @@ const BreathingExercises = () => {
         </Grid>
       </Box>
 
+      {/* Анимация круга по центру */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', my: 2 }}>
+        <Box sx={{ position: 'relative', width: 180, height: 180 }}>
+          {/* Фоновая подсветка */}
+          <motion.div
+            animate={{
+              boxShadow: isPlaying 
+                ? `0 0 30px 10px ${getColors(currentPhase).glow}` 
+                : '0 0 30px 10px rgba(255, 51, 102, 0.2)',
+              scale: isPlaying 
+                ? (currentPhase === 'inhale' ? [1, 1.05, 1] :
+                  currentPhase === 'hold' ? [1, 1.05, 1, 1.05, 1] :
+                  currentPhase === 'exhale' ? [1, 0.95, 1] : 1)
+                : 1,
+            }}
+            transition={{
+              duration: isPlaying ? phases[currentPhase].duration : 2,
+              repeat: isPlaying ? (currentPhase === 'hold' ? 3 : 0) : Infinity,
+              repeatType: 'reverse',
+              ease: isPlaying 
+                ? (currentPhase === 'inhale' ? 'easeOut' : 
+                  currentPhase === 'exhale' ? 'easeIn' : 'easeInOut')
+                : 'easeInOut',
+            }}
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              borderRadius: '50%',
+              zIndex: 1,
+            }}
+          />
+          {/* Внешний круг */}
+          <motion.div
+            animate={{
+              scale: isPlaying 
+                ? (currentPhase === 'inhale' ? [1, 1.2] :
+                  currentPhase === 'hold' ? 1.2 :
+                  currentPhase === 'exhale' ? [1.2, 1] : 1)
+                : 1,
+              opacity: isPlaying ? [0.3, 0.8] : 0.8,
+              borderColor: isPlaying 
+                ? getColors(currentPhase).primary 
+                : '#fff',
+            }}
+            transition={{
+              duration: isPlaying ? phases[currentPhase].duration : 3,
+              ease: isPlaying 
+                ? (currentPhase === 'inhale' ? 'easeOut' : 
+                  currentPhase === 'exhale' ? 'easeIn' : 'linear')
+                : 'easeInOut',
+              repeat: !isPlaying ? Infinity : 0,
+              repeatType: 'reverse',
+            }}
+            style={{
+              position: 'absolute',
+              width: '90%',
+              height: '90%',
+              borderRadius: '50%',
+              border: `8px solid ${isPlaying ? getColors(currentPhase).primary : theme.palette.mode === 'dark' ? '#555' : '#fff'}`,
+              zIndex: 2,
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            }}
+          />
+          {/* Центральный текст */}
+          <Box
+            sx={{
+              position: 'absolute',
+              zIndex: 5,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
+              height: '100%',
+            }}
+          >
+            {!isPlaying ? (
+              <Typography 
+                variant="h6"
+                sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#333333',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  px: 2,
+                  textShadow: theme.palette.mode === 'dark' ? '0 1px 4px rgba(0,0,0,0.5)' : 'none',
+                }}
+              >
+                {t('breathing_press_start')}
+              </Typography>
+            ) : (
+              <Typography 
+                variant="h6"
+                sx={{ 
+                  color: theme.palette.mode === 'dark' ? '#ffffff' : '#333333',
+                  fontWeight: 800,
+                  textShadow: theme.palette.mode === 'dark' 
+                    ? '0 1px 4px rgba(0,0,0,0.5)' 
+                    : '0 1px 2px rgba(0,0,0,0.1)',
+                }}
+              >
+                {phases[currentPhase].label}
+              </Typography>
+            )}
+          </Box>
+        </Box>
+      </Box>
+
       <Box
         sx={{
           display: 'flex',

@@ -198,6 +198,23 @@ const MetronomeReader = () => {
         {t('metronome_instruction')}
       </Typography>
 
+      {/* Ползунок BPM */}
+      <Box sx={{ width: '100%', mb: 2 }}>
+        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 500, textAlign: 'center', fontSize: 14 }}>
+          {t('bpm')}: {bpm}
+        </Typography>
+        <Slider
+          value={bpm}
+          onChange={handleBpmChange}
+          min={40}
+          max={180}
+          step={1}
+          valueLabelDisplay="auto"
+          sx={{ mx: 2, color: theme.palette.primary.main }}
+          slots={{ thumb: CustomThumb }}
+        />
+      </Box>
+
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
         <motion.div
           initial={{ scale: 1 }}
