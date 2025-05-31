@@ -73,7 +73,7 @@ const Progress = () => {
           Ваш прогресс
         </Typography> */}
         
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pb: 8 }}>
           <ProgressCounter showDetails={true} />
           <Box sx={{ mt: 4, width: '100%' }}>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center', mb: 2 }}>
@@ -216,7 +216,17 @@ const Progress = () => {
         </Box>
 
         {/* Кнопка назад внутри основного блока */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          mt: 4,
+          position: 'sticky',
+          bottom: 16,
+          backgroundColor: theme.palette.background.paper,
+          pt: 2,
+          pb: 2,
+          zIndex: 1
+        }}>
           <Button
             variant="contained"
             startIcon={<ArrowBack />}
