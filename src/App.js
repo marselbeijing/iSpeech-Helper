@@ -52,29 +52,58 @@ const App = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [themeMode, setThemeMode] = useState('light');
   
+  // Функция для проверки доступности функций Telegram WebApp
+  const isTelegramWebAppAvailable = () => {
+    return window.Telegram && window.Telegram.WebApp;
+  };
+
+  // Функция для проверки поддержки методов установки цветов
+  const isColorMethodsSupported = () => {
+    if (!isTelegramWebAppAvailable()) return false;
+    const version = window.Telegram.WebApp.version;
+    return version && parseFloat(version) > 6.0;
+  };
+  
   const updateTheme = (isDark) => {
     setDarkMode(isDark);
     setThemeMode(isDark ? 'dark' : 'light');
     
-    if (window.Telegram?.WebApp?.isExpanded && isTelegramFeatureSupported()) {
-      window.Telegram.WebApp.setHeaderColor(isDark ? '#17212B' : '#FFFFFF');
-      window.Telegram.WebApp.setBackgroundColor(isDark ? '#1F2936' : '#F0F2F5');
+    if (window.Telegram?.WebApp?.isExpanded && isColorMethodsSupported()) {
+      try {
+        window.Telegram.WebApp.setHeaderColor(isDark ? '#17212B' : '#FFFFFF');
+        window.Telegram.WebApp.setBackgroundColor(isDark ? '#1F2936' : '#F0F2F5');
+      } catch (error) {
+        console.warn('Error setting Telegram WebApp colors:', error);
+      }
     }
   };
+
+  // Загрузка сохраненных настроек при запуске
+  useEffect(() => {
+    const savedSettings = getUserSettings();
+    if (savedSettings) {
+      updateTheme(savedSettings.darkMode || false);
+    }
+  }, []);
+
+  // Обработчик события изменения темы из настроек
+  useEffect(() => {
+    const handleThemeChange = (event) => {
+      const isDark = event.detail.darkMode;
+      updateTheme(isDark);
+    };
+
+    window.addEventListener('themeChanged', handleThemeChange);
+    return () => window.removeEventListener('themeChanged', handleThemeChange);
+  }, []);
   
   useEffect(() => {
     const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
-    // Функция для проверки доступности функций Telegram WebApp
-    const isTelegramWebAppAvailable = () => {
-      return window.Telegram && window.Telegram.WebApp;
-    };
-
     // Функция для установки цветов
     const setColors = () => {
-      if (isTelegramWebAppAvailable()) {
+      if (isColorMethodsSupported()) {
         try {
-          // Используем новые методы для установки цветов
           window.Telegram.WebApp.setHeaderColor(isDark ? '#17212B' : '#FFFFFF');
           window.Telegram.WebApp.setBackgroundColor(isDark ? '#1F2936' : '#F0F2F5');
         } catch (error) {
