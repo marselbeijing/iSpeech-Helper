@@ -220,7 +220,9 @@ const TongueTwisters = () => {
         flexDirection: 'column',
         overflow: 'hidden',
         position: 'relative',
-        p: { xs: 1, sm: 2 }
+        p: { xs: 0, sm: 0 },
+        width: '100%',
+        maxWidth: '100%'
       }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -231,7 +233,7 @@ const TongueTwisters = () => {
           <Box
             sx={{
               p: { xs: 1.5, sm: 2 },
-              borderRadius: 3,
+              borderRadius: { xs: 0, sm: 3 },
               background: theme.palette.mode === 'dark' 
                 ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)' 
                 : 'linear-gradient(135deg, #fffefb 0%, #fffde4 100%)',

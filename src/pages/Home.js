@@ -41,40 +41,40 @@ const Home = () => {
 
   const menuItems = [
     {
-      title: t('breathing'),
-      icon: <BreathingIcon sx={{ fontSize: 48, color: '#fff' }} />,
-      path: '/breathing',
+      title: t('smooth_reader'),
+      icon: <ReaderIcon sx={{ fontSize: 48, color: '#fff' }} />,
+      path: '/smooth-reader',
       color: '#FF4A6E',
     },
     {
       title: t('metronome'),
       icon: <MetronomeIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/metronome',
-      color: '#5B7CFF',
+      color: '#FF4A6E',
     },
     {
-      title: t('smooth_reader'),
-      icon: <ReaderIcon sx={{ fontSize: 48, color: '#fff' }} />,
-      path: '/smooth-reader',
-      color: '#32B768',
-    },
-    {
-      title: t('tongue_twisters'),
-      icon: <TongueTwisterIcon sx={{ fontSize: 48, color: '#fff' }} />,
-      path: '/tongue-twisters',
+      title: t('breathing'),
+      icon: <BreathingIcon sx={{ fontSize: 48, color: '#fff' }} />,
+      path: '/breathing',
       color: '#FFB84A',
     },
     {
       title: t('dafmaf'),
       icon: <DAFIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/dafmaf',
-      color: '#8B5CF6',
+      color: '#FFB84A',
+    },
+    {
+      title: t('tongue_twisters'),
+      icon: <TongueTwisterIcon sx={{ fontSize: 48, color: '#fff' }} />,
+      path: '/tongue-twisters',
+      color: '#32B768',
     },
     {
       title: t('emotions'),
       icon: <EmotionsIcon sx={{ fontSize: 48, color: '#fff' }} />,
       path: '/emotions',
-      color: '#FF6B6B',
+      color: '#32B768',
     },
   ];
 
