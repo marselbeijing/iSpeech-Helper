@@ -32,15 +32,7 @@ const Progress = () => {
     <Container maxWidth="md" sx={{ 
       py: { xs: 0, sm: 4 }, 
       minHeight: '100vh',
-      px: { xs: 0, sm: 2 },
-      overflow: 'hidden',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      width: '100%',
-      height: '100%'
+      px: { xs: 0, sm: 2 }
     }}>
       {/* Основной контейнер */}
       <Paper
@@ -53,11 +45,9 @@ const Progress = () => {
           marginBottom: { xs: 0, sm: '20px' },
           width: '100%',
           maxWidth: '100%',
-          height: '100%',
+          height: { xs: '100vh', sm: 'auto' },
           mx: 'auto',
           overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column'
         }}
       >
         {/* Заголовок внутри основного блока */}
@@ -73,7 +63,7 @@ const Progress = () => {
           Ваш прогресс
         </Typography> */}
         
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', pb: 8 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <ProgressCounter showDetails={true} />
           <Box sx={{ mt: 4, width: '100%' }}>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', textAlign: 'center', mb: 2 }}>
@@ -216,17 +206,7 @@ const Progress = () => {
         </Box>
 
         {/* Кнопка назад внутри основного блока */}
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          mt: 4,
-          position: 'sticky',
-          bottom: 16,
-          backgroundColor: theme.palette.background.paper,
-          pt: 2,
-          pb: 2,
-          zIndex: 1
-        }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
           <Button
             variant="contained"
             startIcon={<ArrowBack />}
