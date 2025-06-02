@@ -16,7 +16,6 @@
 .env.test.local
 .env.production.local
 .env
-<<<<<<< HEAD
 
 # logs
 npm-debug.log*
@@ -29,23 +28,5 @@ yarn-error.log*
 *.swp
 *.swo
 
-# Cursor
-.cursor/
-
-# Optional npm cache directory
-.npm
-
 # Optional eslint cache
 .eslintcache
-
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity 
-=======
- 
->>>>>>> 0ea33bd (Добавлена техподдержка с ссылкой на Telegram)
