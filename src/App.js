@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Box } from '@mui/material';
-import { AnimatePresence } from 'framer-motion';
+import { CssBaseline } from '@mui/material';
 import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
@@ -12,7 +11,7 @@ import './i18n';
 import { useTranslation } from 'react-i18next';
 
 // Components
-import NavigationBar from './components/NavigationBar';
+import Root from './components/Root';
 import Home from './pages/Home';
 import Functions from './pages/Functions';
 import Account from './pages/Account';
@@ -24,27 +23,60 @@ import TongueTwisters from './components/TongueTwisters';
 import MetronomeReader from './components/MetronomeReader';
 import EmotionsTrainer from './components/EmotionsTrainer';
 
-// Animated Routes component
-const AnimatedRoutes = () => {
-  const location = useLocation();
-
-  return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Home />} />
-        <Route path="/functions" element={<Functions />} />
-        <Route path="/account" element={<Account />} />
-        <Route path="/progress" element={<Progress />} />
-        <Route path="/smooth-reader" element={<SmoothReader />} />
-        <Route path="/dafmaf" element={<DAFMAF />} />
-        <Route path="/breathing" element={<BreathingExercises />} />
-        <Route path="/tongue-twisters" element={<TongueTwisters />} />
-        <Route path="/metronome" element={<MetronomeReader />} />
-        <Route path="/emotions" element={<EmotionsTrainer />} />
-      </Routes>
-    </AnimatePresence>
-  );
-};
+// Router configuration
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Root />,
+    children: [
+      {
+        path: '/',
+        element: <Home />
+      },
+      {
+        path: '/functions',
+        element: <Functions />
+      },
+      {
+        path: '/account',
+        element: <Account />
+      },
+      {
+        path: '/progress',
+        element: <Progress />
+      },
+      {
+        path: '/smooth-reader',
+        element: <SmoothReader />
+      },
+      {
+        path: '/dafmaf',
+        element: <DAFMAF />
+      },
+      {
+        path: '/breathing',
+        element: <BreathingExercises />
+      },
+      {
+        path: '/tongue-twisters',
+        element: <TongueTwisters />
+      },
+      {
+        path: '/metronome',
+        element: <MetronomeReader />
+      },
+      {
+        path: '/emotions',
+        element: <EmotionsTrainer />
+      }
+    ]
+  }
+], {
+  future: {
+    v7_startTransition: true,
+    v7_relativeSplatPath: true
+  }
+});
 
 // Main App component
 const App = () => {
@@ -201,26 +233,7 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          background: theme.palette.background.default,
-          transition: 'background 0.3s ease',
-          paddingBottom: '56px',
-        }}
-      >
-        <Box
-          component="main"
-          sx={{
-            flex: 1,
-          }}
-        >
-          <AnimatedRoutes />
-        </Box>
-        <NavigationBar />
-      </Box>
+      <RouterProvider router={router} />
     </ThemeProvider>
   );
 };

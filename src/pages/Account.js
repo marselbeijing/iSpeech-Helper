@@ -11,11 +11,17 @@ import {
   Modal,
   Fade,
   IconButton,
+  TextField,
+  Snackbar,
+  Alert,
+  Divider,
 } from '@mui/material';
 import {
   Telegram as TelegramIcon,
   Logout as LogoutIcon,
   Close as CloseIcon,
+  ContentCopy as ContentCopyIcon,
+  Share as ShareIcon,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { verifyTelegramAuth, getCurrentUser, logout } from '../services/telegram';
@@ -24,6 +30,9 @@ import { vibrate } from '../services/vibration';
 import TelegramLogin from '../components/TelegramLogin';
 import { checkSubscriptionStatus, purchaseSubscription } from '../services/subscription';
 import { useTranslation } from 'react-i18next';
+import { getUserSettings, saveUserSettings } from '../services/storage';
+import { getReferralStats, getReferralTransactions, generateReferralLink, requestPayout } from '../services/referral';
+import ReferralProgram from '../components/ReferralProgram';
 
 const StarIcon = () => (
   <span style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }}>
@@ -41,6 +50,12 @@ const Account = () => {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [subscription, setSubscription] = useState(null);
   const [isPurchasing, setIsPurchasing] = useState(false);
+  const [settings, setSettings] = useState(getUserSettings());
+  const [showCopied, setShowCopied] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [referralStats, setReferralStats] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+  const [payoutStatus, setPayoutStatus] = useState(null);
 
   useEffect(() => {
     try {
@@ -98,7 +113,23 @@ const Account = () => {
       console.error('Ошибка инициализации:', error);
       setLoading(false);
     }
-  }, []);
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      const loadReferralData = async () => {
+        try {
+          const stats = await getReferralStats();
+          const txHistory = await getReferralTransactions();
+          setReferralStats(stats);
+          setTransactions(txHistory);
+        } catch (error) {
+          console.error('Error loading referral data:', error);
+        }
+      };
+      loadReferralData();
+    }
+  }, [user]);
 
   const handleLogout = () => {
     try {
@@ -131,6 +162,68 @@ const Account = () => {
       vibrate('error');
     } finally {
       setIsPurchasing(false);
+    }
+  };
+
+  const handleSettingChange = (key, value) => {
+    const newSettings = { ...settings, [key]: value };
+    setSettings(newSettings);
+    saveUserSettings(newSettings);
+  };
+
+  const generateReferralLink = () => {
+    // В реальном приложении здесь будет генерация уникальной ссылки
+    return `https://ispeech.app/ref/${settings.userId || 'demo'}`;
+  };
+
+  const copyToClipboard = async () => {
+    try {
+      const link = await generateReferralLink();
+      await navigator.clipboard.writeText(link);
+      setShowCopied(true);
+      playSound('success');
+      vibrate('success');
+    } catch (err) {
+      setShowError(true);
+      playSound('error');
+      vibrate('error');
+    }
+  };
+
+  const shareLink = async () => {
+    try {
+      const link = await generateReferralLink();
+      await navigator.share({
+        title: 'iSpeech Helper',
+        text: t('referral_share_text'),
+        url: link,
+      });
+      playSound('success');
+      vibrate('success');
+    } catch (err) {
+      setShowError(true);
+      playSound('error');
+      vibrate('error');
+    }
+  };
+
+  const handleRequestPayout = async () => {
+    try {
+      const result = await requestPayout();
+      setPayoutStatus(result);
+      if (result.success) {
+        const stats = await getReferralStats();
+        setReferralStats(stats);
+        playSound('success');
+        vibrate('success');
+      } else {
+        playSound('error');
+        vibrate('error');
+      }
+    } catch (error) {
+      console.error('Error requesting payout:', error);
+      playSound('error');
+      vibrate('error');
     }
   };
 
@@ -518,6 +611,28 @@ const Account = () => {
             </Paper>
           </Fade>
         </Modal>
+
+        <ReferralProgram />
+
+        <Snackbar
+          open={showCopied}
+          autoHideDuration={3000}
+          onClose={() => setShowCopied(false)}
+        >
+          <Alert severity="success" onClose={() => setShowCopied(false)}>
+            {t('copied_to_clipboard')}
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+          open={showError}
+          autoHideDuration={3000}
+          onClose={() => setShowError(false)}
+        >
+          <Alert severity="error" onClose={() => setShowError(false)}>
+            {t('error_occurred')}
+          </Alert>
+        </Snackbar>
       </Container>
     </Box>
   );
