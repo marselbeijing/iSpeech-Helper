@@ -117,5 +117,10 @@
   "speed": "Speed",
   "smooth_reader_repeat": "Repeat 3–5 times, trying to keep the rhythm.",
   "random_text": "Random text",
-  "smooth_reader_title": "Smooth Reader"
+  "smooth_reader_title": "Smooth Reader",
+  "reset_progress": "Reset Progress",
+  "reset_progress_confirmation": "Reset Progress?",
+  "reset_progress_warning": "This action cannot be undone. All your progress, including levels, achievements, and statistics, will be reset.",
+  "cancel": "Cancel",
+  "confirm": "Confirm"
 } 

@@ -6,14 +6,18 @@ import {
   useTheme,
   Button,
   Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
-import { ArrowBack } from '@mui/icons-material';
+import { ArrowBack, RestartAlt } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import ProgressCounter from '../components/ProgressCounter';
-import { getUserStats } from '../services/storage';
+import { getUserStats, saveUserStats, DEFAULT_STATS } from '../services/storage';
 import { useTranslation } from 'react-i18next';
 
 const Progress = () => {
@@ -21,11 +25,28 @@ const Progress = () => {
   const navigate = useNavigate();
   const progressData = getUserStats();
   const { t } = useTranslation();
+  const [resetDialogOpen, setResetDialogOpen] = React.useState(false);
   
   const handleBack = () => {
     playSound('click');
     vibrate('click');
     navigate('/');
+  };
+
+  const handleResetProgress = () => {
+    playSound('click');
+    vibrate('click');
+    setResetDialogOpen(true);
+  };
+
+  const handleConfirmReset = () => {
+    saveUserStats({ ...DEFAULT_STATS });
+    setResetDialogOpen(false);
+    window.location.reload(); // Перезагружаем страницу для обновления данных
+  };
+
+  const handleCancelReset = () => {
+    setResetDialogOpen(false);
   };
 
   return (
@@ -206,23 +227,46 @@ const Progress = () => {
         </Box>
 
         {/* Кнопка назад внутри основного блока */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 4, mb: { xs: 8, sm: 2 } }}>
           <Button
             variant="contained"
+            color="error"
+            startIcon={<RestartAlt />}
+            onClick={handleResetProgress}
+            sx={{
+              py: { xs: 0.75, sm: 1 },
+              px: { xs: 2, sm: 2.5 },
+              borderRadius: 30,
+              fontWeight: 500,
+              fontSize: { xs: '0.875rem', sm: '0.95rem' },
+              minWidth: 0,
+              width: 'auto',
+              alignSelf: 'center',
+              backgroundColor: '#ff3366',
+              '&:hover': {
+                backgroundColor: '#e0294d',
+              },
+            }}
+          >
+            {t('reset_progress')}
+          </Button>
+          <Button
+            variant="contained"
+            color="primary"
             startIcon={<ArrowBack />}
             onClick={handleBack}
             sx={{
-              py: 1.2,
-              px: 4,
+              py: { xs: 0.75, sm: 1 },
+              px: { xs: 2, sm: 2.5 },
               borderRadius: 30,
-              textTransform: 'none',
               fontWeight: 500,
-              fontSize: '1rem',
-              background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
-              color: '#fff',
-              boxShadow: '0 8px 32px 0 rgba(255, 74, 110, 0.3)',
+              fontSize: { xs: '0.875rem', sm: '0.95rem' },
+              minWidth: 0,
+              width: 'auto',
+              alignSelf: 'center',
+              backgroundColor: '#ff3366',
               '&:hover': {
-                background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
+                backgroundColor: '#e0294d',
               },
             }}
           >
@@ -230,6 +274,54 @@ const Progress = () => {
           </Button>
         </Box>
       </Paper>
+
+      {/* Диалог подтверждения сброса */}
+      <Dialog
+        open={resetDialogOpen}
+        onClose={handleCancelReset}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            p: 1,
+          },
+        }}
+      >
+        <DialogTitle sx={{ textAlign: 'center' }}>
+          {t('reset_progress_confirmation')}
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            {t('reset_progress_warning')}
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'center', pb: 2 }}>
+          <Button
+            onClick={handleCancelReset}
+            variant="outlined"
+            sx={{
+              borderRadius: 30,
+              px: 3,
+            }}
+          >
+            {t('cancel')}
+          </Button>
+          <Button
+            onClick={handleConfirmReset}
+            variant="contained"
+            color="error"
+            sx={{
+              borderRadius: 30,
+              px: 3,
+              backgroundColor: '#ff3366',
+              '&:hover': {
+                backgroundColor: '#e0294d',
+              },
+            }}
+          >
+            {t('confirm')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

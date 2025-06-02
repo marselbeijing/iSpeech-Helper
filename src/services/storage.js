@@ -17,7 +17,7 @@ const DEFAULT_SETTINGS = {
 };
 
 // Начальная статистика
-const DEFAULT_STATS = {
+export const DEFAULT_STATS = {
   totalExercises: 0,
   currentStreak: 0,
   bestStreak: 0,
@@ -91,21 +91,31 @@ export const updateProgress = (exerciseType) => {
   // Проверка повышения уровня
   if (stats.experience >= stats.nextLevelExp) {
     stats.level += 1;
+    stats.experience = stats.experience - stats.nextLevelExp; // Остаток опыта переносится на следующий уровень
     stats.nextLevelExp = Math.floor(stats.nextLevelExp * 1.5); // Увеличение опыта для следующего уровня
   }
   
   // Обновление серии упражнений
-  if (stats.lastExerciseDate === today) {
-    // Уже выполнили упражнение сегодня
-  } else if (stats.lastExerciseDate === new Date(Date.now() - 86400000).toISOString().split('T')[0]) {
-    // Вчера выполняли упражнение - увеличиваем серию
-    stats.currentStreak += 1;
-    if (stats.currentStreak > stats.bestStreak) {
-      stats.bestStreak = stats.currentStreak;
-    }
-  } else {
-    // Сброс серии
+  if (!stats.lastExerciseDate) {
+    // Первое упражнение
     stats.currentStreak = 1;
+  } else if (stats.lastExerciseDate === today) {
+    // Уже выполнили упражнение сегодня - не увеличиваем серию
+  } else {
+    const lastDate = new Date(stats.lastExerciseDate);
+    const currentDate = new Date(today);
+    const diffDays = Math.floor((currentDate - lastDate) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) {
+      // Упражнение выполнено на следующий день - увеличиваем серию
+      stats.currentStreak += 1;
+      if (stats.currentStreak > stats.bestStreak) {
+        stats.bestStreak = stats.currentStreak;
+      }
+    } else if (diffDays > 1) {
+      // Пропущен день - сбрасываем серию
+      stats.currentStreak = 1;
+    }
   }
   
   stats.lastExerciseDate = today;
@@ -124,19 +134,37 @@ export const updateProgress = (exerciseType) => {
 
 // Проверка достижений
 const checkAchievements = (stats) => {
+  let achievementsUpdated = false;
+
   // Первые шаги
-  if (stats.totalExercises >= 10) {
+  if (!stats.achievements[0].completed && stats.totalExercises >= 10) {
     stats.achievements[0].completed = true;
+    achievementsUpdated = true;
   }
   
   // Неделя практики
-  if (stats.currentStreak >= 7) {
+  if (!stats.achievements[1].completed && stats.currentStreak >= 7) {
     stats.achievements[1].completed = true;
+    achievementsUpdated = true;
   }
   
   // Мастер слова
-  if (stats.totalExercises >= 100) {
+  if (!stats.achievements[2].completed && stats.totalExercises >= 100) {
     stats.achievements[2].completed = true;
+    achievementsUpdated = true;
+  }
+
+  // Если были получены новые достижения, добавляем бонусный опыт
+  if (achievementsUpdated) {
+    const achievementExpBonus = 50; // Бонусный опыт за достижение
+    stats.experience += achievementExpBonus;
+    
+    // Проверяем, не нужно ли повысить уровень после получения бонуса
+    while (stats.experience >= stats.nextLevelExp) {
+      stats.level += 1;
+      stats.experience = stats.experience - stats.nextLevelExp;
+      stats.nextLevelExp = Math.floor(stats.nextLevelExp * 1.5);
+    }
   }
 };
 
