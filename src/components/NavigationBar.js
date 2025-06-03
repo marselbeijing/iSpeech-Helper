@@ -27,11 +27,24 @@ const NavigationBar = () => {
     navigate(newValue);
   };
 
+  const CircleIcon = () => (
+    <svg width="24" height="24" viewBox="0 0 24 24">
+      <defs>
+        <linearGradient id="assistantGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style={{ stopColor: '#E8F0FE', stopOpacity: 1 }} />
+          <stop offset="100%" style={{ stopColor: '#4A90E2', stopOpacity: 1 }} />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="12" fill="url(#assistantGradient)" />
+    </svg>
+  );
+
   const navItems = [
-    { value: '/', icon: <HomeIcon />, label: 'Home' },
-    { value: '/progress', icon: <ProgressIcon />, label: 'Progress' },
-    { value: '/functions', icon: <SettingsIcon />, label: 'Functions' },
-    { value: '/account', icon: <PersonIcon />, label: 'Account' },
+    { value: '/', icon: <HomeIcon />, label: 'Главная' },
+    { value: '/progress', icon: <ProgressIcon />, label: 'Прогресс' },
+    { value: '/assistant', icon: <CircleIcon />, label: 'Ассистент' },
+    { value: '/functions', icon: <SettingsIcon />, label: 'Настройки' },
+    { value: '/account', icon: <PersonIcon />, label: 'Аккаунт' },
   ];
 
   return (
@@ -88,6 +101,7 @@ const NavigationBar = () => {
                   fontSize: '1.5rem',
                   transition: 'all 0.2s',
                 },
+                flex: item.value === '/assistant' ? '1.2' : '1',
               }}
             />
           ))}

@@ -16,6 +16,7 @@ import Home from './pages/Home';
 import Functions from './pages/Functions';
 import Account from './pages/Account';
 import Progress from './pages/Progress';
+import Assistant from './pages/Assistant';
 import SmoothReader from './components/SmoothReader';
 import DAFMAF from './components/DAFMAF';
 import BreathingExercises from './components/BreathingExercises';
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
       {
         path: '/progress',
         element: <Progress />
+      },
+      {
+        path: '/assistant',
+        element: <Assistant />
       },
       {
         path: '/smooth-reader',

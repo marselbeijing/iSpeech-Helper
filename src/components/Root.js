@@ -15,7 +15,7 @@ const Root = () => {
         flexDirection: 'column',
         background: theme.palette.background.default,
         transition: 'background 0.3s ease',
-        paddingBottom: '56px',
+        paddingBottom: '66px',
       }}
     >
       <Box
