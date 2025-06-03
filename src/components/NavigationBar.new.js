@@ -15,12 +15,25 @@ import {
 import { motion } from 'framer-motion';
 import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
-import AssistantIcon from './AssistantIcon';
+import { useTranslation } from 'react-i18next';
+
+const AssistantIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" style={{ filter: 'drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.1))' }}>
+    <defs>
+      <linearGradient id="assistantGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#E8F0FE" />
+        <stop offset="100%" stopColor="#4A90E2" />
+      </linearGradient>
+    </defs>
+    <circle cx="12" cy="12" r="11" fill="url(#assistantGradient)" />
+  </svg>
+);
 
 const NavigationBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const handleChange = (event, newValue) => {
     playSound('click');
@@ -29,11 +42,11 @@ const NavigationBar = () => {
   };
 
   const navItems = [
-    { value: '/', icon: <HomeIcon />, label: 'Home' },
-    { value: '/progress', icon: <ProgressIcon />, label: 'Progress' },
-    { value: '/assistant', icon: <AssistantIcon />, label: 'Assistant' },
-    { value: '/functions', icon: <SettingsIcon />, label: 'Settings' },
-    { value: '/account', icon: <PersonIcon />, label: 'Account' }
+    { value: '/', icon: <HomeIcon />, label: t('home') },
+    { value: '/progress', icon: <ProgressIcon />, label: t('progress') },
+    { value: '/assistant', icon: <AssistantIcon />, label: t('virtual_assistant') },
+    { value: '/functions', icon: <SettingsIcon />, label: t('settings') },
+    { value: '/account', icon: <PersonIcon />, label: t('account') }
   ];
 
   return (
