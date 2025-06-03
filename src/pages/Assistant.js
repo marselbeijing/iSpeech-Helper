@@ -8,30 +8,53 @@ import {
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { keyframes } from '@emotion/react';
+import { styled } from '@mui/material/styles';
+
+const gradientAnimation = keyframes`
+  0% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
+`;
+
+const AnimatedCircle = styled(Box)`
+  background: linear-gradient(-45deg, #FF4A6E, #FFB84A, #32B768, #FF4A6E);
+  background-size: 400% 400%;
+  animation: ${gradientAnimation} 8s ease infinite;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+`;
 
 const Assistant = () => {
   const theme = useTheme();
   const { t } = useTranslation();
 
   return (
-    <Container maxWidth="md" sx={{ 
-      py: { xs: 0, sm: 4 }, 
-      minHeight: '100vh',
-      px: { xs: 0, sm: 2 }
-    }}>
+    <Container 
+      maxWidth="md" 
+      sx={{ 
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        py: { xs: 2, sm: 4 },
+        px: { xs: 2, sm: 3 }
+      }}
+    >
       <Paper
         elevation={0}
         sx={{
           borderRadius: { xs: 0, sm: '24px' },
-          padding: { xs: '16px', sm: '24px' },
+          padding: { xs: '24px', sm: '32px' },
           backgroundColor: theme.palette.background.paper,
           boxShadow: { xs: 'none', sm: '0 4px 20px rgba(0,0,0,0.08)' },
-          marginBottom: { xs: 0, sm: '20px' },
           width: '100%',
           maxWidth: '100%',
-          height: { xs: '100vh', sm: 'auto' },
           mx: 'auto',
-          overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -42,27 +65,56 @@ const Assistant = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%'
+          }}
         >
-          <Box
+          <AnimatedCircle
             sx={{
-              width: 200,
-              height: 200,
+              width: { xs: 200, sm: 240 },
+              height: { xs: 200, sm: 240 },
               borderRadius: '50%',
-              backgroundColor: '#FF4A6E',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 3,
+              marginBottom: 4,
             }}
           >
-            <Typography variant="h6" color="white">
+            <Typography 
+              variant="h5" 
+              color="white"
+              sx={{ 
+                fontWeight: 600,
+                textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+              }}
+            >
               {t('coming_soon')}
             </Typography>
-          </Box>
-          <Typography variant="h5" textAlign="center" gutterBottom>
+          </AnimatedCircle>
+          <Typography 
+            variant="h4" 
+            textAlign="center" 
+            gutterBottom
+            sx={{ 
+              fontWeight: 700,
+              mb: 2
+            }}
+          >
             {t('virtual_assistant')}
           </Typography>
-          <Typography variant="body1" textAlign="center" color="text.secondary">
+          <Typography 
+            variant="body1" 
+            textAlign="center" 
+            color="text.secondary"
+            sx={{
+              maxWidth: 480,
+              mx: 'auto',
+              lineHeight: 1.6
+            }}
+          >
             {t('assistant_description')}
           </Typography>
         </motion.div>
