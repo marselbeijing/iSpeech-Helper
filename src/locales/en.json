@@ -156,5 +156,8 @@
     "rewardConditions": "Stars are credited after your invited friend pays for a subscription.",
     "shareMessage": "Try iSpeech Helper - an app to improve your speech!"
   },
-  "copied": "Copied!"
+  "copied": "Copied!",
+  "coming_soon": "Coming soon",
+  "virtual_assistant": "Virtual Assistant",
+  "assistant_description": "Here you can chat with a virtual assistant that will help you with speech training"
 } 
