@@ -139,8 +139,7 @@ const Functions = () => {
       description: '',
       icon: <SupportIcon sx={{ fontSize: 25 }} />,
       onClick: () => {
-        const username = 'MilanPlayBall';
-        const telegramUrl = `https://t.me/${username}`;
+        const telegramUrl = 'https://t.me/iSpeechHelper';
         window.open(telegramUrl, '_blank');
       },
       color: '#2196f3',
