@@ -201,12 +201,12 @@ const TongueTwisters = () => {
 
   return (
     <Box sx={{ 
-      height: '100vh', 
-      width: '100%', 
+      height: '105vh',
+      width: '105%',
       overflow: 'hidden',
       position: 'fixed',
       top: 0,
-      left: 0,
+      left: '-2.5%',
       right: 0,
       bottom: 0,
       backgroundColor: theme.palette.background.default,
@@ -215,14 +215,14 @@ const TongueTwisters = () => {
       justifyContent: 'center'
     }}>
       <Container maxWidth="sm" sx={{ 
-        height: '100%', 
+        height: '105%',
         display: 'flex', 
         flexDirection: 'column',
         overflow: 'hidden',
         position: 'relative',
         p: { xs: 0, sm: 0 },
-        width: '100%',
-        maxWidth: '100%'
+        width: '105%',
+        maxWidth: '105%'
       }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}

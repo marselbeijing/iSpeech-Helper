@@ -161,8 +161,8 @@ const EmotionsTrainer = () => {
             }}>
               <Box
                 sx={{
-                  width: { xs: 100, sm: 120 },
-                  height: { xs: 100, sm: 120 },
+                  width: { xs: 120, sm: 144 },
+                  height: { xs: 120, sm: 144 },
                   borderRadius: '50%',
                   background: currentEmotion.color,
                   color: 'white',
@@ -172,7 +172,7 @@ const EmotionsTrainer = () => {
                   mb: { xs: 1.5, sm: 2 },
                   boxShadow: `0 4px 16px 0 ${currentEmotion.color}40`,
                   '& > svg': {
-                    fontSize: { xs: 40, sm: 48 }
+                    fontSize: { xs: 48, sm: 58 }
                   }
                 }}
               >
