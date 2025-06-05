@@ -141,7 +141,6 @@
   "request_payout": "Request Payout",
   "min_payout_amount": "Minimum withdrawal amount - 100 ₽",
   "transaction_history": "Transaction History",
-  "commission_from_payment": "Commission from payment",
   "payout_requested": "Payout request created",
   "payout_error": "Error creating payout request",
   "referral": {

@@ -136,7 +136,6 @@
   "request_payout": "Запросить выплату",
   "min_payout_amount": "Минимальная сумма для вывода - 100 ₽",
   "transaction_history": "История транзакций",
-  "commission_from_payment": "Комиссия с оплаты",
   "payout_requested": "Заявка на выплату создана",
   "payout_error": "Ошибка при создании заявки на выплату",
   "referral": {

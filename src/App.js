@@ -9,7 +9,6 @@ import WebApp from '@twa-dev/sdk';
 import telegramAnalytics from '@telegram-apps/analytics';
 import './i18n';
 import { useTranslation } from 'react-i18next';
-import posthog from 'posthog-js';
 
 // Components
 import Root from './components/Root';
@@ -83,16 +82,6 @@ const router = createBrowserRouter([
     v7_relativeSplatPath: true
   }
 });
-
-// Инициализация PostHog
-if (process.env.REACT_APP_POSTHOG_KEY) {
-  posthog.init(process.env.REACT_APP_POSTHOG_KEY, {
-    api_host: 'https://app.posthog.com',
-    loaded: (posthog) => {
-      if (process.env.NODE_ENV === 'development') posthog.debug();
-    }
-  });
-}
 
 // Main App component
 const App = () => {
@@ -243,28 +232,6 @@ const App = () => {
       } catch (error) {
         console.warn('Error initializing analytics:', error);
       }
-    }
-  }, []);
-
-  useEffect(() => {
-    // Логируем для отладки
-    console.log('WebApp initialization started');
-    console.log('Telegram object:', window.Telegram);
-    console.log('WebApp object:', window.Telegram?.WebApp);
-
-    // Инициализация Telegram WebApp
-    if (window.Telegram?.WebApp) {
-      const webApp = window.Telegram.WebApp;
-      
-      // Сообщаем Telegram, что приложение готово
-      webApp.ready();
-      
-      // Включаем расширение окна на весь экран
-      webApp.expand();
-      
-      console.log('WebApp initialized successfully');
-    } else {
-      console.log('WebApp object not found');
     }
   }, []);
 

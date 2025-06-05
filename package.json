@@ -13,7 +13,6 @@
     "firebase": "^11.8.1",
     "framer-motion": "^11.0.3",
     "i18next": "^25.2.1",
-    "posthog-js": "^1.249.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^15.5.2",
