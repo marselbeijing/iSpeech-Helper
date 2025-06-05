@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
@@ -7,15 +7,21 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="iSpeech Helper - приложение для помощи людям с речевыми расстройствами"
+      content="iSpeech Helper - Your Language Learning Assistant"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <title>iSpeech Helper</title>
+    <script>
+      // Проверяем, открыто ли приложение через Telegram WebApp
+      if (!window.Telegram?.WebApp) {
+        // Если открыто не через Telegram, редиректим на бота
+        window.location.href = 'https://t.me/iSpeechHelper_bot';
+      }
+    </script>
   </head>
   <body>
-    <noscript>Для работы приложения необходимо включить JavaScript.</noscript>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
   </body>
 </html> 

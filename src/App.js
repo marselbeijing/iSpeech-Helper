@@ -235,6 +235,16 @@ const App = () => {
     }
   }, []);
 
+  useEffect(() => {
+    // Проверяем, открыто ли приложение через Telegram WebApp
+    const isTelegramWebApp = window.Telegram?.WebApp;
+    
+    if (!isTelegramWebApp) {
+      // Если открыто не через Telegram, редиректим на бота
+      window.location.href = 'https://t.me/iSpeechHelper_bot';
+    }
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
