@@ -21,6 +21,27 @@ import {
   Refresh,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { styled } from '@mui/material/styles';
+
+const EmotionIcon = styled('div')(({ theme }) => ({
+  width: '120px',
+  height: '120px',
+  [theme.breakpoints.up('sm')]: {
+    width: '144px',
+    height: '144px',
+  },
+  borderRadius: '50%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginBottom: theme.spacing(2),
+  '& > svg': {
+    fontSize: '72px',
+    [theme.breakpoints.up('sm')]: {
+      fontSize: '86px',
+    },
+  },
+}));
 
 const EmotionsTrainer = () => {
   const theme = useTheme();
@@ -159,24 +180,26 @@ const EmotionsTrainer = () => {
               flex: 1,
               mt: { xs: 2, sm: 3 }
             }}>
-              <Box
-                sx={{
-                  width: { xs: 120, sm: 144 },
-                  height: { xs: 120, sm: 144 },
-                  borderRadius: '50%',
-                  background: currentEmotion.color,
-                  color: 'white',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  mb: { xs: 1.5, sm: 2 },
-                  boxShadow: `0 4px 16px 0 ${currentEmotion.color}40`,
-                  '& > svg': {
-                    fontSize: { xs: 48, sm: 58 }
-                  }
-                }}
-              >
-                {currentEmotion.icon}
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                <Box
+                  sx={{
+                    width: { xs: '173px', sm: '206px' },  // Увеличено на 20%
+                    height: { xs: '173px', sm: '206px' }, // Увеличено на 20%
+                    borderRadius: '50%',
+                    background: currentEmotion.color,
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mb: 2,
+                    boxShadow: `0 4px 16px 0 ${currentEmotion.color}40`,
+                    '& > svg': {
+                      fontSize: { xs: '86px', sm: '103px' }  // Увеличено на 20%
+                    }
+                  }}
+                >
+                  {currentEmotion.icon}
+                </Box>
               </Box>
               <Typography 
                 variant="h6" 

@@ -200,227 +200,166 @@ const TongueTwisters = () => {
   };
 
   return (
-    <Box sx={{ 
-      height: '105vh',
-      width: '105%',
-      overflow: 'hidden',
-      position: 'fixed',
-      top: 0,
-      left: '-2.5%',
-      right: 0,
-      bottom: 0,
-      backgroundColor: theme.palette.background.default,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    }}>
-      <Container maxWidth="sm" sx={{ 
-        height: '105%',
-        display: 'flex', 
+    <Container 
+      maxWidth={false}
+      sx={{
+        minHeight: '100vh',
+        width: '100%',
+        p: 0,
+        m: 0,
+        display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden',
-        position: 'relative',
-        p: { xs: 0, sm: 0 },
-        width: '105%',
-        maxWidth: '105%'
-      }}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        backgroundColor: theme.palette.background.default,
+        mt: '-5vh',
+      }}
+    >
+      <Box
+        sx={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          px: 2,
+          pt: 0,
+        }}
+      >
+        <Box
+          sx={{
+            width: '100%',
+            maxWidth: 600,
+            backgroundColor: theme.palette.primary.main,
+            color: 'white',
+            borderRadius: { xs: '12px', sm: '16px' },
+            textAlign: 'center',
+            mb: 2,
+            py: { xs: 1.5, sm: 2 },
+          }}
         >
-          <Box
+          <Typography 
+            variant="h5" 
+            fontWeight="bold"
             sx={{
-              p: { xs: 1.5, sm: 2 },
-              borderRadius: { xs: 0, sm: 3 },
-              background: theme.palette.mode === 'dark' 
-                ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)' 
-                : 'linear-gradient(135deg, #fffefb 0%, #fffde4 100%)',
-              border: `1px solid ${theme.palette.divider}`,
-              width: '100%',
-              height: '100%',
-              maxHeight: '100vh',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-              position: 'relative',
+              fontSize: { xs: '1.25rem', sm: '1.5rem' }
             }}
           >
-            <Box
+            {t('tongue_twisters')}
+          </Typography>
+        </Box>
+
+        <Tabs
+          value={level}
+          onChange={(e, newValue) => setLevel(newValue)}
+          sx={{
+            mb: 3,
+            '& .MuiTabs-indicator': {
+              backgroundColor: theme.palette.primary.main,
+            },
+          }}
+        >
+          {levels.map((lvl) => (
+            <Tab
+              key={lvl.value}
+              value={lvl.value}
+              label={i18n.language === 'ru' ? lvl.labelRu : lvl.label}
               sx={{
-                width: '100%',
-                background: 'linear-gradient(90deg, #2196f3 0%, #1e88e5 100%)',
-                borderRadius: 2,
-                mb: { xs: 1, sm: 2 },
-                py: { xs: 1.5, sm: 2 },
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                boxShadow: '0 2px 8px 0 rgba(0,0,0,0.08)',
-                px: 2
+                color: theme.palette.text.secondary,
+                '&.Mui-selected': {
+                  color: theme.palette.primary.main,
+                },
               }}
-            >
-              <Typography 
-                variant="h5" 
-                align="center" 
-                sx={{ 
-                  color: '#fff',
-                  fontWeight: 'bold',
-                  textShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                  m: 0,
-                  fontSize: { xs: '1.25rem', sm: '1.5rem' },
-                  width: '100%',
-                  textAlign: 'center'
-                }}
-              >
-                {i18n.language === 'ru' ? 'Скороговорки' : 'Tongue Twisters'}
-              </Typography>
-            </Box>
-            <Tabs
-              value={level}
-              onChange={(_, v) => setLevel(v)}
-              variant="fullWidth"
-              sx={{ mb: { xs: 1, sm: 2 }, width: '100%' }}
-            >
-              {levels.map(l => (
-                <Tab 
-                  key={l.value} 
-                  value={l.value} 
-                  label={i18n.language === 'ru' ? l.labelRu : l.label} 
-                  sx={{ fontWeight: 600, fontSize: { xs: '0.875rem', sm: '1rem' } }} 
-                />
-              ))}
-            </Tabs>
-            
-            <Box sx={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: 0, p: { xs: 1, sm: 2 } }}>
-              <Box
-                sx={{
-                  p: { xs: 1, sm: 1.5 },
-                  borderRadius: 4,
-                  background: theme.palette.mode === 'dark' ? '#2d2d2d' : '#fff',
-                  boxShadow: theme.palette.mode === 'dark' 
-                    ? '0 4px 24px 0 rgba(0,0,0,0.3)' 
-                    : '0 4px 24px 0 rgba(60,60,120,0.10)',
-                  fontSize: { xs: 14, sm: 15 },
-                  color: theme.palette.text.primary,
-                  fontWeight: 500,
-                  textAlign: 'center',
-                  minHeight: 40,
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  gap: 0.5,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  lineHeight: 1.5,
-                  maxHeight: { xs: '40vh', sm: 180 },
-                  overflowY: 'auto',
-                  width: '100%',
-                  margin: '0 auto',
-                  maxWidth: 520,
-                  userSelect: 'none',
-                  letterSpacing: '-0.01em',
-                  wordBreak: 'break-word',
-                }}
-                ref={textBoxRef}
-              >
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.97 }}
-                  animate={{ opacity: isVisible ? 1 : 0, scale: isVisible ? 1 : 0.97 }}
-                  transition={{ duration: 0.3 }}
-                  style={{ width: '100%' }}
-                >
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      color: theme.palette.text.primary,
-                      textAlign: 'center',
-                      fontWeight: 500,
-                      fontSize: '1.1rem',
-                      lineHeight: 1.6,
-                      wordBreak: 'break-word',
-                      whiteSpace: 'pre-line',
-                      m: 0,
-                    }}
-                  >
-                    {currentTwister}
-                  </Typography>
-                </motion.div>
-              </Box>
-            </Box>
+            />
+          ))}
+        </Tabs>
 
-            <Typography
-              variant="caption"
-              align="center"
-              sx={{ 
-                mb: { xs: 1, sm: 2 }, 
-                mt: { xs: 1, sm: 2 }, 
-                display: 'block', 
-                color: theme.palette.text.primary, 
-                fontWeight: 500,
-                fontSize: { xs: '0.75rem', sm: '0.875rem' }
-              }}
-            >
-              {i18n.language === 'ru' 
-                ? 'Тренируйте дикцию и артикуляцию, повторяя скороговорки вслух.'
-                : 'Practice your diction and articulation by repeating tongue twisters out loud.'}
-              <br /><br />
-              {i18n.language === 'ru'
-                ? 'Повторите 3–5 раз, стараясь не сбиваться с ритма.'
-                : 'Repeat 3-5 times, trying to maintain the rhythm.'}
-            </Typography>
-
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 1, sm: 1.5 }, width: '100%', mb: { xs: 8, sm: 2 } }}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => getRandomTwister()}
-                sx={{
-                  py: { xs: 0.75, sm: 1 },
-                  px: { xs: 2, sm: 2.5 },
-                  borderRadius: 30,
-                  fontWeight: 500,
-                  fontSize: { xs: '0.875rem', sm: '0.95rem' },
-                  minWidth: 0,
-                  width: 'auto',
-                  alignSelf: 'center',
-                  backgroundColor: '#ff3366',
-                  '&:hover': {
-                    backgroundColor: '#e0294d',
-                  },
-                }}
-              >
-                {i18n.language === 'ru' ? 'Случайная скороговорка' : 'Random Tongue Twister'}
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<ArrowBack />}
-                onClick={handleBackClick}
-                sx={{
-                  py: { xs: 0.75, sm: 1 },
-                  px: { xs: 2, sm: 2.5 },
-                  borderRadius: 30,
-                  fontWeight: 500,
-                  fontSize: { xs: '0.875rem', sm: '0.95rem' },
-                  minWidth: 0,
-                  width: 'auto',
-                  alignSelf: 'center',
-                  backgroundColor: '#ff3366',
-                  '&:hover': {
-                    backgroundColor: '#e0294d',
-                  },
-                }}
-              >
-                {i18n.language === 'ru' ? 'Назад' : 'Back'}
-              </Button>
-            </Box>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 }}
+          transition={{ duration: 0.3 }}
+          style={{ width: '100%', maxWidth: 600 }}
+        >
+          <Box
+            ref={textBoxRef}
+            sx={{
+              backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+              borderRadius: '16px',
+              p: 3,
+              mb: 3,
+              textAlign: 'center',
+              fontSize: { xs: '1.1rem', sm: '1.25rem' },
+              fontWeight: 500,
+              lineHeight: 1.6,
+              maxHeight: '200px',
+              overflow: 'auto',
+            }}
+          >
+            {currentTwister}
           </Box>
         </motion.div>
-      </Container>
-    </Box>
+
+        <Typography
+          variant="body1"
+          sx={{
+            textAlign: 'center',
+            mb: 2,
+            color: theme.palette.text.secondary,
+            maxWidth: 600,
+            mx: 'auto',
+            px: 2,
+          }}
+        >
+          {t('tongue_twisters_instruction')}
+        </Typography>
+
+        <Typography
+          variant="body2"
+          sx={{
+            textAlign: 'center',
+            mb: 4,
+            color: theme.palette.text.secondary,
+            maxWidth: 600,
+            mx: 'auto',
+            px: 2,
+          }}
+        >
+          {t('tongue_twisters_repeat')}
+        </Typography>
+
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%', maxWidth: 400, mx: 'auto', px: 2, mb: 2 }}>
+          <Button
+            variant="contained"
+            onClick={() => getRandomTwister()}
+            sx={{
+              py: 1.5,
+              borderRadius: '100px',
+              backgroundColor: theme.palette.error.main,
+              '&:hover': {
+                backgroundColor: theme.palette.error.dark,
+              },
+            }}
+          >
+            {t('random_tongue_twister')}
+          </Button>
+
+          <Button
+            variant="outlined"
+            onClick={handleBackClick}
+            startIcon={<ArrowBack />}
+            sx={{
+              py: 1.5,
+              borderRadius: '100px',
+              borderColor: theme.palette.primary.main,
+              color: theme.palette.primary.main,
+              '&:hover': {
+                borderColor: theme.palette.primary.dark,
+                backgroundColor: 'transparent',
+              },
+            }}
+          >
+            {t('back')}
+          </Button>
+        </Box>
+      </Box>
+    </Container>
   );
 };
 
