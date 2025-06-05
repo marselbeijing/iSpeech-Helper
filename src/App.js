@@ -246,26 +246,26 @@ const App = () => {
     }
   }, []);
 
-  useEffect(() => {
-    // Проверяем, открыто ли приложение через Telegram WebApp
-    const isTelegramWebApp = window.Telegram?.WebApp;
-    
-    if (!isTelegramWebApp) {
-      // Если открыто не через Telegram, редиректим на бота
-      window.location.href = 'https://t.me/iSpeechHelper_bot';
-    } else {
-      // Идентифицируем пользователя в PostHog
-      const user = window.Telegram.WebApp.initDataUnsafe?.user;
-      if (user) {
-        posthog.identify(user.id.toString(), {
-          username: user.username,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          language_code: user.language_code
-        });
-      }
-    }
-  }, []);
+  // useEffect(() => {
+  //   // Проверяем, открыто ли приложение через Telegram WebApp
+  //   const isTelegramWebApp = window.Telegram?.WebApp;
+  //   
+  //   if (!isTelegramWebApp) {
+  //     // Если открыто не через Telegram, редиректим на бота
+  //     window.location.href = 'https://t.me/iSpeechHelper_bot';
+  //   } else {
+  //     // Идентифицируем пользователя в PostHog
+  //     const user = window.Telegram.WebApp.initDataUnsafe?.user;
+  //     if (user) {
+  //       posthog.identify(user.id.toString(), {
+  //         username: user.username,
+  //         first_name: user.first_name,
+  //         last_name: user.last_name,
+  //         language_code: user.language_code
+  //       });
+  //     }
+  //   }
+  // }, []);
 
   return (
     <ThemeProvider theme={theme}>
