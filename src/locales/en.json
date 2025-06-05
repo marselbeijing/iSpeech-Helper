@@ -159,5 +159,10 @@
   "copied": "Copied!",
   "coming_soon": "Coming soon",
   "virtual_assistant": "Virtual Assistant",
-  "assistant_description": "Here you can chat with a virtual assistant that will help you with speech training"
+  "assistant_description": "Here you can chat with a virtual assistant that will help you with speech training",
+  "Type your message...": "Type your message...",
+  "Listening...": "Listening...",
+  "Speaking...": "Speaking...",
+  "Click to speak": "Click to speak",
+  "Click the microphone to start speaking": "Click the microphone to start speaking"
 } 

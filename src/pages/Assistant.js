@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Box,
@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { keyframes } from '@emotion/react';
 import { styled } from '@mui/material/styles';
+import posthog from 'posthog-js';
 
 const gradientAnimation = keyframes`
   0% { background-position: 0% 50% }
@@ -31,7 +32,29 @@ const AnimatedCircle = styled(Box)`
 
 const Assistant = () => {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [message, setMessage] = useState('');
+
+  const handleSendMessage = async () => {
+    if (!message.trim()) return;
+
+    // Отслеживаем отправку сообщения
+    posthog.capture('message_sent', {
+      message_length: message.length,
+      language: i18n.language
+    });
+
+    // ... rest of the code ...
+  };
+
+  const handleVoiceInput = () => {
+    // Отслеживаем использование голосового ввода
+    posthog.capture('voice_input_used', {
+      language: i18n.language
+    });
+
+    // ... rest of the code ...
+  };
 
   return (
     <Container 

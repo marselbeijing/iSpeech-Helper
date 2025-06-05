@@ -9,6 +9,7 @@ import WebApp from '@twa-dev/sdk';
 import telegramAnalytics from '@telegram-apps/analytics';
 import './i18n';
 import { useTranslation } from 'react-i18next';
+import posthog from 'posthog-js';
 
 // Components
 import Root from './components/Root';
@@ -82,6 +83,16 @@ const router = createBrowserRouter([
     v7_relativeSplatPath: true
   }
 });
+
+// Инициализация PostHog
+if (process.env.REACT_APP_POSTHOG_KEY) {
+  posthog.init(process.env.REACT_APP_POSTHOG_KEY, {
+    api_host: 'https://app.posthog.com',
+    loaded: (posthog) => {
+      if (process.env.NODE_ENV === 'development') posthog.debug();
+    }
+  });
+}
 
 // Main App component
 const App = () => {
@@ -242,6 +253,17 @@ const App = () => {
     if (!isTelegramWebApp) {
       // Если открыто не через Telegram, редиректим на бота
       window.location.href = 'https://t.me/iSpeechHelper_bot';
+    } else {
+      // Идентифицируем пользователя в PostHog
+      const user = window.Telegram.WebApp.initDataUnsafe?.user;
+      if (user) {
+        posthog.identify(user.id.toString(), {
+          username: user.username,
+          first_name: user.first_name,
+          last_name: user.last_name,
+          language_code: user.language_code
+        });
+      }
     }
   }, []);
 
