@@ -220,7 +220,8 @@ const App = () => {
           try {
             telegramAnalytics.init({
               token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=!j9+Ln94Vror//YszMapC2bBcM7JNJ3tyOVLFnAUI7xg=',
-              appName: 'iSpeech Helper'
+              appName: 'iSpeech Helper',
+              appUrl: 'https://t.me/iSpeechHelper_bot/app'
             });
             console.log('Telegram Analytics initialized successfully');
           } catch (error) {
