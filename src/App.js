@@ -217,25 +217,24 @@ const App = () => {
           console.log('🔍 TG Analytics: Начинаем инициализацию...');
           console.log('🔍 TG Analytics: initData доступна?', !!window.Telegram.WebApp.initData);
           
-          // Ждем загрузки TG Analytics скрипта
-          const checkTgAnalytics = () => {
-            if (window.TgAnalytics) {
-              console.log('✅ TG Analytics: Браузерный скрипт загружен');
-              try {
-                telegramAnalytics.init({
-                  token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=!j9+Ln94Vror//YszMapC2bBcM7JNJ3tyOVLFnAUI7xg=',
-                  appName: 'iSpeech Helper',
-                  appUrl: 'https://t.me/iSpeechHelper_bot/app'
-                });
-                console.log('✅ TG Analytics: Успешно инициализирован');
-              } catch (error) {
-                console.error('❌ TG Analytics: Ошибка инициализации SDK:', error);
-              }
-            } else {
-              console.log('⏳ TG Analytics: Ожидаем загрузку браузерного скрипта...');
-              setTimeout(checkTgAnalytics, 500);
-            }
-          };
+                     // Ждем загрузки TG Analytics скрипта
+           const checkTgAnalytics = () => {
+             if (window.telegramAnalytics) {
+               console.log('✅ TG Analytics: Браузерный скрипт загружен');
+               try {
+                 window.telegramAnalytics.init({
+                   token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=!j9+Ln94Vror//YszMapC2bBcM7JNJ3tyOVLFnAUI7xg=',
+                   appName: 'ispeech_helper_analytics'
+                 });
+                 console.log('✅ TG Analytics: Успешно инициализирован');
+               } catch (error) {
+                 console.error('❌ TG Analytics: Ошибка инициализации SDK:', error);
+               }
+             } else {
+               console.log('⏳ TG Analytics: Ожидаем загрузку браузерного скрипта...');
+               setTimeout(checkTgAnalytics, 500);
+             }
+           };
           
           // Начинаем проверку через небольшую задержку
           setTimeout(checkTgAnalytics, 100);

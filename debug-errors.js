@@ -41,7 +41,7 @@ scripts.forEach((script, index) => {
 });
 
 // 3. Проверяем специфично TG Analytics
-const analyticsScript = document.querySelector('script[src*="analytics.tganalytics.xyz"]');
+const analyticsScript = document.querySelector('script[src*="tganalytics.xyz"]');
 if (analyticsScript) {
   console.log('📊 TG Analytics скрипт найден:', analyticsScript.src);
 } else {
@@ -69,10 +69,10 @@ if (window.Telegram?.WebApp) {
 
 // 6. Проверяем TG Analytics объект
 setTimeout(() => {
-  if (window.TgAnalytics) {
-    console.log('✅ TgAnalytics загружен:', typeof window.TgAnalytics);
+  if (window.telegramAnalytics) {
+    console.log('✅ telegramAnalytics загружен:', typeof window.telegramAnalytics);
   } else {
-    console.warn('⚠️ TgAnalytics не загружен после 2 секунд');
+    console.warn('⚠️ telegramAnalytics не загружен после 2 секунд');
   }
 }, 2000);
 
