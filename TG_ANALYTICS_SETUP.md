@@ -169,4 +169,18 @@ const shouldLoadAnalytics = false; // Отключено
 
 ## 📞 Контакт модератора:
 
-Обратитесь к модератору Telegram Mini Apps для уточнения правильного API TG Analytics. 
+Обратитесь к модератору Telegram Mini Apps для уточнения правильного API TG Analytics.
+
+## 📋 Официальные данные от @DataChief_bot:
+
+- **Analytics identifier**: `ispeech_helper_analytics`
+- **Telegram URL**: `https://t.me/iSpeechHelper_bot`
+- **Application domain**: `https://i-speech-helper-uce4.vercel.app`
+- **SDK Auth token**: `eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=!j9+Ln94Vror//YszMapC2bBcM7JNJ3tyOVLFnAUI7xg=`
+- **API Read token**: `eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=!75hbfwnhM0ARTkobJ1kGDGUPC3P60ThOHZzdGipZFxo=`
+- **Lifetime**: infinity
+- **Last record**: no records (новая интеграция)
+
+## ✅ Статус интеграции:
+
+Интеграция выполнена с официальными токенами! Используется **SDK Auth token** для инициализации. 
