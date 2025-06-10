@@ -211,92 +211,9 @@ const App = () => {
 
   // Инициализация аналитики
   useEffect(() => {
-    const initAnalytics = () => {
-      if (window.Telegram && window.Telegram.WebApp) {
-        try {
-          console.log('🔍 TG Analytics: Начинаем инициализацию...');
-          console.log('🔍 TG Analytics: initData доступна?', !!window.Telegram.WebApp.initData);
-          
-          // Ждем загрузки TG Analytics скрипта
-          const checkTgAnalytics = () => {
-            if (window.telegramAnalytics) {
-              console.log('✅ TG Analytics: Браузерный скрипт загружен');
-              
-              // Проверяем доступность Telegram WebApp данных
-              const initData = window.Telegram?.WebApp?.initData;
-              const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-              
-              console.log('🔍 TG Analytics: Диагностика окружения:');
-              console.log('  - initData доступна:', !!initData);
-              console.log('  - initData длина:', initData ? initData.length : 0);
-              console.log('  - userId доступен:', !!userId);
-              console.log('  - WebApp расширен:', !!window.Telegram?.WebApp?.isExpanded);
-              
-              try {
-                // Согласно документации используем только token
-                window.telegramAnalytics.init({
-                  token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=!j9+Ln94Vror//YszMapC2bBcM7JNJ3tyOVLFnAUI7xg='
-                });
-                console.log('✅ TG Analytics: Успешно инициализирован с официальным SDK Auth token');
-                console.log('📊 TG Analytics: Analytics ID - ispeech_helper_analytics');
-                console.log('🔗 TG Analytics: Domain - https://i-speech-helper-uce4.vercel.app');
-                
-                // Мониторим ошибки сети для TG Analytics
-                const originalFetch = window.fetch;
-                window.fetch = async (...args) => {
-                  try {
-                    const response = await originalFetch(...args);
-                    const url = args[0];
-                    
-                    if (typeof url === 'string' && url.includes('tganalytics.xyz/events')) {
-                      if (!response.ok) {
-                        console.error('❌ TG Analytics: Ошибка отправки события:', response.status, response.statusText);
-                        if (response.status === 400) {
-                          console.warn('⚠️ TG Analytics: Получена ошибка 400 - отключаем дальнейшие запросы');
-                          window.telegramAnalytics = null;
-                        }
-                      } else {
-                        console.log('✅ TG Analytics: Событие успешно отправлено');
-                      }
-                    }
-                    
-                    return response;
-                  } catch (error) {
-                    console.error('❌ TG Analytics: Ошибка сети:', error);
-                    return originalFetch(...args);
-                  }
-                };
-                
-                // Согласно документации, после успешной инициализации события отправляются автоматически
-                console.log('ℹ️ TG Analytics: События будут отправляться автоматически');
-                console.log('🔍 TG Analytics: Для проверки откройте DevTools → Network → фильтр "tganalytics"');
-                
-              } catch (error) {
-                console.error('❌ TG Analytics: Ошибка инициализации SDK:', error);
-                // Отключаем аналитику в случае ошибки
-                window.telegramAnalytics = null;
-              }
-            } else if (window.telegramAnalytics !== null) {
-              console.log('⏳ TG Analytics: Ожидаем загрузку браузерного скрипта...');
-              setTimeout(checkTgAnalytics, 500);
-            } else {
-              console.log('🔕 TG Analytics: Отключен администратором');
-            }
-          };
-          
-          // Начинаем проверку через небольшую задержку
-          setTimeout(checkTgAnalytics, 100);
-          
-        } catch (error) {
-          console.warn('⚠️ TG Analytics: Общая ошибка инициализации:', error);
-        }
-      } else {
-        console.warn('⚠️ TG Analytics: Telegram WebApp недоступен');
-      }
-    };
-
-    // Инициализируем аналитику после монтирования компонента
-    initAnalytics();
+    // TG Analytics теперь инициализируется в HTML согласно официальной документации
+    // через глобальную функцию initAnalytics() в onload событии
+    console.log('ℹ️ TG Analytics: Инициализация перенесена в HTML согласно документации');
   }, []);
 
   return (

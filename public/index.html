@@ -19,19 +19,38 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <!-- TG Analytics -->
     <script>
+      // Глобальная функция инициализации согласно документации
+      function initAnalytics() {
+        console.log('🔄 TG Analytics: Функция initAnalytics() вызвана');
+        try {
+          if (window.telegramAnalytics && window.telegramAnalytics.init) {
+            window.telegramAnalytics.init({
+              token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=!j9+Ln94Vror//YszMapC2bBcM7JNJ3tyOVLFnAUI7xg=',
+              appName: 'ispeech_helper_analytics'
+            });
+            console.log('✅ TG Analytics: Успешно инициализирован согласно документации');
+          } else {
+            console.error('❌ TG Analytics: telegramAnalytics не найден или метод init недоступен');
+          }
+        } catch (error) {
+          console.error('❌ TG Analytics: Ошибка в initAnalytics():', error);
+        }
+      }
+      
       // Быстрое отключение TG Analytics в случае проблем
-      const DISABLE_TG_ANALYTICS = true; // ОТКЛЮЧЕНО: ошибки 400 на сервере
+      const DISABLE_TG_ANALYTICS = false; // Включаем обратно для тестирования
       
       // Проверяем, нужно ли загружать TG Analytics
       const shouldLoadAnalytics = !DISABLE_TG_ANALYTICS && window.Telegram && window.Telegram.WebApp;
       
       if (shouldLoadAnalytics) {
-        console.log('🔄 TG Analytics: Загружаем скрипт...');
+        console.log('🔄 TG Analytics: Загружаем скрипт согласно документации...');
         const script = document.createElement('script');
         script.src = 'https://tganalytics.xyz/index.js';
         script.async = true;
         script.onload = function() {
-          console.log('✅ TG Analytics: Скрипт успешно загружен');
+          console.log('✅ TG Analytics: Скрипт загружен, вызываем initAnalytics()');
+          initAnalytics(); // Вызываем согласно документации
         };
         script.onerror = function() {
           console.warn('⚠️ TG Analytics: Не удалось загрузить скрипт');
