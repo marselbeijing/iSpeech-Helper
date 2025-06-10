@@ -221,6 +221,17 @@ const App = () => {
           const checkTgAnalytics = () => {
             if (window.telegramAnalytics) {
               console.log('✅ TG Analytics: Браузерный скрипт загружен');
+              
+              // Проверяем доступность Telegram WebApp данных
+              const initData = window.Telegram?.WebApp?.initData;
+              const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+              
+              console.log('🔍 TG Analytics: Диагностика окружения:');
+              console.log('  - initData доступна:', !!initData);
+              console.log('  - initData длина:', initData ? initData.length : 0);
+              console.log('  - userId доступен:', !!userId);
+              console.log('  - WebApp расширен:', !!window.Telegram?.WebApp?.isExpanded);
+              
               try {
                 // Согласно документации используем только token
                 window.telegramAnalytics.init({
@@ -229,6 +240,32 @@ const App = () => {
                 console.log('✅ TG Analytics: Успешно инициализирован с официальным SDK Auth token');
                 console.log('📊 TG Analytics: Analytics ID - ispeech_helper_analytics');
                 console.log('🔗 TG Analytics: Domain - https://i-speech-helper-uce4.vercel.app');
+                
+                // Мониторим ошибки сети для TG Analytics
+                const originalFetch = window.fetch;
+                window.fetch = async (...args) => {
+                  try {
+                    const response = await originalFetch(...args);
+                    const url = args[0];
+                    
+                    if (typeof url === 'string' && url.includes('tganalytics.xyz/events')) {
+                      if (!response.ok) {
+                        console.error('❌ TG Analytics: Ошибка отправки события:', response.status, response.statusText);
+                        if (response.status === 400) {
+                          console.warn('⚠️ TG Analytics: Получена ошибка 400 - отключаем дальнейшие запросы');
+                          window.telegramAnalytics = null;
+                        }
+                      } else {
+                        console.log('✅ TG Analytics: Событие успешно отправлено');
+                      }
+                    }
+                    
+                    return response;
+                  } catch (error) {
+                    console.error('❌ TG Analytics: Ошибка сети:', error);
+                    return originalFetch(...args);
+                  }
+                };
                 
                 // Согласно документации, после успешной инициализации события отправляются автоматически
                 console.log('ℹ️ TG Analytics: События будут отправляться автоматически');
