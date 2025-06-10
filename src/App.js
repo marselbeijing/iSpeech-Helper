@@ -222,28 +222,14 @@ const App = () => {
             if (window.telegramAnalytics) {
               console.log('✅ TG Analytics: Браузерный скрипт загружен');
               try {
+                // Согласно документации используем только token
                 window.telegramAnalytics.init({
                   token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=!j9+Ln94Vror//YszMapC2bBcM7JNJ3tyOVLFnAUI7xg='
                 });
                 console.log('✅ TG Analytics: Успешно инициализирован');
                 
-                // Тестируем отправку события для проверки работоспособности
-                setTimeout(() => {
-                  try {
-                    // Проверяем доступные методы TG Analytics
-                    if (window.telegramAnalytics && typeof window.telegramAnalytics.trackEvent === 'function') {
-                      window.telegramAnalytics.trackEvent('app_start');
-                    } else if (window.telegramAnalytics && typeof window.telegramAnalytics.sendEvent === 'function') {
-                      window.telegramAnalytics.sendEvent('app_start');
-                    } else {
-                      console.log('ℹ️ TG Analytics: Методы отправки событий недоступны, используем только инициализацию');
-                    }
-                  } catch (testError) {
-                    console.warn('⚠️ TG Analytics: Ошибка при тестовой отправке события:', testError);
-                    // В случае ошибки отключаем дальнейшие попытки
-                    window.telegramAnalytics = null;
-                  }
-                }, 1000);
+                // Согласно документации, после успешной инициализации события отправляются автоматически
+                console.log('ℹ️ TG Analytics: События будут отправляться автоматически');
                 
               } catch (error) {
                 console.error('❌ TG Analytics: Ошибка инициализации SDK:', error);
