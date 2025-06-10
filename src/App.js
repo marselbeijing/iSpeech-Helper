@@ -230,9 +230,18 @@ const App = () => {
                 // Тестируем отправку события для проверки работоспособности
                 setTimeout(() => {
                   try {
-                    window.telegramAnalytics.track('app_start');
+                    // Проверяем доступные методы TG Analytics
+                    if (window.telegramAnalytics && typeof window.telegramAnalytics.trackEvent === 'function') {
+                      window.telegramAnalytics.trackEvent('app_start');
+                    } else if (window.telegramAnalytics && typeof window.telegramAnalytics.sendEvent === 'function') {
+                      window.telegramAnalytics.sendEvent('app_start');
+                    } else {
+                      console.log('ℹ️ TG Analytics: Методы отправки событий недоступны, используем только инициализацию');
+                    }
                   } catch (testError) {
                     console.warn('⚠️ TG Analytics: Ошибка при тестовой отправке события:', testError);
+                    // В случае ошибки отключаем дальнейшие попытки
+                    window.telegramAnalytics = null;
                   }
                 }, 1000);
                 
