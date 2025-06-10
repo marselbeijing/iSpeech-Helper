@@ -17,6 +17,24 @@
     <noscript>Для работы приложения необходимо включить JavaScript.</noscript>
     <div id="root"></div>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://tganalytics.xyz/index.js"></script>
+    <!-- TG Analytics -->
+    <script>
+      // Проверяем, нужно ли загружать TG Analytics
+      const shouldLoadAnalytics = true; // Установить в false для отключения
+      
+      if (shouldLoadAnalytics && window.Telegram && window.Telegram.WebApp) {
+        const script = document.createElement('script');
+        script.src = 'https://tganalytics.xyz/index.js';
+        script.async = true;
+        script.onerror = function() {
+          console.warn('⚠️ TG Analytics: Не удалось загрузить скрипт');
+          window.telegramAnalytics = null;
+        };
+        document.head.appendChild(script);
+      } else {
+        console.log('🔕 TG Analytics: Отключен или Telegram WebApp недоступен');
+        window.telegramAnalytics = null;
+      }
+    </script>
   </body>
 </html> 
