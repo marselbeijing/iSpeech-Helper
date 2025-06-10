@@ -1,57 +1,14 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { TonConnectUIProvider, useTonConnectUI } from '@tonconnect/ui-react';
+import React from 'react';
 
-const TonConnectContext = createContext();
+// Временно отключаем TON Connect до деплоя манифеста
+const DISABLE_TON_CONNECT = true;
 
-// Конфигурация TON Connect
-const manifestUrl = 'https://i-speech-helper-uce4.vercel.app/tonconnect-manifest.json';
-
-// TG Analytics интеграция для TON Connect событий
+// TG Analytics интеграция для TON Connect событий (временно отключена)
 const useTonConnectAnalytics = () => {
-  const [tonConnectUI] = useTonConnectUI();
-
-  useEffect(() => {
-    if (!tonConnectUI || !window.telegramAnalytics) return;
-
-    // Отслеживание событий подключения
-    const unsubscribeStatusChange = tonConnectUI.onStatusChange((wallet) => {
-      if (wallet) {
-        // Успешное подключение
-        window.telegramAnalytics.trackConnectionCompleted({
-          wallet_address: wallet.account.address,
-          wallet_type: wallet.device.appName,
-          wallet_version: wallet.device.appVersion,
-          auth_type: wallet.account.chain === '-239' ? 0 : 1, // 0 - ton_addr, 1 - ton_proof
-          custom_data: {
-            ton_connect_sdk_lib: '@tonconnect/sdk@3.0.5',
-            ton_connect_ui_lib: '@tonconnect/ui-react@2.0.5'
-          }
-        });
-      } else {
-        // Отключение
-        window.telegramAnalytics.trackDisconnection();
-      }
-    });
-
-    // Отслеживание событий транзакций
-    const unsubscribeModal = tonConnectUI.onModalStateChange((state) => {
-      if (state === 'opened') {
-        window.telegramAnalytics.trackConnectionStarted({
-          custom_data: {
-            ton_connect_sdk_lib: '@tonconnect/sdk@3.0.5',
-            ton_connect_ui_lib: '@tonconnect/ui-react@2.0.5'
-          }
-        });
-      }
-    });
-
-    return () => {
-      unsubscribeStatusChange();
-      unsubscribeModal();
-    };
-  }, [tonConnectUI]);
-
-  return tonConnectUI;
+  if (DISABLE_TON_CONNECT) return null;
+  
+  // TODO: Включить после деплоя манифеста
+  return null;
 };
 
 // Компонент для отслеживания событий TON Connect
@@ -60,103 +17,40 @@ const TonConnectAnalytics = ({ children }) => {
   return children;
 };
 
-// Провайдер TON Connect с аналитикой
+// Провайдер TON Connect с аналитикой (временно отключен)
 export const TonConnectProvider = ({ children }) => {
-  return (
-    <TonConnectUIProvider manifestUrl={manifestUrl}>
-      <TonConnectAnalytics>
-        {children}
-      </TonConnectAnalytics>
-    </TonConnectUIProvider>
-  );
+  if (DISABLE_TON_CONNECT) {
+    console.log('🔕 TON Connect временно отключен до деплоя манифеста');
+    return children;
+  }
+  
+  // TODO: Включить после деплоя манифеста
+  return children;
 };
 
-// Хук для использования TON Connect с аналитикой
+// Хук для использования TON Connect с аналитикой (временно отключен)
 export const useTonConnect = () => {
-  const [tonConnectUI] = useTonConnectUI();
+  if (DISABLE_TON_CONNECT) {
+    return {
+      tonConnectUI: null,
+      sendTransaction: async () => { throw new Error('TON Connect отключен'); },
+      connectWallet: async () => { throw new Error('TON Connect отключен'); },
+      disconnect: async () => {},
+      connected: false,
+      account: null,
+      wallet: null
+    };
+      }
   
-  const sendTransaction = async (transaction) => {
-    try {
-      // Отправляем событие о начале транзакции
-      if (window.telegramAnalytics) {
-        window.telegramAnalytics.track('transaction-sent-for-signature', {
-          custom_data: {
-            ton_connect_sdk_lib: '@tonconnect/sdk@3.0.5',
-            ton_connect_ui_lib: '@tonconnect/ui-react@2.0.5'
-          }
-        });
-      }
-
-      const result = await tonConnectUI.sendTransaction(transaction);
-      
-      // Событие успешной подписи
-      if (window.telegramAnalytics) {
-        window.telegramAnalytics.track('transaction-signed', {
-          is_success: true,
-          custom_data: {
-            ton_connect_sdk_lib: '@tonconnect/sdk@3.0.5',
-            ton_connect_ui_lib: '@tonconnect/ui-react@2.0.5'
-          }
-        });
-      }
-
-      return result;
-    } catch (error) {
-      // Событие ошибки подписи
-      if (window.telegramAnalytics) {
-        window.telegramAnalytics.track('transaction-signing-failed', {
-          is_success: false,
-          error_message: error.message || 'Transaction signing failed',
-          error_code: error.code || null,
-          custom_data: {
-            ton_connect_sdk_lib: '@tonconnect/sdk@3.0.5',
-            ton_connect_ui_lib: '@tonconnect/ui-react@2.0.5'
-          }
-        });
-      }
-      throw error;
-    }
-  };
-
-  const connectWallet = async () => {
-    try {
-      if (window.telegramAnalytics) {
-        window.telegramAnalytics.trackConnectionStarted({
-          custom_data: {
-            ton_connect_sdk_lib: '@tonconnect/sdk@3.0.5',
-            ton_connect_ui_lib: '@tonconnect/ui-react@2.0.5'
-          }
-        });
-      }
-
-      await tonConnectUI.connectWallet();
-    } catch (error) {
-      if (window.telegramAnalytics) {
-        window.telegramAnalytics.trackConnectionError({
-          message: error.message || 'Connection failed',
-          code: error.code || null
-        });
-      }
-      throw error;
-    }
-  };
-
-  const disconnect = async () => {
-    try {
-      await tonConnectUI.disconnect();
-    } catch (error) {
-      console.error('Disconnect error:', error);
-    }
-  };
-
+  // TODO: Включить после деплоя манифеста
   return {
-    tonConnectUI,
-    sendTransaction,
-    connectWallet,
-    disconnect,
-    connected: tonConnectUI?.connected || false,
-    account: tonConnectUI?.account || null,
-    wallet: tonConnectUI?.wallet || null
+    tonConnectUI: null,
+    sendTransaction: async () => { throw new Error('TON Connect отключен'); },
+    connectWallet: async () => { throw new Error('TON Connect отключен'); },
+    disconnect: async () => {},
+    connected: false,
+    account: null,
+    wallet: null
   };
 };
 
