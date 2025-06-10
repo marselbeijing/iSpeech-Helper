@@ -223,12 +223,23 @@ const App = () => {
                console.log('✅ TG Analytics: Браузерный скрипт загружен');
                try {
                  window.telegramAnalytics.init({
-                   token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=!j9+Ln94Vror//YszMapC2bBcM7JNJ3tyOVLFnAUI7xg=',
-                   appName: 'ispeech_helper_analytics'
+                   token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=!j9+Ln94Vror//YszMapC2bBcM7JNJ3tyOVLFnAUI7xg='
                  });
                  console.log('✅ TG Analytics: Успешно инициализирован');
+                 
+                 // Тестируем отправку события для проверки работоспособности
+                 setTimeout(() => {
+                   try {
+                     window.telegramAnalytics.track('app_start');
+                   } catch (testError) {
+                     console.warn('⚠️ TG Analytics: Ошибка при тестовой отправке события:', testError);
+                   }
+                 }, 1000);
+                 
                } catch (error) {
                  console.error('❌ TG Analytics: Ошибка инициализации SDK:', error);
+                 // Отключаем аналитику в случае ошибки
+                 window.telegramAnalytics = null;
                }
              } else {
                console.log('⏳ TG Analytics: Ожидаем загрузку браузерного скрипта...');
