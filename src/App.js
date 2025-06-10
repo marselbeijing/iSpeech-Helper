@@ -222,10 +222,14 @@ const App = () => {
              if (window.telegramAnalytics) {
                console.log('✅ TG Analytics: Браузерный скрипт загружен');
                try {
+                 // Временно отключено до получения правильного токена от @DataChief_bot
+                 console.log('🔄 TG Analytics: Инициализация отключена (нужен токен от @DataChief_bot)');
+                 /*
                  window.telegramAnalytics.init({
-                   token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=',
+                   token: 'ПОЛУЧИТЕ_ТОКЕН_ОТ_@DataChief_bot',
                    appName: 'ispeech_helper_analytics'
                  });
+                 */
                  console.log('✅ TG Analytics: Успешно инициализирован');
                } catch (error) {
                  console.error('❌ TG Analytics: Ошибка инициализации SDK:', error);
