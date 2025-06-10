@@ -5,8 +5,6 @@ import { CssBaseline } from '@mui/material';
 import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
-import WebApp from '@twa-dev/sdk';
-import telegramAnalytics from '@telegram-apps/analytics';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 
@@ -23,6 +21,7 @@ import BreathingExercises from './components/BreathingExercises';
 import TongueTwisters from './components/TongueTwisters';
 import MetronomeReader from './components/MetronomeReader';
 import EmotionsTrainer from './components/EmotionsTrainer';
+import { TonConnectProvider } from './components/TonConnectProvider';
 
 // Router configuration
 const router = createBrowserRouter([
@@ -85,7 +84,7 @@ const router = createBrowserRouter([
 
 // Main App component
 const App = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [darkMode, setDarkMode] = useState(false);
   const [themeMode, setThemeMode] = useState('light');
   
@@ -217,10 +216,12 @@ const App = () => {
   }, []);
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <TonConnectProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </TonConnectProvider>
   );
 };
 
