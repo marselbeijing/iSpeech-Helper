@@ -8,6 +8,7 @@ import { telegramColors } from './styles/TelegramStyles';
 // import WebApp from '@twa-dev/sdk'; - УДАЛЯЕМ ГЛОБАЛЬНЫЙ ИМПОРТ
 import './i18n';
 import { useTranslation } from 'react-i18next';
+import { initTelegramAnalytics } from './services/telegramAnalytics';
 
 // Components
 import Root from './components/Root';
@@ -88,6 +89,11 @@ const App = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [themeMode, setThemeMode] = useState('light');
   
+  // Инициализация Telegram Analytics при запуске
+  useEffect(() => {
+    initTelegramAnalytics();
+  }, []);
+
   // Функция для проверки доступности функций Telegram WebApp
   const isTelegramWebAppAvailable = () => {
     return window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData;
