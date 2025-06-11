@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import { SDKProvider } from '@telegram-apps/sdk-react';
+import { SDKProvider, useInitData } from '@telegram-apps/sdk-react';
 import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
 import './i18n';
 import { useTranslation } from 'react-i18next';
-import AnalyticsProvider from './components/AnalyticsProvider';
+import { initAnalytics } from './services/telegramAnalytics';
 
 // Components
 import Root from './components/Root';
@@ -88,6 +88,7 @@ const App = () => {
   const { t, i18n } = useTranslation();
   const [darkMode, setDarkMode] = useState(false);
   const [themeMode, setThemeMode] = useState('light');
+  const initData = useInitData();
   
   // Загрузка сохраненных настроек при запуске
   useEffect(() => {
@@ -133,6 +134,13 @@ const App = () => {
     },
   });
 
+  // Инициализация нашей кастомной аналитики
+  useEffect(() => {
+    if (initData) {
+      initAnalytics(initData);
+    }
+  }, [initData]);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -143,9 +151,7 @@ const App = () => {
 
 const AppWithProviders = () => (
   <SDKProvider acceptCustomStyles debug>
-    <AnalyticsProvider>
-      <App />
-    </AnalyticsProvider>
+    <App />
   </SDKProvider>
 );
 
