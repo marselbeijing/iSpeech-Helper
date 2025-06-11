@@ -6,6 +6,8 @@ import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
 import WebApp from '@twa-dev/sdk';
+import telegramAnalyticsService from './services/telegramAnalytics';
+import AnalyticsDebugger from './utils/analyticsDebug';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 
@@ -87,6 +89,7 @@ const App = () => {
   const { t, i18n } = useTranslation();
   const [darkMode, setDarkMode] = useState(false);
   const [themeMode, setThemeMode] = useState('light');
+  const [analyticsInitialized, setAnalyticsInitialized] = useState(false);
   
   // Функция для проверки доступности функций Telegram WebApp
   const isTelegramWebAppAvailable = () => {
@@ -114,6 +117,55 @@ const App = () => {
     }
   };
 
+  // Инициализация Telegram Analytics
+  useEffect(() => {
+    const initAnalytics = async () => {
+      try {
+        console.log('🚀 Инициализация Telegram Analytics...');
+        
+        // Небольшая задержка для полной загрузки Telegram WebApp
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const success = await telegramAnalyticsService.init();
+        
+        if (success) {
+          setAnalyticsInitialized(true);
+          console.log('✅ Analytics успешно инициализирован');
+          
+          // Отправляем событие запуска приложения
+          telegramAnalyticsService.trackAppLaunch();
+          telegramAnalyticsService.trackSessionStart();
+          
+          // Отслеживаем информацию о пользователе
+          const userInfo = telegramAnalyticsService.getUserInfo();
+          if (userInfo) {
+            console.log('👤 Информация о пользователе:', userInfo);
+          }
+        } else {
+          console.warn('⚠️ Analytics не инициализирован');
+        }
+      } catch (error) {
+        console.error('❌ Ошибка инициализации Analytics:', error);
+      }
+    };
+
+    initAnalytics();
+
+    // Отслеживание закрытия приложения
+    const handleBeforeUnload = () => {
+      if (analyticsInitialized) {
+        const sessionDuration = Date.now() - performance.timing.navigationStart;
+        telegramAnalyticsService.trackSessionEnd(Math.round(sessionDuration / 1000));
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
   // Загрузка сохраненных настроек при запуске
   useEffect(() => {
     const savedSettings = getUserSettings();
@@ -127,11 +179,16 @@ const App = () => {
     const handleThemeChange = (event) => {
       const isDark = event.detail.darkMode;
       updateTheme(isDark);
+      
+      // Отслеживаем изменение темы
+      if (analyticsInitialized) {
+        telegramAnalyticsService.trackSettingsChange('theme', isDark ? 'dark' : 'light');
+      }
     };
 
     window.addEventListener('themeChanged', handleThemeChange);
     return () => window.removeEventListener('themeChanged', handleThemeChange);
-  }, []);
+  }, [analyticsInitialized]);
   
   useEffect(() => {
     const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -208,7 +265,17 @@ const App = () => {
     },
   });
 
+  // Глобальный обработчик ошибок для аналитики
+  useEffect(() => {
+    const handleError = (event) => {
+      if (analyticsInitialized) {
+        telegramAnalyticsService.trackError('javascript_error', event.error?.message || 'Unknown error');
+      }
+    };
 
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, [analyticsInitialized]);
 
   return (
     <ThemeProvider theme={theme}>
