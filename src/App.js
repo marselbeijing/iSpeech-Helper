@@ -217,6 +217,82 @@ const App = () => {
         appName: 'ispeech_helper',
       });
       console.log('Telegram Analytics initialized successfully');
+
+      // Функция для тестирования аналитики
+      window.testAnalytics = () => {
+        try {
+          TelegramAnalytics.track('custom-event', {
+            custom_data: {
+              test_event: 'manual_test',
+              timestamp: Date.now()
+            }
+          });
+          console.log('✅ Test event sent successfully');
+        } catch (error) {
+          console.error('❌ Test event failed:', error);
+        }
+      };
+
+      // Функция для проверки записанных событий
+      window.checkAnalytics = async () => {
+        try {
+          const response = await fetch('https://tganalytics.xyz/analytics', {
+            method: 'GET',
+            headers: {
+              'TGA-Auth-Token': 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9pU3BlZWNoSGVscGVyX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2ktc3BlZWNoLWhlbHBlci11Y2U0LnZlcmNlbC5hcHAifQ==!O5l+gMOPRZsJaSDNJKH6UNpoGEsfrucxUjp11f//UYI=',
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            console.log('📊 Analytics data:', data);
+            return data;
+          } else {
+            console.log('❌ Failed to fetch analytics:', response.status);
+          }
+        } catch (error) {
+          console.error('❌ Error checking analytics:', error);
+        }
+      };
+
+      console.log('🔧 Test functions available:');
+      console.log('- testAnalytics() - send test event');
+      console.log('- checkAnalytics() - check recorded events');
+
+      // Добавляем слушатель для пользовательских событий
+      const handleCustomEvent = (event) => {
+        try {
+          TelegramAnalytics.track('custom-event', {
+            custom_data: {
+              event_type: event.type,
+              event_details: event.detail
+            }
+          });
+        } catch (error) {
+          console.warn('Error tracking custom event:', error);
+        }
+      };
+
+      // Слушатель для навигации
+      const handleRouteChange = () => {
+        try {
+          TelegramAnalytics.track('app-hide');
+        } catch (error) {
+          console.warn('Error tracking navigation:', error);
+        }
+      };
+
+      // Регистрируем слушатели
+      window.addEventListener('customAnalyticsEvent', handleCustomEvent);
+      window.addEventListener('beforeunload', handleRouteChange);
+
+      // Очистка при размонтировании
+      return () => {
+        window.removeEventListener('customAnalyticsEvent', handleCustomEvent);
+        window.removeEventListener('beforeunload', handleRouteChange);
+      };
+
     } catch (error) {
       console.error('Error initializing Telegram Analytics:', error);
     }
