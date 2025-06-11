@@ -15,6 +15,7 @@ import {
 import { motion } from 'framer-motion';
 import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
+import analyticsService from '../services/analytics';
 import AssistantIcon from './AssistantIcon';
 
 const NavigationBar = () => {
@@ -25,6 +26,11 @@ const NavigationBar = () => {
   const handleChange = (event, newValue) => {
     playSound('click');
     vibrate('click');
+    
+    // Отслеживаем переход между страницами
+    const pageName = newValue === '/' ? 'home' : newValue.replace('/', '');
+    analyticsService.trackPageView(pageName);
+    
     navigate(newValue);
   };
 

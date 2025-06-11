@@ -7,6 +7,7 @@ import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
+import analyticsService from '../services/analytics';
 import stories from '../data/stories';
 
 const MIN_SPEED = 1;
@@ -91,6 +92,8 @@ const SmoothReader = () => {
         setCurrentIndex(0);
       }
       setIsPlaying(true);
+      // Отслеживаем начало упражнения
+      analyticsService.trackExerciseStarted('smooth_reader');
     }
   };
 
@@ -111,6 +114,8 @@ const SmoothReader = () => {
 
   const handleExerciseComplete = () => {
     updateProgress('smoothReader');
+    // Отслеживаем завершение упражнения
+    analyticsService.trackExerciseCompleted('smooth_reader', Math.round(totalLetters / (speed / 60)));
   };
 
   return (

@@ -1,11 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import { Box } from '@mui/material';
 import NavigationBar from './NavigationBar';
+import analyticsService from '../services/analytics';
 
 const Root = () => {
   const theme = useTheme();
+  
+  // Отслеживание открытия приложения
+  useEffect(() => {
+    analyticsService.trackAppOpen();
+  }, []);
   
   return (
     <Box
