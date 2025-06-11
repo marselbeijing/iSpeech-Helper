@@ -1,6 +1,6 @@
 const API_URL = 'https://tganalytics.xyz/events';
-const TOKEN = 'b3a58e2a-d242-4368-a0d7-5421293a525f';
-const APP_NAME = 'iSpeech Helper';
+const TOKEN = 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9pU3BlZWNoSGVscGVyX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2ktc3BlZWNoLWhlbHBlci11Y2U0LnZlcmNlbC5hcHAifQ==!xnr1GO/F3uekQi8c2s7KcdMvjEP35yprm/UWP9Z7q4A=';
+const APP_NAME = 'ispeech_helper';
 
 let userInitData = null;
 
