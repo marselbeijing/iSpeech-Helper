@@ -7,15 +7,15 @@ let userInitData = null;
 /**
  * Initializes the analytics service with user's initData.
  * This should be called once when the app starts.
- * @param {object} initData - The initData object from Telegram WebApp.
+ * @param {string} initData - The raw initData string from Telegram WebApp.
  */
 export const initAnalytics = (initData) => {
-  if (!initData || !initData.user) {
-    console.warn('Analytics: initData is missing or invalid. Tracking will be disabled.');
+  if (!initData) {
+    console.warn('Analytics: initData string is missing. Tracking will be disabled.');
     return;
   }
   userInitData = initData;
-  console.log('Analytics Service Initialized');
+  console.log('Analytics Service Initialized with correct credentials and raw initData string.');
   
   // Track the initial app open event
   trackEvent('app_opened', {});
@@ -26,7 +26,7 @@ export const initAnalytics = (initData) => {
  * @param {string} eventName - The name of the event to track.
  * @param {object} eventData - An object with additional data for the event.
  */
-export const trackEvent = async (eventName, eventData) => {
+export const trackEvent = async (eventName, eventData = {}) => {
   if (!userInitData) {
     // Silently fail if analytics is not initialized
     return;

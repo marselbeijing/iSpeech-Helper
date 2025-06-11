@@ -93,7 +93,7 @@ const App = () => {
   useEffect(() => {
     // Ensure we are in the Telegram environment
     if (WebApp.platform !== 'unknown') {
-      initAnalytics(WebApp.initDataUnsafe);
+      initAnalytics(WebApp.initData);
     }
   }, []);
 
