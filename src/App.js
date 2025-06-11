@@ -6,6 +6,7 @@ import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
 import WebApp from '@twa-dev/sdk';
+import TelegramAnalytics from '@telegram-apps/analytics';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 
@@ -208,7 +209,18 @@ const App = () => {
     },
   });
 
-
+  // Инициализация Telegram Analytics
+  useEffect(() => {
+    try {
+      TelegramAnalytics.init({
+        token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9pU3BlZWNoSGVscGVyX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2ktc3BlZWNoLWhlbHBlci11Y2U0LnZlcmNlbC5hcHAifQ==!xnr1GO/F3uekQi8c2s7KcdMvjEP35yprm/UWP9Z7q4A=',
+        appName: 'ispeech_helper',
+      });
+      console.log('Telegram Analytics initialized successfully');
+    } catch (error) {
+      console.error('Error initializing Telegram Analytics:', error);
+    }
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
