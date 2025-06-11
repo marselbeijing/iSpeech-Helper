@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
 import stories from '../data/stories';
-import telegramAnalyticsService from '../services/telegramAnalytics';
 
 const MIN_SPEED = 1;
 const MAX_SPEED = 100;
@@ -40,8 +39,6 @@ const SmoothReader = () => {
   const textBoxRef = useRef(null);
   const lastActiveRef = useRef(null);
   const navigate = useNavigate();
-  const [isReading, setIsReading] = useState(false);
-  const [startTime, setStartTime] = useState(null);
   
   // Используем истории в зависимости от текущего языка
   const currentLanguageStories = stories[i18n.language] || stories.en;
@@ -114,20 +111,6 @@ const SmoothReader = () => {
 
   const handleExerciseComplete = () => {
     updateProgress('smoothReader');
-  };
-
-  const handleStartReading = () => {
-    setIsReading(!isReading);
-    
-    if (!isReading) {
-      // Отслеживаем начало чтения
-      telegramAnalyticsService.trackFunctionUsage('smooth_reader_start');
-      setStartTime(Date.now());
-    } else {
-      // Отслеживаем завершение чтения
-      const duration = Date.now() - startTime;
-      telegramAnalyticsService.trackExerciseCompleted('smooth_reading', Math.round(duration / 1000));
-    }
   };
 
   return (
