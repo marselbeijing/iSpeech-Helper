@@ -55,7 +55,9 @@ class AnalyticsService {
   }
 
   /**
-   * Отправка события в аналитику
+   * Отправка события в аналитику через прямой API вызов
+   * Согласно документации SDK не имеет метода track, события отправляются автоматически
+   * Используем прямой API для кастомных событий
    */
   async trackEvent(eventName, customData = {}) {
     try {
@@ -70,9 +72,21 @@ class AnalyticsService {
         ...customData
       };
 
-      // Используем SDK для отправки события
-      await TelegramAnalytics.track(eventName, eventData);
-      console.log('Analytics event tracked:', eventName, eventData);
+      // Отправляем событие через прямой API
+      const response = await fetch('https://tganalytics.xyz/events', {
+        method: 'POST',
+        headers: {
+          'TGA-Auth-Token': 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9pU3BlZWNoSGVscGVyX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2ktc3BlZWNoLWhlbHBlci11Y2U0LnZlcmNlbC5hcHAifQ==!xnr1GO/F3uekQi8c2s7KcdMvjEP35yprm/UWP9Z7q4A=',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify([eventData])
+      });
+
+      if (response.ok) {
+        console.log('Analytics event tracked:', eventName, eventData);
+      } else {
+        console.error('Failed to track analytics event:', response.status, response.statusText);
+      }
     } catch (error) {
       console.error('Error tracking analytics event:', error);
     }
