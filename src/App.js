@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import { useLaunchParams, useInitData, useThemeParams } from '@telegram-apps/sdk-react';
+import { useLaunchParams, useRawInitData, retrieveInitData } from '@telegram-apps/sdk-react';
 import { init } from '@telegram-apps/sdk';
 import TelegramAnalytics from '@telegram-apps/analytics';
 import baseTheme from './theme';
@@ -92,8 +92,14 @@ const App = () => {
   const [themeMode, setThemeMode] = useState('light');
   
   const launchParams = useLaunchParams();
-  const initData = useInitData();
-  const themeParams = useThemeParams();
+  const initData = useMemo(() => {
+    try {
+      return retrieveInitData();
+    } catch (e) {
+      console.error('Could not retrieve init data', e);
+      return undefined;
+    }
+  }, []);
 
   // Инициализация SDK и аналитики
   useEffect(() => {
@@ -103,20 +109,18 @@ const App = () => {
       // Сначала инициализируем главный SDK
       init();
       
-      // Затем, если есть initData, инициализируем аналитику
       if (initData) {
         TelegramAnalytics.init({
           token: SDK_AUTH_TOKEN,
           appName: 'ispeech_helper',
           initData,
-          themeParams,
         });
         console.log('Telegram Analytics SDK initialized correctly.');
       }
     } catch (error) {
       console.error('Failed to initialize SDKs:', error);
     }
-  }, [initData, themeParams]);
+  }, [initData]);
 
   // Функция для проверки доступности функций Telegram WebApp
   const isTelegramWebAppAvailable = () => {
