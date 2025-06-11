@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/iSpeech-Helper/static/css/main.ec86f7ac.css",
-    "main.js": "/iSpeech-Helper/static/js/main.2f1db0bd.js",
-    "index.html": "/iSpeech-Helper/index.html",
-    "main.ec86f7ac.css.map": "/iSpeech-Helper/static/css/main.ec86f7ac.css.map",
-    "main.2f1db0bd.js.map": "/iSpeech-Helper/static/js/main.2f1db0bd.js.map"
+    "main.css": "/static/css/main.ec86f7ac.css",
+    "main.js": "/static/js/main.91ce62aa.js",
+    "index.html": "/index.html",
+    "main.ec86f7ac.css.map": "/static/css/main.ec86f7ac.css.map",
+    "main.91ce62aa.js.map": "/static/js/main.91ce62aa.js.map"
   },
   "entrypoints": [
     "static/css/main.ec86f7ac.css",
-    "static/js/main.2f1db0bd.js"
+    "static/js/main.91ce62aa.js"
   ]
 }
