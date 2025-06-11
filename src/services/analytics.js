@@ -65,12 +65,18 @@ class AnalyticsService {
       const eventData = {
         event_name: eventName,
         session_id: this.sessionId,
+        user_id: userData.user_id,
         app_name: 'ispeech_helper',
+        is_premium: userData.is_premium,
+        platform: userData.platform,
+        locale: userData.locale,
+        start_param: userData.start_param,
         client_timestamp: Date.now().toString(),
         url_referer: window.location.href,
-        ...userData,
         ...customData
       };
+
+      console.log('Sending analytics event:', eventData);
 
       // Отправляем событие через прямой API
       const response = await fetch('https://tganalytics.xyz/events', {
@@ -83,9 +89,11 @@ class AnalyticsService {
       });
 
       if (response.ok) {
-        console.log('Analytics event tracked:', eventName, eventData);
+        const result = await response.json();
+        console.log('Analytics event tracked successfully:', eventName, result);
       } else {
-        console.error('Failed to track analytics event:', response.status, response.statusText);
+        const errorText = await response.text();
+        console.error('Failed to track analytics event:', response.status, response.statusText, errorText);
       }
     } catch (error) {
       console.error('Error tracking analytics event:', error);

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Telegram Analytics API</title>
+</head>
+<body>
+    <h1>Test Telegram Analytics API</h1>
+    <button onclick="testAPI()">Test API Call</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            
+            const eventData = {
+                event_name: "test-event",
+                session_id: "12345678-1234-4567-8901-123456789012",
+                user_id: 123456789,
+                app_name: "ispeech_helper",
+                is_premium: false,
+                platform: "web",
+                locale: "ru",
+                client_timestamp: Date.now().toString(),
+                url_referer: window.location.href
+            };
+
+            console.log('Sending test event:', eventData);
+
+            try {
+                const response = await fetch('https://tganalytics.xyz/events', {
+                    method: 'POST',
+                    headers: {
+                        'TGA-Auth-Token': 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9pU3BlZWNoSGVscGVyX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2ktc3BlZWNoLWhlbHBlci11Y2U0LnZlcmNlbC5hcHAifQ==!xnr1GO/F3uekQi8c2s7KcdMvjEP35yprm/UWP9Z7q4A=',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify([eventData])
+                });
+
+                const responseText = await response.text();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `<p style="color: green;">Success: ${responseText}</p>`;
+                } else {
+                    resultDiv.innerHTML = `<p style="color: red;">Error ${response.status}: ${responseText}</p>`;
+                }
+                
+                console.log('Response:', response.status, responseText);
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">Network Error: ${error.message}</p>`;
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html> 
