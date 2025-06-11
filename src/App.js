@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import { SDKProvider } from '@telegram-apps/sdk-react';
+import { useLaunchParams, useInitData, useThemeParams } from '@telegram-apps/sdk-react';
+import { init } from '@telegram-apps/sdk';
+import TelegramAnalytics from '@telegram-apps/analytics';
 import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
 // import WebApp from '@twa-dev/sdk'; - УДАЛЯЕМ ГЛОБАЛЬНЫЙ ИМПОРТ
 import './i18n';
 import { useTranslation } from 'react-i18next';
-import AnalyticsProvider from './components/AnalyticsProvider';
 
 // Components
 import Root from './components/Root';
@@ -90,7 +91,32 @@ const App = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [themeMode, setThemeMode] = useState('light');
   
-  // Инициализация Telegram Analytics теперь происходит в AnalyticsProvider
+  const launchParams = useLaunchParams();
+  const initData = useInitData();
+  const themeParams = useThemeParams();
+
+  // Инициализация SDK и аналитики
+  useEffect(() => {
+    const SDK_AUTH_TOKEN = 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9pU3BlZWNoSGVscGVyX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2ktc3BlZWNoLWhlbHBlci11Y2U0LnZlcmNlbC5hcHAifQ==!xnr1GO/F3uekQi8c2s7KcdMvjEP35yprm/UWP9Z7q4A=';
+
+    try {
+      // Сначала инициализируем главный SDK
+      init();
+      
+      // Затем, если есть initData, инициализируем аналитику
+      if (initData) {
+        TelegramAnalytics.init({
+          token: SDK_AUTH_TOKEN,
+          appName: 'ispeech_helper',
+          initData,
+          themeParams,
+        });
+        console.log('Telegram Analytics SDK initialized correctly.');
+      }
+    } catch (error) {
+      console.error('Failed to initialize SDKs:', error);
+    }
+  }, [initData, themeParams]);
 
   // Функция для проверки доступности функций Telegram WebApp
   const isTelegramWebAppAvailable = () => {
@@ -224,12 +250,4 @@ const App = () => {
   );
 };
 
-const AppWithProviders = () => (
-  <SDKProvider acceptCustomStyles>
-    <AnalyticsProvider>
-      <App />
-    </AnalyticsProvider>
-  </SDKProvider>
-);
-
-export default AppWithProviders; 
+export default App; 
