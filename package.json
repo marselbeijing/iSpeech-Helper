@@ -7,8 +7,6 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.17.1",
     "@mui/material": "^5.17.1",
-    "@tonconnect/sdk": "^3.1.0",
-    "@tonconnect/ui-react": "^2.1.0",
     "@twa-dev/sdk": "^8.0.2",
     "axios": "^1.9.0",
     "firebase": "^11.8.1",
