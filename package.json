@@ -2,6 +2,7 @@
   "name": "ispeech-helper",
   "version": "1.0.0",
   "private": true,
+  "homepage": "https://i-speech-helper-uce4.vercel.app",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.11.0",
