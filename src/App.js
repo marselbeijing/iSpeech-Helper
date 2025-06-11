@@ -28,18 +28,50 @@ window.TelegramAnalytics = {
   token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9pU3BlZWNoSGVscGVyX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2ktc3BlZWNoLWhlbHBlci11Y2U0LnZlcmNlbC5hcHAifQ==!xnr1GO/F3uekQi8c2s7KcdMvjEP35yprm/UWP9Z7q4A=',
   appName: 'ispeech_helper',
   
-  async sendEvent(eventType, eventData = {}) {
+  // Генерируем UUID для сессии
+  generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  },
+
+  // Получаем или создаем session_id
+  getSessionId() {
+    if (!this.sessionId) {
+      this.sessionId = this.generateUUID();
+    }
+    return this.sessionId;
+  },
+
+  // Получаем user_id из Telegram WebApp или генерируем
+  getUserId() {
+    if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
+      return window.Telegram.WebApp.initDataUnsafe.user.id;
+    }
+    // Генерируем фиктивный user_id для тестирования
+    if (!this.userId) {
+      this.userId = Math.floor(Math.random() * 1000000000) + 100000000;
+    }
+    return this.userId;
+  },
+  
+  async sendEvent(eventName, eventData = {}) {
     try {
       const payload = {
-        event_type: eventType,
-        event_data: eventData,
-        app_name: this.appName,
-        timestamp: Date.now(),
-        platform: 'web',
-        user_agent: navigator.userAgent,
+        events: [{
+          event_name: eventName,
+          user_id: this.getUserId(),
+          session_id: this.getSessionId(),
+          timestamp: Date.now(),
+          event_data: eventData,
+          platform: 'web',
+          app_name: this.appName
+        }]
       };
 
-      console.log('📤 Отправляем событие:', eventType, eventData);
+      console.log('📤 Отправляем событие:', eventName, payload);
       
       const response = await fetch('https://tganalytics.xyz/events', {
         method: 'POST',
@@ -54,7 +86,8 @@ window.TelegramAnalytics = {
       });
 
       if (response.ok) {
-        console.log('✅ Событие отправлено успешно:', eventType);
+        const result = await response.json();
+        console.log('✅ Событие отправлено успешно:', eventName, result);
         return true;
       } else {
         const errorText = await response.text();
@@ -69,7 +102,7 @@ window.TelegramAnalytics = {
 
   // Основные события согласно документации
   appShow() {
-    this.sendEvent('app-show');
+    this.sendEvent('app-init');
   },
 
   appHide() {
@@ -77,12 +110,16 @@ window.TelegramAnalytics = {
   },
 
   screenView(screenName) {
-    this.sendEvent('screen-view', { screen_name: screenName });
+    this.sendEvent('custom-event', { 
+      screen_name: screenName,
+      event_type: 'screen_view'
+    });
   },
 
   buttonClick(buttonName, screenName = null) {
-    this.sendEvent('button-click', { 
+    this.sendEvent('custom-event', { 
       button_name: buttonName,
+      event_type: 'button_click',
       ...(screenName && { screen_name: screenName })
     });
   },
@@ -288,8 +325,8 @@ const App = () => {
 
     // Глобальные функции для тестирования
     window.testAnalytics = () => {
-      window.TelegramAnalytics.customEvent('manual_test', {
-        test_type: 'browser_test',
+      window.TelegramAnalytics.customEvent('browser_test', {
+        test_type: 'manual_test',
         timestamp: Date.now(),
         user_agent: navigator.userAgent.substring(0, 100)
       });
@@ -321,6 +358,14 @@ const App = () => {
     console.log('🔧 Доступные функции:');
     console.log('- testAnalytics() - отправить тестовое событие');
     console.log('- checkAnalytics() - проверить записанные события');
+    
+    // Показываем информацию о пользователе и сессии
+    console.log('👤 User ID:', window.TelegramAnalytics.getUserId());
+    console.log('🔗 Session ID:', window.TelegramAnalytics.getSessionId());
+    console.log('📱 Telegram WebApp доступен:', !!window.Telegram?.WebApp);
+    if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
+      console.log('👤 Telegram User:', window.Telegram.WebApp.initDataUnsafe.user);
+    }
 
     // Отслеживание закрытия приложения
     const handleBeforeUnload = () => {
