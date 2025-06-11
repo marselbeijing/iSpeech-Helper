@@ -9,6 +9,9 @@ import WebApp from '@twa-dev/sdk';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 
+// Временно отключаем TON Connect для диагностики
+// import { TonConnectUIProvider } from '@tonconnect/ui-react';
+
 // Components
 import Root from './components/Root';
 import Home from './pages/Home';
@@ -53,51 +56,59 @@ class TelegramAnalytics {
   }
 
   async sendEvent(eventName, eventData = {}) {
-    const eventPayload = [{
-      event_name: eventName,
-      user_id: this.userId,
-      session_id: this.sessionId,
-      app_name: this.appName,
-      event_data: eventData,
-      platform: 'web',
-      client_timestamp: Date.now().toString(),
-      locale: navigator.language || 'en',
-      url_referer: window.location.href
-    }];
-
-    console.log('📤 Отправляем событие:', eventName);
-    console.log('📋 Полная структура:', JSON.stringify(eventPayload, null, 2));
-
     try {
+      const eventPayload = [{
+        event_name: eventName,
+        user_id: this.userId,
+        session_id: this.sessionId,
+        app_name: this.appName,
+        event_data: {
+          ...eventData,
+          platform: 'web',
+          client_timestamp: new Date().toISOString(),
+          locale: navigator.language || 'en',
+          url_referer: window.location.href,
+          screen_resolution: `${window.screen.width}x${window.screen.height}`,
+          user_agent: navigator.userAgent.substring(0, 200) // Ограничиваем длину
+        }
+      }];
+
+      console.log('📤 Отправляем событие:', eventName);
+      console.log('📋 Структура события:', JSON.stringify(eventPayload, null, 2));
+
       const response = await fetch('https://tganalytics.xyz/events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'TGA-Auth-Token': this.token,
-          'Authorization': `Bearer ${this.token}`,
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
         },
+        mode: 'cors',
         body: JSON.stringify(eventPayload)
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        console.log('✅ Событие отправлено успешно:', eventName, result);
-        return true;
-      } else {
+      console.log('📡 Статус ответа:', response.status);
+
+      if (!response.ok) {
         const errorText = await response.text();
-        console.warn('⚠️ Ошибка отправки события:', response.status, errorText);
+        console.error(`⚠️ Ошибка отправки события: ${response.status}`, errorText);
         return false;
       }
+
+      const result = await response.json();
+      console.log('✅ Событие отправлено успешно:', eventName, result);
+      return true;
+
     } catch (error) {
-      console.error('❌ Сетевая ошибка при отправке события:', error);
+      console.error('❌ Критическая ошибка отправки события:', error);
       return false;
     }
   }
 
   // События согласно официальной документации
-  appInit() {
-    this.sendEvent('app-init', {
+  async appInit() {
+    return await this.sendEvent('app-init', {
       is_premium: window.Telegram?.WebApp?.initDataUnsafe?.user?.is_premium || false,
       start_param: window.Telegram?.WebApp?.initDataUnsafe?.start_param || null
     });
@@ -128,14 +139,14 @@ class TelegramAnalytics {
     });
   }
 
-  init() {
+  async init() {
     if (this.isInitialized) {
       console.log('⚠️ TelegramAnalytics уже инициализирован');
       return;
     }
 
     this.isInitialized = true;
-    this.appInit();
+    await this.appInit();
     console.log('🎯 TelegramAnalytics успешно инициализирован');
   }
 }
@@ -202,9 +213,20 @@ function App() {
       }
     }
 
-    // Инициализация аналитики
-    telegramAnalytics.init();
-    telegramAnalytics.screenView('home');
+    // Инициализация аналитики с задержкой между событиями
+    const initAnalytics = async () => {
+      try {
+        await telegramAnalytics.init();
+        // Задержка перед отправкой screen_view
+        setTimeout(() => {
+          telegramAnalytics.screenView('home');
+        }, 2000);
+      } catch (error) {
+        console.error('❌ Ошибка инициализации аналитики:', error);
+      }
+    };
+    
+    initAnalytics();
 
     console.log('🚀 Telegram Analytics готов к работе');
     console.log('🔧 Доступные функции:');
