@@ -1,8 +1,25 @@
 import { getUserSettings } from './storage';
 
-// Проверка поддержки вибрации
+// Проверка поддержки вибрации и возможности её использования
 const isVibrationSupported = () => {
-  return 'vibrate' in navigator;
+  // Проверяем базовую поддержку
+  if (!('vibrate' in navigator)) {
+    return false;
+  }
+
+  // Проверяем, находимся ли мы в iframe
+  try {
+    // В cross-origin iframe window.parent будет заблокирован
+    if (window.self !== window.top) {
+      // Мы в iframe, проверяем можем ли использовать вибрацию
+      return false;
+    }
+  } catch (e) {
+    // Ошибка доступа означает cross-origin iframe
+    return false;
+  }
+
+  return true;
 };
 
 // Паттерны вибрации для разных событий
@@ -14,19 +31,36 @@ const patterns = {
 
 // Функция для вибрации
 export const vibrate = (type) => {
-  if (!isVibrationSupported()) {
-    return;
-  }
+  try {
+    // Получаем настройки пользователя
+    const settings = getUserSettings();
+    
+    // Проверяем, включена ли вибрация в настройках
+    if (settings && settings.vibrationEnabled === false) {
+      return;
+    }
 
-  const pattern = patterns[type];
-  if (pattern) {
-    navigator.vibrate(pattern);
+    if (!isVibrationSupported()) {
+      return;
+    }
+
+    const pattern = patterns[type];
+    if (pattern) {
+      navigator.vibrate(pattern);
+    }
+  } catch (error) {
+    // Тихо игнорируем ошибки вибрации - это не критично
+    console.debug('Вибрация недоступна:', error.message);
   }
 };
 
 // Функция для отключения вибрации
 export const stopVibration = () => {
-  if (isVibrationSupported()) {
-    navigator.vibrate(0);
+  try {
+    if (isVibrationSupported()) {
+      navigator.vibrate(0);
+    }
+  } catch (error) {
+    console.debug('Остановка вибрации недоступна:', error.message);
   }
 }; 
