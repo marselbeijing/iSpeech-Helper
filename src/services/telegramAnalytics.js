@@ -14,7 +14,7 @@ export const initTelegramAnalytics = () => {
   }
 
   try {
-    telegramAnalytics.init(SDK_AUTH_TOKEN);
+    telegramAnalytics.init({ token: SDK_AUTH_TOKEN });
     isInitialized = true;
     console.log('Telegram Analytics SDK initialized successfully.');
   } catch (error) {
