@@ -6,7 +6,6 @@ import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
 import WebApp from '@twa-dev/sdk';
-import telegramAnalytics from '@telegram-apps/analytics';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 
@@ -209,32 +208,7 @@ const App = () => {
     },
   });
 
-  // Инициализация аналитики
-  useEffect(() => {
-    if (window.Telegram && window.Telegram.WebApp) {
-      try {
-        // Проверяем доступность аналитики
-        if (window.Telegram.WebApp.initData) {
-          // Инициализация аналитики
-          console.log('Analytics initialized');
-          try {
-            telegramAnalytics.init({
-              token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyX2FuYWx5dGljcyIsImFwcF91cmwiOiJodHRwczovL3QubWUvaVNwZWVjaEhlbHBlcl9ib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwIn0=!j9+Ln94Vror//YszMapC2bBcM7JNJ3tyOVLFnAUI7xg=',
-              appName: 'iSpeech Helper',
-              appUrl: 'https://t.me/iSpeechHelper_bot/app'
-            });
-            console.log('Telegram Analytics initialized successfully');
-          } catch (error) {
-            console.error('Error initializing Telegram Analytics:', error);
-          }
-        } else {
-          console.log('Telegram WebApp analytics not available');
-        }
-      } catch (error) {
-        console.warn('Error initializing analytics:', error);
-      }
-    }
-  }, []);
+
 
   return (
     <ThemeProvider theme={theme}>
