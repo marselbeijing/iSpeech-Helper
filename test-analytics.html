@@ -204,6 +204,9 @@
                         initStatus.innerHTML = '✅ Telegram Analytics SDK успешно загружен и инициализирован!';
                         addResult('✅ SDK инициализирован с токеном и app_name', 'success');
                         
+                        // Выводим доступные методы SDK
+                        addResult(`🔧 Доступные методы SDK: ${Object.keys(window.telegramAnalytics).join(', ')}`, 'info');
+                        
                     } catch (initError) {
                         // Если ошибка инициализации - это нормально для обычного браузера
                         initStatus.className = 'status warning';
@@ -212,6 +215,11 @@
                         
                         // Все равно считаем что SDK доступен для прямого API тестирования
                         analyticsInitialized = false; // Отключаем методы SDK
+                        
+                        // Выводим доступные методы SDK даже при ошибке
+                        if (window.telegramAnalytics) {
+                            addResult(`🔧 Доступные методы SDK: ${Object.keys(window.telegramAnalytics).join(', ')}`, 'info');
+                        }
                     }
                     
                     // Делаем функции доступными глобально для тестирования
@@ -230,24 +238,47 @@
         }
 
         function testBasicEvent() {
-            if (!analyticsInitialized) {
-                addResult('❌ SDK методы недоступны. Попробуйте прямой API тест.', 'error');
-                return;
-            }
-
             addResult('🔄 Отправляем базовое событие через SDK...', 'info');
             
             try {
-                // Используем официальный метод SDK
-                window.telegramAnalytics.track('custom-event', {
-                    custom_data: {
-                        test_type: 'basic_event',
-                        timestamp: Date.now(),
-                        source: 'test_file'
+                // Проверяем разные варианты API
+                if (window.telegramAnalytics && typeof window.telegramAnalytics.track === 'function') {
+                    window.telegramAnalytics.track('custom-event', {
+                        custom_data: {
+                            test_type: 'basic_event',
+                            timestamp: Date.now(),
+                            source: 'test_file'
+                        }
+                    });
+                    addResult('✅ Базовое событие отправлено через .track()!', 'success');
+                    
+                } else if (window.telegramAnalytics && typeof window.telegramAnalytics.sendEvent === 'function') {
+                    window.telegramAnalytics.sendEvent('custom-event', {
+                        custom_data: {
+                            test_type: 'basic_event',
+                            timestamp: Date.now(),
+                            source: 'test_file'
+                        }
+                    });
+                    addResult('✅ Базовое событие отправлено через .sendEvent()!', 'success');
+                    
+                } else if (window.telegramAnalytics && typeof window.telegramAnalytics.pushEvent === 'function') {
+                    window.telegramAnalytics.pushEvent({
+                        event_type: 'custom-event',
+                        custom_data: {
+                            test_type: 'basic_event',
+                            timestamp: Date.now(),
+                            source: 'test_file'
+                        }
+                    });
+                    addResult('✅ Базовое событие отправлено через .pushEvent()!', 'success');
+                    
+                } else {
+                    addResult('❌ Не найден подходящий метод SDK. Попробуйте прямой API тест.', 'error');
+                    if (window.telegramAnalytics) {
+                        addResult(`🔧 Доступные методы: ${Object.keys(window.telegramAnalytics).join(', ')}`, 'info');
                     }
-                });
-                
-                addResult('✅ Базовое событие отправлено через SDK!', 'success');
+                }
                 
                 // Проверяем через небольшую задержку
                 setTimeout(() => {
@@ -260,26 +291,39 @@
         }
 
         function testCustomEvent() {
-            if (!analyticsInitialized) {
-                addResult('❌ SDK методы недоступны. Попробуйте прямой API тест.', 'error');
-                return;
-            }
-
             addResult('🔄 Отправляем пользовательское событие...', 'info');
             
             try {
-                window.telegramAnalytics.track('user-interaction', {
-                    custom_data: {
-                        action: 'button_click',
-                        element: 'test_custom_event_btn',
-                        timestamp: Date.now(),
-                        session_id: generateSessionId(),
-                        browser: getBrowserName(),
-                        screen_resolution: `${screen.width}x${screen.height}`
-                    }
-                });
-                
-                addResult('✅ Пользовательское событие отправлено!', 'success');
+                // Проверяем разные варианты API
+                if (window.telegramAnalytics && typeof window.telegramAnalytics.track === 'function') {
+                    window.telegramAnalytics.track('user-interaction', {
+                        custom_data: {
+                            action: 'button_click',
+                            element: 'test_custom_event_btn',
+                            timestamp: Date.now(),
+                            session_id: generateSessionId(),
+                            browser: getBrowserName(),
+                            screen_resolution: `${screen.width}x${screen.height}`
+                        }
+                    });
+                    addResult('✅ Пользовательское событие отправлено через .track()!', 'success');
+                    
+                } else if (window.telegramAnalytics && typeof window.telegramAnalytics.sendEvent === 'function') {
+                    window.telegramAnalytics.sendEvent('user-interaction', {
+                        custom_data: {
+                            action: 'button_click',
+                            element: 'test_custom_event_btn',
+                            timestamp: Date.now(),
+                            session_id: generateSessionId(),
+                            browser: getBrowserName(),
+                            screen_resolution: `${screen.width}x${screen.height}`
+                        }
+                    });
+                    addResult('✅ Пользовательское событие отправлено через .sendEvent()!', 'success');
+                    
+                } else {
+                    addResult('❌ Не найден подходящий метод SDK. Попробуйте прямой API тест.', 'error');
+                }
                 
             } catch (error) {
                 addResult(`❌ Ошибка отправки пользовательского события: ${error.message}`, 'error');
@@ -305,25 +349,45 @@
 
                 addResult(`📋 Отправляемые данные: <pre>${JSON.stringify(eventData, null, 2)}</pre>`, 'info');
 
+                // Пробуем разные варианты заголовков
+                const headers = {
+                    'Content-Type': 'application/json',
+                    'TGA-Auth-Token': API_TOKEN,
+                    'Authorization': `Bearer ${API_TOKEN}`,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                };
+
+                // Для обхода CORS - симулируем запрос с правильного домена
+                if (window.location.hostname === 'localhost') {
+                    headers['Origin'] = 'https://i-speech-helper-uce4.vercel.app';
+                    headers['Referer'] = 'https://i-speech-helper-uce4.vercel.app/';
+                }
+
+                addResult(`📡 Отправляем запрос с заголовками: <pre>${JSON.stringify(headers, null, 2)}</pre>`, 'info');
+
                 const response = await fetch('https://tganalytics.xyz/events', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'TGA-Auth-Token': API_TOKEN,
-                        'Origin': window.location.origin
-                    },
-                    body: JSON.stringify(eventData)
+                    headers: headers,
+                    body: JSON.stringify(eventData),
+                    mode: 'cors'
                 });
 
                 addResult(`📡 Статус ответа: ${response.status} ${response.statusText}`, 
                           response.ok ? 'success' : 'error');
 
+                const responseText = await response.text();
+                
                 if (response.ok) {
-                    const result = await response.text();
-                    addResult(`✅ Прямой API тест успешен! Ответ: ${result}`, 'success');
+                    addResult(`✅ Прямой API тест успешен! Ответ: ${responseText}`, 'success');
                 } else {
-                    const errorText = await response.text();
-                    addResult(`❌ Ошибка API: ${errorText}`, 'error');
+                    addResult(`❌ Ошибка API: ${responseText}`, 'error');
+                    
+                    // Если ошибка домена - предлагаем альтернативу
+                    if (responseText.includes('domain') || responseText.includes('Domain')) {
+                        addResult(`💡 Попробуйте протестировать из основного приложения: http://localhost:3000`, 'warning');
+                        addResult(`💡 Или в Telegram Mini App: https://i-speech-helper-uce4.vercel.app`, 'info');
+                    }
                 }
 
             } catch (error) {
