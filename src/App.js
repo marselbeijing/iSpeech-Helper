@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
+import { SDKProvider } from '@telegram-apps/sdk-react';
 import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
 // import WebApp from '@twa-dev/sdk'; - УДАЛЯЕМ ГЛОБАЛЬНЫЙ ИМПОРТ
 import './i18n';
 import { useTranslation } from 'react-i18next';
-import telegramAnalytics from '@telegram-apps/analytics';
+import AnalyticsProvider from './components/AnalyticsProvider';
 
 // Components
 import Root from './components/Root';
@@ -89,7 +90,7 @@ const App = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [themeMode, setThemeMode] = useState('light');
   
-  // Инициализация Telegram Analytics теперь происходит в `src/index.js`
+  // Инициализация Telegram Analytics теперь происходит в AnalyticsProvider
 
   // Функция для проверки доступности функций Telegram WebApp
   const isTelegramWebAppAvailable = () => {
@@ -223,4 +224,12 @@ const App = () => {
   );
 };
 
-export default App; 
+const AppWithProviders = () => (
+  <SDKProvider acceptCustomStyles>
+    <AnalyticsProvider>
+      <App />
+    </AnalyticsProvider>
+  </SDKProvider>
+);
+
+export default AppWithProviders; 
