@@ -228,7 +228,19 @@ function App() {
     ...baseTheme,
     palette: {
       mode,
-      ...(mode === 'dark' ? telegramColors.dark : telegramColors.light),
+      primary: {
+        main: mode === 'dark' ? telegramColors.dark.primary : telegramColors.light.primary,
+        light: mode === 'dark' ? telegramColors.dark.secondary : telegramColors.light.secondary,
+      },
+      background: {
+        default: mode === 'dark' ? telegramColors.dark.background : telegramColors.light.background,
+        paper: mode === 'dark' ? telegramColors.dark.paper : telegramColors.light.paper,
+      },
+      text: {
+        primary: mode === 'dark' ? telegramColors.dark.text : telegramColors.light.text,
+        secondary: mode === 'dark' ? telegramColors.dark.textSecondary : telegramColors.light.textSecondary,
+      },
+      divider: mode === 'dark' ? telegramColors.dark.divider : telegramColors.light.divider,
     },
   });
 
