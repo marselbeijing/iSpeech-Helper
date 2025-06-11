@@ -31,18 +31,14 @@ export const createNotification = async (userId, type, data) => {
     });
 
     // Отправляем push-уведомление, если пользователь разрешил
-    if ('Notification' in window && Notification.permission === 'granted') {
+    if (Notification.permission === 'granted') {
       const title = getNotificationTitle(type);
       const body = getNotificationBody(type, data);
       
-      try {
-        new Notification(title, {
-          body,
-          icon: '/logo192.png'
-        });
-      } catch (error) {
-        console.warn('Error showing notification:', error);
-      }
+      new Notification(title, {
+        body,
+        icon: '/logo192.png'
+      });
     }
 
     return true;
@@ -92,30 +88,8 @@ export const markNotificationAsRead = async (notificationId) => {
 // Запрос разрешения на push-уведомления
 export const requestNotificationPermission = async () => {
   try {
-    // Проверяем доступность Notification API
-    if (!('Notification' in window)) {
-      console.warn('This browser does not support notifications');
-      return false;
-    }
-    
-    // Если разрешение уже есть
-    if (Notification.permission === 'granted') {
-      return true;
-    }
-    
-    // Если разрешение запрещено, не спрашиваем снова
-    if (Notification.permission === 'denied') {
-      console.warn('Notification permission denied');
-      return false;
-    }
-    
-    // Запрашиваем разрешение только если это default состояние
-    if (Notification.permission === 'default') {
-      const permission = await Notification.requestPermission();
-      return permission === 'granted';
-    }
-    
-    return false;
+    const permission = await Notification.requestPermission();
+    return permission === 'granted';
   } catch (error) {
     console.error('Error requesting notification permission:', error);
     return false;
