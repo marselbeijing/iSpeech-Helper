@@ -5,7 +5,7 @@ import { CssBaseline } from '@mui/material';
 import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
-import WebApp from '@twa-dev/sdk';
+// import WebApp from '@twa-dev/sdk'; - УДАЛЯЕМ ГЛОБАЛЬНЫЙ ИМПОРТ
 import './i18n';
 import { useTranslation } from 'react-i18next';
 
@@ -90,7 +90,7 @@ const App = () => {
   
   // Функция для проверки доступности функций Telegram WebApp
   const isTelegramWebAppAvailable = () => {
-    return window.Telegram && window.Telegram.WebApp;
+    return window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData;
   };
 
   // Функция для проверки поддержки методов установки цветов
@@ -104,7 +104,7 @@ const App = () => {
     setDarkMode(isDark);
     setThemeMode(isDark ? 'dark' : 'light');
     
-    if (window.Telegram?.WebApp?.isExpanded && isColorMethodsSupported()) {
+    if (isTelegramWebAppAvailable() && window.Telegram.WebApp.isExpanded && isColorMethodsSupported()) {
       try {
         window.Telegram.WebApp.setHeaderColor(isDark ? '#17212B' : '#FFFFFF');
         window.Telegram.WebApp.setBackgroundColor(isDark ? '#1F2936' : '#F0F2F5');
@@ -153,6 +153,10 @@ const App = () => {
 
     // Обработка изменения темы
     if (isTelegramWebAppAvailable()) {
+      // Установка начальных цветов
+      setColors();
+
+      // Обработка изменения темы
       try {
         const colorScheme = window.Telegram.WebApp.colorScheme;
         setDarkMode(colorScheme === 'dark');
