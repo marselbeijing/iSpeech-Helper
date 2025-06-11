@@ -37,43 +37,45 @@ class TelegramAnalytics {
   }
 
   generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
       const r = Math.random() * 16 | 0;
       const v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
+    console.log('🔗 Сгенерирован Session ID:', uuid);
+    return uuid;
   }
 
   getUserId() {
     if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
-      return window.Telegram.WebApp.initDataUnsafe.user.id;
+      const telegramUserId = window.Telegram.WebApp.initDataUnsafe.user.id;
+      console.log('👤 Telegram User ID найден:', telegramUserId, typeof telegramUserId);
+      return telegramUserId;
     }
     // Для тестирования генерируем фиктивный ID
     if (!this._generatedUserId) {
       this._generatedUserId = Math.floor(Math.random() * 1000000000) + 100000000;
+      console.log('👤 Сгенерирован User ID:', this._generatedUserId, typeof this._generatedUserId);
     }
     return this._generatedUserId;
   }
 
   async sendEvent(eventName, eventData = {}) {
     try {
+      // Минимальная структура для диагностики ошибки 500
       const eventPayload = [{
         event_name: eventName,
         user_id: this.userId,
         session_id: this.sessionId,
         app_name: this.appName,
         event_data: {
-          ...eventData,
           platform: 'web',
-          client_timestamp: new Date().toISOString(),
-          locale: navigator.language || 'en',
-          url_referer: window.location.href,
-          screen_resolution: `${window.screen.width}x${window.screen.height}`,
-          user_agent: navigator.userAgent.substring(0, 200) // Ограничиваем длину
+          locale: 'en',
+          ...eventData
         }
       }];
 
-      console.log('📤 Отправляем событие:', eventName);
+      console.log('📤 Отправляем минимальное событие:', eventName);
       console.log('📋 Структура события:', JSON.stringify(eventPayload, null, 2));
 
       const response = await fetch('https://tganalytics.xyz/events', {
@@ -81,8 +83,7 @@ class TelegramAnalytics {
         headers: {
           'Content-Type': 'application/json',
           'TGA-Auth-Token': this.token,
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
+          'Accept': 'application/json'
         },
         mode: 'cors',
         body: JSON.stringify(eventPayload)
@@ -93,6 +94,12 @@ class TelegramAnalytics {
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`⚠️ Ошибка отправки события: ${response.status}`, errorText);
+        
+        // Если ошибка 500, попробуем еще более простую структуру
+        if (response.status === 500) {
+          console.log('🔧 Пробуем упрощенную структуру...');
+          return await this.sendSimpleEvent(eventName);
+        }
         return false;
       }
 
@@ -102,6 +109,45 @@ class TelegramAnalytics {
 
     } catch (error) {
       console.error('❌ Критическая ошибка отправки события:', error);
+      return false;
+    }
+  }
+
+  // Упрощенная отправка события для диагностики
+  async sendSimpleEvent(eventName) {
+    try {
+      const simplePayload = [{
+        event_name: eventName,
+        user_id: this.userId,
+        session_id: this.sessionId,
+        app_name: this.appName
+      }];
+
+      console.log('🧪 Тестируем минимальную структуру:', JSON.stringify(simplePayload, null, 2));
+
+      const response = await fetch('https://tganalytics.xyz/events', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'TGA-Auth-Token': this.token
+        },
+        body: JSON.stringify(simplePayload)
+      });
+
+      console.log('📡 Упрощенный запрос - статус:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`⚠️ Упрощенный запрос тоже неуспешен: ${response.status}`, errorText);
+        return false;
+      }
+
+      const result = await response.json();
+      console.log('✅ Упрощенное событие успешно:', eventName, result);
+      return true;
+
+    } catch (error) {
+      console.error('❌ Ошибка упрощенного события:', error);
       return false;
     }
   }
