@@ -16,6 +16,7 @@ import { motion } from 'framer-motion';
 import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import AssistantIcon from './AssistantIcon';
+import { trackEvent } from '../services/telegramAnalytics';
 
 const NavigationBar = () => {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ const NavigationBar = () => {
     playSound('click');
     vibrate('click');
     navigate(newValue);
+    trackEvent('navigation_item_clicked', { path: newValue });
   };
 
   const navItems = [

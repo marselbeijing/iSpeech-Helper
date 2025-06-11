@@ -7,6 +7,8 @@ import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
 import './i18n';
 import { useTranslation } from 'react-i18next';
+import WebApp from '@twa-dev/sdk';
+import { initAnalytics } from './services/telegramAnalytics';
 
 // Components
 import Root from './components/Root';
@@ -87,6 +89,14 @@ const App = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [themeMode, setThemeMode] = useState('light');
   
+  // Initialize Analytics on component mount
+  useEffect(() => {
+    // Ensure we are in the Telegram environment
+    if (WebApp.platform !== 'unknown') {
+      initAnalytics(WebApp.initDataUnsafe);
+    }
+  }, []);
+
   // Загрузка сохраненных настроек при запуске
   useEffect(() => {
     const savedSettings = getUserSettings();
