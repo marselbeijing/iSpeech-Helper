@@ -9,9 +9,6 @@ import WebApp from '@twa-dev/sdk';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 
-// Временно отключаем TON Connect для диагностики
-// import { TonConnectUIProvider } from '@tonconnect/ui-react';
-
 // Components
 import Root from './components/Root';
 import Home from './pages/Home';
@@ -20,297 +17,198 @@ import Account from './pages/Account';
 import Progress from './pages/Progress';
 import Assistant from './pages/Assistant';
 import SmoothReader from './components/SmoothReader';
+import DAFMAF from './components/DAFMAF';
+import BreathingExercises from './components/BreathingExercises';
+import TongueTwisters from './components/TongueTwisters';
+import MetronomeReader from './components/MetronomeReader';
+import EmotionsTrainer from './components/EmotionsTrainer';
 
-// Аналитика Telegram - правильная реализация
-class TelegramAnalytics {
-  constructor() {
-    this.token = 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9pU3BlZWNoSGVscGVyX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2ktc3BlZWNoLWhlbHBlci11Y2U0LnZlcmNlbC5hcHAifQ==!xnr1GO/F3uekQi8c2s7KcdMvjEP35yprm/UWP9Z7q4A=';
-    this.appName = 'ispeech_helper';
-    this.sessionId = this.generateUUID();
-    this.userId = this.getUserId();
-    this.isInitialized = false;
+// Router configuration
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Root />,
+    children: [
+      {
+        path: '/',
+        element: <Home />
+      },
+      {
+        path: '/functions',
+        element: <Functions />
+      },
+      {
+        path: '/account',
+        element: <Account />
+      },
+      {
+        path: '/progress',
+        element: <Progress />
+      },
+      {
+        path: '/assistant',
+        element: <Assistant />
+      },
+      {
+        path: '/smooth-reader',
+        element: <SmoothReader />
+      },
+      {
+        path: '/dafmaf',
+        element: <DAFMAF />
+      },
+      {
+        path: '/breathing',
+        element: <BreathingExercises />
+      },
+      {
+        path: '/tongue-twisters',
+        element: <TongueTwisters />
+      },
+      {
+        path: '/metronome',
+        element: <MetronomeReader />
+      },
+      {
+        path: '/emotions',
+        element: <EmotionsTrainer />
+      }
+    ]
+  }
+], {
+  future: {
+    v7_startTransition: true,
+    v7_relativeSplatPath: true
+  }
+});
+
+// Main App component
+const App = () => {
+  const { t, i18n } = useTranslation();
+  const [darkMode, setDarkMode] = useState(false);
+  const [themeMode, setThemeMode] = useState('light');
+  
+  // Функция для проверки доступности функций Telegram WebApp
+  const isTelegramWebAppAvailable = () => {
+    return window.Telegram && window.Telegram.WebApp;
+  };
+
+  // Функция для проверки поддержки методов установки цветов
+  const isColorMethodsSupported = () => {
+    if (!isTelegramWebAppAvailable()) return false;
+    const version = window.Telegram.WebApp.version;
+    return version && parseFloat(version) > 6.0;
+  };
+  
+  const updateTheme = (isDark) => {
+    setDarkMode(isDark);
+    setThemeMode(isDark ? 'dark' : 'light');
     
-    console.log('🚀 TelegramAnalytics создан');
-    console.log('📊 App Name:', this.appName);
-    console.log('👤 User ID:', this.userId);
-    console.log('🔗 Session ID:', this.sessionId);
-  }
-
-  generateUUID() {
-    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      const r = Math.random() * 16 | 0;
-      const v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
-    console.log('🔗 Сгенерирован Session ID:', uuid);
-    return uuid;
-  }
-
-  getUserId() {
-    if (window.Telegram?.WebApp?.initDataUnsafe?.user?.id) {
-      const telegramUserId = window.Telegram.WebApp.initDataUnsafe.user.id;
-      console.log('👤 Telegram User ID найден:', telegramUserId, typeof telegramUserId);
-      return telegramUserId;
-    }
-    // Для тестирования генерируем фиктивный ID
-    if (!this._generatedUserId) {
-      this._generatedUserId = Math.floor(Math.random() * 1000000000) + 100000000;
-      console.log('👤 Сгенерирован User ID:', this._generatedUserId, typeof this._generatedUserId);
-    }
-    return this._generatedUserId;
-  }
-
-  async sendEvent(eventName, eventData = {}) {
-    try {
-      // Минимальная структура для диагностики ошибки 500
-      const eventPayload = [{
-        event_name: eventName,
-        user_id: this.userId,
-        session_id: this.sessionId,
-        app_name: this.appName,
-        event_data: {
-          platform: 'web',
-          locale: 'en',
-          ...eventData
-        }
-      }];
-
-      console.log('📤 Отправляем минимальное событие:', eventName);
-      console.log('📋 Структура события:', JSON.stringify(eventPayload, null, 2));
-
-      const response = await fetch('https://tganalytics.xyz/events', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'TGA-Auth-Token': this.token,
-          'Accept': 'application/json'
-        },
-        mode: 'cors',
-        body: JSON.stringify(eventPayload)
-      });
-
-      console.log('📡 Статус ответа:', response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`⚠️ Ошибка отправки события: ${response.status}`, errorText);
-        
-        // Если ошибка 500, попробуем еще более простую структуру
-        if (response.status === 500) {
-          console.log('🔧 Пробуем упрощенную структуру...');
-          return await this.sendSimpleEvent(eventName);
-        }
-        return false;
-      }
-
-      const result = await response.json();
-      console.log('✅ Событие отправлено успешно:', eventName, result);
-      return true;
-
-    } catch (error) {
-      console.error('❌ Критическая ошибка отправки события:', error);
-      return false;
-    }
-  }
-
-  // Упрощенная отправка события для диагностики
-  async sendSimpleEvent(eventName) {
-    try {
-      const simplePayload = [{
-        event_name: eventName,
-        user_id: this.userId,
-        session_id: this.sessionId,
-        app_name: this.appName
-      }];
-
-      console.log('🧪 Тестируем минимальную структуру:', JSON.stringify(simplePayload, null, 2));
-
-      const response = await fetch('https://tganalytics.xyz/events', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'TGA-Auth-Token': this.token
-        },
-        body: JSON.stringify(simplePayload)
-      });
-
-      console.log('📡 Упрощенный запрос - статус:', response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`⚠️ Упрощенный запрос тоже неуспешен: ${response.status}`, errorText);
-        return false;
-      }
-
-      const result = await response.json();
-      console.log('✅ Упрощенное событие успешно:', eventName, result);
-      return true;
-
-    } catch (error) {
-      console.error('❌ Ошибка упрощенного события:', error);
-      return false;
-    }
-  }
-
-  // События согласно официальной документации
-  async appInit() {
-    return await this.sendEvent('app-init', {
-      is_premium: window.Telegram?.WebApp?.initDataUnsafe?.user?.is_premium || false,
-      start_param: window.Telegram?.WebApp?.initDataUnsafe?.start_param || null
-    });
-  }
-
-  appHide() {
-    this.sendEvent('app-hide');
-  }
-
-  customEvent(eventName, customData = {}) {
-    this.sendEvent('custom-event', {
-      event_name: eventName,
-      custom_data: customData
-    });
-  }
-
-  screenView(screenName) {
-    this.customEvent('screen_view', {
-      screen_name: screenName,
-      timestamp: Date.now()
-    });
-  }
-
-  buttonClick(buttonName, screenName = null) {
-    this.customEvent('button_click', {
-      button_name: buttonName,
-      ...(screenName && { screen_name: screenName })
-    });
-  }
-
-  async init() {
-    if (this.isInitialized) {
-      console.log('⚠️ TelegramAnalytics уже инициализирован');
-      return;
-    }
-
-    this.isInitialized = true;
-    await this.appInit();
-    console.log('🎯 TelegramAnalytics успешно инициализирован');
-  }
-}
-
-// Создаем глобальный экземпляр аналитики
-const telegramAnalytics = new TelegramAnalytics();
-
-// Создаем глобальные функции для удобства
-window.TelegramAnalytics = telegramAnalytics;
-window.testAnalytics = () => {
-  telegramAnalytics.customEvent('manual_test', {
-    test_type: 'browser_test',
-    timestamp: Date.now(),
-    user_agent: navigator.userAgent.substring(0, 100)
-  });
-};
-
-window.checkAnalytics = async () => {
-  console.log('🔍 Проверяем состояние аналитики:');
-  console.log('- User ID:', telegramAnalytics.userId);
-  console.log('- Session ID:', telegramAnalytics.sessionId);
-  console.log('- App Name:', telegramAnalytics.appName);
-  console.log('- Инициализирован:', telegramAnalytics.isInitialized);
-  console.log('- Telegram WebApp доступен:', !!window.Telegram?.WebApp);
-  if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-    console.log('- Telegram User:', window.Telegram.WebApp.initDataUnsafe.user);
-  }
-};
-
-function App() {
-  const [mode, setMode] = useState('light');
-  const { i18n } = useTranslation();
-
-  // ... остальной код остается без изменений
-  const router = createBrowserRouter([
-    {
-      path: '/',
-      element: <Root />,
-      children: [
-        { index: true, element: <Home /> },
-        { path: 'functions', element: <Functions /> },
-        { path: 'account', element: <Account /> },
-        { path: 'progress', element: <Progress /> },
-        { path: 'assistant', element: <Assistant /> },
-        { path: 'smooth-reader', element: <SmoothReader /> }
-      ]
-    }
-  ]);
-
-  useEffect(() => {
-    const storedSettings = getUserSettings();
-    setMode(storedSettings.mode);
-    i18n.changeLanguage(storedSettings.language);
-
-    // Инициализация Telegram WebApp
-    if (window.Telegram?.WebApp) {
-      WebApp.ready();
-      WebApp.expand();
-      
-      // Получаем цветовую схему из Telegram
-      const colorScheme = WebApp.colorScheme;
-      if (colorScheme) {
-        setMode(colorScheme);
-      }
-    }
-
-    // Инициализация аналитики с задержкой между событиями
-    const initAnalytics = async () => {
+    if (window.Telegram?.WebApp?.isExpanded && isColorMethodsSupported()) {
       try {
-        await telegramAnalytics.init();
-        // Задержка перед отправкой screen_view
-        setTimeout(() => {
-          telegramAnalytics.screenView('home');
-        }, 2000);
+        window.Telegram.WebApp.setHeaderColor(isDark ? '#17212B' : '#FFFFFF');
+        window.Telegram.WebApp.setBackgroundColor(isDark ? '#1F2936' : '#F0F2F5');
       } catch (error) {
-        console.error('❌ Ошибка инициализации аналитики:', error);
+        console.warn('Error setting Telegram WebApp colors:', error);
+      }
+    }
+  };
+
+  // Загрузка сохраненных настроек при запуске
+  useEffect(() => {
+    const savedSettings = getUserSettings();
+    if (savedSettings) {
+      updateTheme(savedSettings.darkMode || false);
+    }
+  }, []);
+
+  // Обработчик события изменения темы из настроек
+  useEffect(() => {
+    const handleThemeChange = (event) => {
+      const isDark = event.detail.darkMode;
+      updateTheme(isDark);
+    };
+
+    window.addEventListener('themeChanged', handleThemeChange);
+    return () => window.removeEventListener('themeChanged', handleThemeChange);
+  }, []);
+  
+  useEffect(() => {
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    // Функция для установки цветов
+    const setColors = () => {
+      if (isColorMethodsSupported()) {
+        try {
+          window.Telegram.WebApp.setHeaderColor(isDark ? '#17212B' : '#FFFFFF');
+          window.Telegram.WebApp.setBackgroundColor(isDark ? '#1F2936' : '#F0F2F5');
+        } catch (error) {
+          console.warn('Error setting Telegram WebApp colors:', error);
+        }
       }
     };
-    
-    initAnalytics();
 
-    console.log('🚀 Telegram Analytics готов к работе');
-    console.log('🔧 Доступные функции:');
-    console.log('- testAnalytics() - отправить тестовое событие');
-    console.log('- checkAnalytics() - проверить состояние аналитики');
-    console.log('- window.TelegramAnalytics - объект аналитики');
+    // Установка начальных цветов
+    setColors();
 
-    // Отслеживание закрытия приложения
-    const handleBeforeUnload = () => {
-      telegramAnalytics.appHide();
-    };
+    // Обработка изменения темы
+    if (isTelegramWebAppAvailable()) {
+      try {
+        const colorScheme = window.Telegram.WebApp.colorScheme;
+        setDarkMode(colorScheme === 'dark');
+        setThemeMode(colorScheme === 'dark' ? 'dark' : 'light');
+        setColors();
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
+        window.Telegram.WebApp.onEvent('themeChanged', () => {
+          try {
+            const newColorScheme = window.Telegram.WebApp.colorScheme;
+            setDarkMode(newColorScheme === 'dark');
+            setThemeMode(newColorScheme === 'dark' ? 'dark' : 'light');
+            setColors();
+          } catch (error) {
+            console.warn('Error handling theme change:', error);
+          }
+        });
+      } catch (error) {
+        console.warn('Error setting up theme listener:', error);
+      }
+    } else {
+      // Если Telegram WebApp недоступен, используем системные настройки
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      setDarkMode(mediaQuery.matches);
+      setThemeMode(mediaQuery.matches ? 'dark' : 'light');
 
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [i18n]);
-
+      mediaQuery.addEventListener('change', (e) => {
+        setDarkMode(e.matches);
+        setThemeMode(e.matches ? 'dark' : 'light');
+      });
+    }
+  }, []);
+  
+  // Создаем тему на основе настроек
   const theme = createTheme({
     ...baseTheme,
     palette: {
-      mode,
+      ...baseTheme.palette,
+      mode: themeMode,
       primary: {
-        main: mode === 'dark' ? telegramColors.dark.primary : telegramColors.light.primary,
-        light: mode === 'dark' ? telegramColors.dark.secondary : telegramColors.light.secondary,
+        ...baseTheme.palette.primary,
+        main: themeMode === 'dark' ? telegramColors.dark.primary : telegramColors.light.primary,
+        light: themeMode === 'dark' ? telegramColors.dark.secondary : telegramColors.light.secondary,
       },
       background: {
-        default: mode === 'dark' ? telegramColors.dark.background : telegramColors.light.background,
-        paper: mode === 'dark' ? telegramColors.dark.paper : telegramColors.light.paper,
+        default: themeMode === 'dark' ? telegramColors.dark.background : telegramColors.light.background,
+        paper: themeMode === 'dark' ? telegramColors.dark.paper : telegramColors.light.paper,
       },
       text: {
-        primary: mode === 'dark' ? telegramColors.dark.text : telegramColors.light.text,
-        secondary: mode === 'dark' ? telegramColors.dark.textSecondary : telegramColors.light.textSecondary,
+        primary: themeMode === 'dark' ? telegramColors.dark.text : telegramColors.light.text,
+        secondary: themeMode === 'dark' ? telegramColors.dark.textSecondary : telegramColors.light.textSecondary,
       },
-      divider: mode === 'dark' ? telegramColors.dark.divider : telegramColors.light.divider,
+      divider: themeMode === 'dark' ? telegramColors.dark.divider : telegramColors.light.divider,
     },
   });
+
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -318,6 +216,6 @@ function App() {
       <RouterProvider router={router} />
     </ThemeProvider>
   );
-}
+};
 
-export default App;
+export default App; 
