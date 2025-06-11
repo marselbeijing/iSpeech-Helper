@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/static/css/main.ec86f7ac.css",
-    "main.js": "/static/js/main.b45784e0.js",
-    "index.html": "/index.html",
-    "main.ec86f7ac.css.map": "/static/css/main.ec86f7ac.css.map",
-    "main.b45784e0.js.map": "/static/js/main.b45784e0.js.map"
+    "main.css": "/iSpeech-Helper/static/css/main.ec86f7ac.css",
+    "main.js": "/iSpeech-Helper/static/js/main.ec469ab5.js",
+    "index.html": "/iSpeech-Helper/index.html",
+    "main.ec86f7ac.css.map": "/iSpeech-Helper/static/css/main.ec86f7ac.css.map",
+    "main.ec469ab5.js.map": "/iSpeech-Helper/static/js/main.ec469ab5.js.map"
   },
   "entrypoints": [
     "static/css/main.ec86f7ac.css",
-    "static/js/main.b45784e0.js"
+    "static/js/main.ec469ab5.js"
   ]
 }
