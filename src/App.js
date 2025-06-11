@@ -1,16 +1,14 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import { useLaunchParams } from '@telegram-apps/sdk-react';
-import { init } from '@telegram-apps/sdk';
-import TelegramAnalytics from '@telegram-apps/analytics';
+import { SDKProvider } from '@telegram-apps/sdk-react';
 import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
-// import WebApp from '@twa-dev/sdk'; - УДАЛЯЕМ ГЛОБАЛЬНЫЙ ИМПОРТ
 import './i18n';
 import { useTranslation } from 'react-i18next';
+import AnalyticsProvider from './components/AnalyticsProvider';
 
 // Components
 import Root from './components/Root';
@@ -91,64 +89,12 @@ const App = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [themeMode, setThemeMode] = useState('light');
   
-  const launchParams = useLaunchParams();
-
-  // Инициализация SDK и аналитики
-  useEffect(() => {
-    const SDK_AUTH_TOKEN = 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9pU3BlZWNoSGVscGVyX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2ktc3BlZWNoLWhlbHBlci11Y2U0LnZlcmNlbC5hcHAifQ==!xnr1GO/F3uekQi8c2s7KcdMvjEP35yprm/UWP9Z7q4A=';
-
-    try {
-      // Сначала инициализируем главный SDK
-      init();
-      
-      // Данные для аналитики берем из launchParams
-      const { initData, themeParams } = launchParams;
-
-      if (initData) {
-        TelegramAnalytics.init({
-          token: SDK_AUTH_TOKEN,
-          appName: 'ispeech_helper',
-          initData,
-          themeParams,
-        });
-        console.log('Telegram Analytics SDK initialized correctly.');
-      }
-    } catch (error) {
-      console.error('Failed to initialize SDKs:', error);
-    }
-  }, [launchParams]);
-
-  // Функция для проверки доступности функций Telegram WebApp
-  const isTelegramWebAppAvailable = () => {
-    return window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData;
-  };
-
-  // Функция для проверки поддержки методов установки цветов
-  const isColorMethodsSupported = () => {
-    if (!isTelegramWebAppAvailable()) return false;
-    const version = window.Telegram.WebApp.version;
-    return version && parseFloat(version) > 6.0;
-  };
-  
-  const updateTheme = (isDark) => {
-    setDarkMode(isDark);
-    setThemeMode(isDark ? 'dark' : 'light');
-    
-    if (isTelegramWebAppAvailable() && window.Telegram.WebApp.isExpanded && isColorMethodsSupported()) {
-      try {
-        window.Telegram.WebApp.setHeaderColor(isDark ? '#17212B' : '#FFFFFF');
-        window.Telegram.WebApp.setBackgroundColor(isDark ? '#1F2936' : '#F0F2F5');
-      } catch (error) {
-        console.warn('Error setting Telegram WebApp colors:', error);
-      }
-    }
-  };
-
   // Загрузка сохраненных настроек при запуске
   useEffect(() => {
     const savedSettings = getUserSettings();
     if (savedSettings) {
-      updateTheme(savedSettings.darkMode || false);
+      setDarkMode(savedSettings.darkMode || false);
+      setThemeMode(savedSettings.themeMode || 'light');
     }
   }, []);
 
@@ -156,67 +102,12 @@ const App = () => {
   useEffect(() => {
     const handleThemeChange = (event) => {
       const isDark = event.detail.darkMode;
-      updateTheme(isDark);
+      setDarkMode(isDark);
+      setThemeMode(isDark ? 'dark' : 'light');
     };
 
     window.addEventListener('themeChanged', handleThemeChange);
     return () => window.removeEventListener('themeChanged', handleThemeChange);
-  }, []);
-  
-  useEffect(() => {
-    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    // Функция для установки цветов
-    const setColors = () => {
-      if (isColorMethodsSupported()) {
-        try {
-          window.Telegram.WebApp.setHeaderColor(isDark ? '#17212B' : '#FFFFFF');
-          window.Telegram.WebApp.setBackgroundColor(isDark ? '#1F2936' : '#F0F2F5');
-        } catch (error) {
-          console.warn('Error setting Telegram WebApp colors:', error);
-        }
-      }
-    };
-
-    // Установка начальных цветов
-    setColors();
-
-    // Обработка изменения темы
-    if (isTelegramWebAppAvailable()) {
-      // Установка начальных цветов
-      setColors();
-
-      // Обработка изменения темы
-      try {
-        const colorScheme = window.Telegram.WebApp.colorScheme;
-        setDarkMode(colorScheme === 'dark');
-        setThemeMode(colorScheme === 'dark' ? 'dark' : 'light');
-        setColors();
-
-        window.Telegram.WebApp.onEvent('themeChanged', () => {
-          try {
-            const newColorScheme = window.Telegram.WebApp.colorScheme;
-            setDarkMode(newColorScheme === 'dark');
-            setThemeMode(newColorScheme === 'dark' ? 'dark' : 'light');
-            setColors();
-          } catch (error) {
-            console.warn('Error handling theme change:', error);
-          }
-        });
-      } catch (error) {
-        console.warn('Error setting up theme listener:', error);
-      }
-    } else {
-      // Если Telegram WebApp недоступен, используем системные настройки
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      setDarkMode(mediaQuery.matches);
-      setThemeMode(mediaQuery.matches ? 'dark' : 'light');
-
-      mediaQuery.addEventListener('change', (e) => {
-        setDarkMode(e.matches);
-        setThemeMode(e.matches ? 'dark' : 'light');
-      });
-    }
   }, []);
   
   // Создаем тему на основе настроек
@@ -250,4 +141,12 @@ const App = () => {
   );
 };
 
-export default App; 
+const AppWithProviders = () => (
+  <SDKProvider acceptCustomStyles debug>
+    <AnalyticsProvider>
+      <App />
+    </AnalyticsProvider>
+  </SDKProvider>
+);
+
+export default AppWithProviders; 
