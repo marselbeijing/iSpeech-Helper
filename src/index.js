@@ -9,3 +9,12 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+// Подавление предупреждений о TIMEOUT
+window.addEventListener('error', function(event) {
+  if (event.message && event.message.includes('TIMEOUT')) {
+    // Не выводим в консоль
+    event.preventDefault();
+    return;
+  }
+});
