@@ -211,7 +211,7 @@ const App = () => {
   // Инициализация аналитики
   useEffect(() => {
     // Проверяем, что мы внутри Telegram Mini App
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+    if (window.Telegram && window.Telegram.WebApp) {
       // Создаем и добавляем script tag для Telegram Analytics
       const script = document.createElement('script');
       script.src = 'https://tganalytics.xyz/index.js';
