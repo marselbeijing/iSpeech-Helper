@@ -72,7 +72,11 @@ export const playSound = async (type) => {
       return; // Если звук отключен в настройках, не воспроизводим
     }
     
-    await generateSound(type);
+    // Временно отключаем звуки для избежания ошибок AudioContext
+    console.log('Звук отключен для избежания ошибок AudioContext');
+    return;
+    
+    // await generateSound(type);
   } catch (error) {
     console.warn('Ошибка при воспроизведении звука:', error);
   }
