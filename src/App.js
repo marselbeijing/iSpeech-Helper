@@ -211,29 +211,15 @@ const App = () => {
 
   // Инициализация аналитики
   useEffect(() => {
-    let analyticsDisabled = false;
-    // Инициализируем аналитику только в среде Telegram Web App
-    if (window.Telegram?.WebApp?.initData) {
-      try {
-        telegramAnalytics.init({
-          token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=',
-          appName: 'ispeechhelper',
-          appUrl: 'https://t.me/iSpeechHelper_bot/ispeech',
-          appDomain: 'https://i-speech-helper-uce4.vercel.app/'
-        });
-        console.log('Telegram Analytics инициализирована успешно');
-      } catch (error) {
-        if (!analyticsDisabled) {
-          analyticsDisabled = true;
-          if (error instanceof TypeError && String(error).includes('Failed to fetch')) {
-            console.warn('Ошибка CORS при инициализации Telegram Analytics. Аналитика будет отключена до обновления сервера.');
-          } else {
-            console.warn('Ошибка инициализации Telegram Analytics:', error);
-          }
-        }
-      }
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+      telegramAnalytics.init({
+        token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=',
+        appName: 'iSpeech Helper',
+        appUrl: 'https://t.me/iSpeechHelper_bot/ispeech'
+      });
+      console.log('Telegram Analytics initialized');
     } else {
-      console.log('Приложение запущено вне Telegram Web App, аналитика отключена');
+      console.warn('Telegram WebApp не найден или нет launch parameters');
     }
   }, []);
 
