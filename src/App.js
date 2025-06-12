@@ -211,10 +211,6 @@ const App = () => {
 
   // Инициализация аналитики
   useEffect(() => {
-    // Временно отключаем аналитику из-за проблем с CORS
-    console.log('Telegram Analytics временно отключена из-за проблем с CORS');
-    return;
-    
     // Инициализируем аналитику только в среде Telegram Web App
     if (window.Telegram?.WebApp?.initData) {
       try {
