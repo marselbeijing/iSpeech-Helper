@@ -211,12 +211,16 @@ const App = () => {
 
   // Инициализация аналитики
   useEffect(() => {
-            telegramAnalytics.init({
-      token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hfaGVscGVyIiwiYXBwX3VybCI6Imh0dHBzOi8vdC5tZS9pU3BlZWNoSGVscGVyX2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL2ktc3BlZWNoLWhlbHBlci11Y2U0LnZlcmNlbC5hcHAifQ==!xnr1GO/F3uekQi8c2s7KcdMvjEP35yprm/UWP9Z7q4A=',
-              appName: 'iSpeech Helper',
-              appUrl: 'https://t.me/iSpeechHelper_bot/app'
-            });
-            console.log('Telegram Analytics initialized successfully');
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+      telegramAnalytics.init({
+        token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90IiwiYXBwX2RvbWFpbiI6Imh0dHBzOi8vaS1zcGVlY2gtaGVscGVyLXVjZTQudmVyY2VsLmFwcC8ifQ==!pvWpjzgR1lzlMAdUlzhA2Wlk4My3V4yssjqLZq4yYeY=',
+        appName: 'iSpeech Helper',
+        appUrl: 'https://t.me/iSpeechHelper_bot/app'
+      });
+      console.log('Telegram Analytics initialized');
+    } else {
+      console.warn('Telegram WebApp не найден или нет launch parameters');
+    }
   }, []);
 
   return (
