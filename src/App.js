@@ -8,6 +8,7 @@ import { telegramColors } from './styles/TelegramStyles';
 import WebApp from '@twa-dev/sdk';
 import './i18n';
 import { useTranslation } from 'react-i18next';
+import { TwaAnalyticsProvider, TrackGroups } from '@tonsolutions/telemetree-react';
 
 // Components
 import Root from './components/Root';
@@ -208,42 +209,21 @@ const App = () => {
     },
   });
 
-  // Инициализация аналитики
-  useEffect(() => {
-    // Проверяем, что мы внутри Telegram Mini App
-    if (window.Telegram && window.Telegram.WebApp) {
-      // Создаем и добавляем script tag для Telegram Analytics
-      const script = document.createElement('script');
-      script.src = 'https://tganalytics.xyz/index.js';
-      script.async = true;
-      script.onload = () => {
-        console.log('Telegram Analytics SDK script loaded');
-        // После загрузки скрипта инициализируем аналитику
-        if (window.TelegramAnalytics) {
-          console.log('Initializing Telegram Analytics');
-          window.TelegramAnalytics.init({
-            token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90IiwiYXBwX2RvbWFpbiI6Imh0dHBzOi8vaS1zcGVlY2gtaGVscGVyLXVjZTQudmVyY2VsLmFwcC8ifQ==!pvWpjzgR1lzlMAdUlzhA2Wlk4My3V4yssjqLZq4yYeY=',
-            appName: 'ispeechhelper'
-          });
-          console.log('Telegram Analytics successfully initialized');
-        } else {
-          console.error('Telegram Analytics is not available after script load');
-        }
-      };
-      script.onerror = () => {
-        console.error('Ошибка загрузки Telegram Analytics SDK');
-      };
-      document.head.appendChild(script);
-    } else {
-      console.warn('Приложение запущено не в Telegram Mini App');
-    }
-  }, []);
+  // Добавляем параметры для Telemetree
+  const projectId = '846989d7-5b58-4f6a-93ba-715073e6b596';
+  const apiKey = 'b6efef23-b414-42d9-ba9b-e011acf410f5';
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <TwaAnalyticsProvider
+      projectId={projectId}
+      apiKey={apiKey}
+      trackGroup={TrackGroups.HIGH}
+    >
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </TwaAnalyticsProvider>
   );
 };
 
