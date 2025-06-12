@@ -85,14 +85,22 @@ const Account = () => {
           try {
             const userData = await verifyTelegramAuth(user);
             setUser(userData);
-            playSound('success');
-            vibrate('success');
           } catch (error) {
             console.error('Ошибка авторизации:', error);
-            playSound('error');
-            vibrate('error');
           }
         };
+
+        setTimeout(() => {
+          const widgetDiv = document.getElementById('telegram-login-widget');
+          if (widgetDiv) {
+            widgetDiv.addEventListener('click', () => {
+              setTimeout(() => {
+                playSound('success');
+                vibrate('success');
+              }, 500);
+            }, { once: true });
+          }
+        }, 1000);
 
         return () => {
           if (widgetDiv) widgetDiv.innerHTML = '';
