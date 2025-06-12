@@ -6,7 +6,7 @@ import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
 import WebApp from '@twa-dev/sdk';
-// import telegramAnalytics from '@telegram-apps/analytics'; // Временно отключено
+import telegramAnalytics from '@telegram-apps/analytics';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 
@@ -209,36 +209,14 @@ const App = () => {
     },
   });
 
-  // Инициализация аналитики (временно отключена)
+  // Инициализация аналитики
   useEffect(() => {
-    console.log('Telegram Analytics временно отключена для отладки');
-    console.log('Telegram WebApp доступен:', !!window.Telegram?.WebApp);
-    console.log('initData:', window.Telegram?.WebApp?.initData);
-    
-    // Временно отключаем аналитику
-    /*
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
-      console.log('Telegram WebApp найден с initData, инициализируем аналитику');
-      
-      const initAnalytics = async () => {
-        try {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          await telegramAnalytics.init({
-            token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=',
-            appName: 'iSpeech Helper',
-            appUrl: 'https://t.me/iSpeechHelper_bot/ispeech'
-          });
-          
-          console.log('Telegram Analytics успешно инициализирован');
-        } catch (error) {
-          console.warn('Не удалось инициализировать Telegram Analytics:', error.message);
-        }
-      };
-      
-      initAnalytics();
-    }
-    */
+    telegramAnalytics.init({
+      token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=',
+      appName: 'ispeechhelper',
+      appUrl: 'https://t.me/iSpeechHelper_bot/ispeech',
+      appDomain: 'https://i-speech-helper-uce4.vercel.app/'
+    });
   }, []);
 
   return (
