@@ -72,9 +72,12 @@ export const playSound = async (type) => {
       return; // Если звук отключен в настройках, не воспроизводим
     }
     
-    // Временно отключаем звуки для избежания ошибок AudioContext
-    console.log('Звук отключен для избежания ошибок AudioContext');
-    return;
+    // Инициализируем AudioContext только после пользовательского жеста
+    const initialized = await initAudioContext();
+    if (!initialized) {
+      console.log('AudioContext не может быть инициализирован без пользовательского жеста');
+      return;
+    }
     
     await generateSound(type);
   } catch (error) {

@@ -211,12 +211,23 @@ const App = () => {
 
   // Инициализация аналитики
   useEffect(() => {
-    telegramAnalytics.init({
-      token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=',
-      appName: 'ispeechhelper',
-      appUrl: 'https://t.me/iSpeechHelper_bot/ispeech',
-      appDomain: 'https://i-speech-helper-uce4.vercel.app/'
-    });
+    // Инициализируем аналитику только в среде Telegram Web App
+    if (window.Telegram?.WebApp?.initData) {
+      try {
+        telegramAnalytics.init({
+          token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=',
+          appName: 'ispeechhelper',
+          appUrl: 'https://t.me/iSpeechHelper_bot/ispeech',
+          appDomain: 'https://i-speech-helper-uce4.vercel.app/'
+        });
+        console.log('Telegram Analytics инициализирована успешно');
+      } catch (error) {
+        console.warn('Ошибка инициализации Telegram Analytics:', error);
+        // Аналитика не критична для работы приложения, продолжаем без неё
+      }
+    } else {
+      console.log('Приложение запущено вне Telegram Web App, аналитика отключена');
+    }
   }, []);
 
   return (
