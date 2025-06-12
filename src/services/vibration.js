@@ -1,8 +1,19 @@
 import { getUserSettings } from './storage';
 
-// Проверка поддержки вибрации
+// Проверка поддержки вибрации и окружения
 const isVibrationSupported = () => {
-  return 'vibrate' in navigator;
+  // Проверяем поддержку API
+  if (!('vibrate' in navigator)) {
+    return false;
+  }
+  
+  // Проверяем, что мы не в iframe (для избежания блокировки браузером)
+  try {
+    return window.self === window.top;
+  } catch (e) {
+    // Если не можем проверить (cross-origin), считаем что в iframe
+    return false;
+  }
 };
 
 // Паттерны вибрации для разных событий
@@ -15,12 +26,17 @@ const patterns = {
 // Функция для вибрации
 export const vibrate = (type) => {
   if (!isVibrationSupported()) {
+    console.log('Вибрация недоступна в текущем окружении');
     return;
   }
 
-  const pattern = patterns[type];
-  if (pattern) {
-    navigator.vibrate(pattern);
+  try {
+    const pattern = patterns[type];
+    if (pattern) {
+      navigator.vibrate(pattern);
+    }
+  } catch (error) {
+    console.warn('Ошибка при вызове вибрации:', error);
   }
 };
 
