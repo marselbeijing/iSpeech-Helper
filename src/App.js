@@ -211,6 +211,7 @@ const App = () => {
 
   // Инициализация аналитики
   useEffect(() => {
+    let analyticsDisabled = false;
     // Инициализируем аналитику только в среде Telegram Web App
     if (window.Telegram?.WebApp?.initData) {
       try {
@@ -222,8 +223,14 @@ const App = () => {
         });
         console.log('Telegram Analytics инициализирована успешно');
       } catch (error) {
-        console.warn('Ошибка инициализации Telegram Analytics:', error);
-        // Аналитика не критична для работы приложения, продолжаем без неё
+        if (!analyticsDisabled) {
+          analyticsDisabled = true;
+          if (error instanceof TypeError && String(error).includes('Failed to fetch')) {
+            console.warn('Ошибка CORS при инициализации Telegram Analytics. Аналитика будет отключена до обновления сервера.');
+          } else {
+            console.warn('Ошибка инициализации Telegram Analytics:', error);
+          }
+        }
       }
     } else {
       console.log('Приложение запущено вне Telegram Web App, аналитика отключена');
