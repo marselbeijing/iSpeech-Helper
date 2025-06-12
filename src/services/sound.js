@@ -2,17 +2,40 @@ import { getUserSettings } from './storage';
 
 // Создаем аудио-контекст при необходимости
 let audioContext = null;
+let isAudioInitialized = false;
 
-// Простой генератор звукового эффекта
-const generateSound = (type) => {
+// Функция для инициализации аудио-контекста
+const initAudioContext = async () => {
   if (!audioContext) {
     try {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       audioContext = new AudioContext();
     } catch (e) {
       console.warn('Web Audio API не поддерживается в этом браузере');
-      return;
+      return false;
     }
+  }
+  
+  // Возобновляем контекст если он приостановлен
+  if (audioContext.state === 'suspended') {
+    try {
+      await audioContext.resume();
+    } catch (e) {
+      console.warn('Не удалось возобновить AudioContext:', e);
+      return false;
+    }
+  }
+  
+  isAudioInitialized = true;
+  return true;
+};
+
+// Простой генератор звукового эффекта
+const generateSound = async (type) => {
+  // Инициализируем аудио-контекст
+  const initialized = await initAudioContext();
+  if (!initialized || !audioContext) {
+    return;
   }
   
   // Параметры звуков для разных типов
@@ -25,26 +48,30 @@ const generateSound = (type) => {
   
   const sound = options[type] || options.click;
   
-  // Создаем осциллятор и усилитель
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  
-  oscillator.type = sound.type;
-  oscillator.frequency.value = sound.freq;
-  
-  gainNode.gain.value = sound.volume;
-  
-  // Соединяем узлы
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  
-  // Запускаем и останавливаем звук
-  oscillator.start();
-  oscillator.stop(audioContext.currentTime + sound.duration);
+  try {
+    // Создаем осциллятор и усилитель
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.type = sound.type;
+    oscillator.frequency.value = sound.freq;
+    
+    gainNode.gain.value = sound.volume;
+    
+    // Соединяем узлы
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // Запускаем и останавливаем звук
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + sound.duration);
+  } catch (error) {
+    console.warn('Ошибка при создании звука:', error);
+  }
 };
 
 // Функция для воспроизведения звука
-export const playSound = (type) => {
+export const playSound = async (type) => {
   try {
     // Получаем настройки пользователя
     const settings = getUserSettings();
@@ -54,7 +81,7 @@ export const playSound = (type) => {
       return; // Если звук отключен в настройках, не воспроизводим
     }
     
-    generateSound(type);
+    await generateSound(type);
   } catch (error) {
     console.warn('Ошибка при воспроизведении звука:', error);
   }
