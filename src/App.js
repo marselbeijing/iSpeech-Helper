@@ -6,7 +6,7 @@ import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
 import WebApp from '@twa-dev/sdk';
-import telegramAnalytics from '@telegram-apps/analytics';
+// import telegramAnalytics from '@telegram-apps/analytics'; // Временно отключено
 import './i18n';
 import { useTranslation } from 'react-i18next';
 
