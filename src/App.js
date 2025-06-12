@@ -217,13 +217,17 @@ const App = () => {
       script.src = 'https://tganalytics.xyz/index.js';
       script.async = true;
       script.onload = () => {
+        console.log('Telegram Analytics SDK script loaded');
         // После загрузки скрипта инициализируем аналитику
         if (window.TelegramAnalytics) {
+          console.log('Initializing Telegram Analytics');
           window.TelegramAnalytics.init({
             token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90IiwiYXBwX2RvbWFpbiI6Imh0dHBzOi8vaS1zcGVlY2gtaGVscGVyLXVjZTQudmVyY2VsLmFwcC8ifQ==!pvWpjzgR1lzlMAdUlzhA2Wlk4My3V4yssjqLZq4yYeY=',
             appName: 'ispeechhelper'
           });
-          console.log('Telegram Analytics успешно инициализирован');
+          console.log('Telegram Analytics successfully initialized');
+        } else {
+          console.error('Telegram Analytics is not available after script load');
         }
       };
       script.onerror = () => {
