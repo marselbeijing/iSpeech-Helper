@@ -53,6 +53,11 @@ const ReferralProgram = () => {
           url: referralLink
         });
       } catch (error) {
+        if (error.name === 'NotAllowedError') {
+          // Пользователь отменил или запретил шаринг — не выводим ошибку в консоль
+          // Можно добавить уведомление, если нужно
+          return;
+        }
         console.error('Error sharing:', error);
       }
     }
