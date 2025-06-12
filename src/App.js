@@ -213,9 +213,9 @@ const App = () => {
   useEffect(() => {
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
       telegramAnalytics.init({
-        token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=',
+        token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90IiwiYXBwX2RvbWFpbiI6Imh0dHBzOi8vaS1zcGVlY2gtaGVscGVyLXVjZTQudmVyY2VsLmFwcC8ifQ==!pvWpjzgR1lzlMAdUlzhA2Wlk4My3V4yssjqLZq4yYeY=',
         appName: 'iSpeech Helper',
-        appUrl: 'https://t.me/iSpeechHelper_bot/ispeech'
+        appUrl: 'https://t.me/iSpeechHelper_bot/app'
       });
       console.log('Telegram Analytics initialized');
     } else {

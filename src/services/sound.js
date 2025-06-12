@@ -2,35 +2,17 @@ import { getUserSettings } from './storage';
 
 // Создаем аудио-контекст при необходимости
 let audioContext = null;
-let isAudioContextInitialized = false;
-
-// Инициализация AudioContext после пользовательского жеста
-const initAudioContext = async () => {
-  if (isAudioContextInitialized) return true;
-  
-  try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!audioContext) {
-      audioContext = new AudioContext();
-    }
-    
-    if (audioContext.state === 'suspended') {
-      await audioContext.resume();
-    }
-    
-    isAudioContextInitialized = true;
-    return true;
-  } catch (e) {
-    console.warn('Web Audio API не поддерживается в этом браузере');
-    return false;
-  }
-};
 
 // Простой генератор звукового эффекта
-const generateSound = async (type) => {
-  const initialized = await initAudioContext();
-  if (!initialized || !audioContext) {
-    return;
+const generateSound = (type) => {
+  if (!audioContext) {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioContext = new AudioContext();
+    } catch (e) {
+      console.warn('Web Audio API не поддерживается в этом браузере');
+      return;
+    }
   }
   
   // Параметры звуков для разных типов
@@ -62,7 +44,7 @@ const generateSound = async (type) => {
 };
 
 // Функция для воспроизведения звука
-export const playSound = async (type) => {
+export const playSound = (type) => {
   try {
     // Получаем настройки пользователя
     const settings = getUserSettings();
@@ -72,14 +54,7 @@ export const playSound = async (type) => {
       return; // Если звук отключен в настройках, не воспроизводим
     }
     
-    // Инициализируем AudioContext только после пользовательского жеста
-    const initialized = await initAudioContext();
-    if (!initialized) {
-      console.log('AudioContext не может быть инициализирован без пользовательского жеста');
-      return;
-    }
-    
-    await generateSound(type);
+    generateSound(type);
   } catch (error) {
     console.warn('Ошибка при воспроизведении звука:', error);
   }
