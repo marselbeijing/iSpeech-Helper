@@ -62,11 +62,11 @@ const EmotionsTrainer = () => {
   };
 
   const emotions = [
-    { name: t('emotion_joy'), icon: <SentimentVerySatisfied sx={{ fontSize: { xs: 62, sm: 62 } }} />, color: '#32B768' },
-    { name: t('emotion_calm'), icon: <SentimentSatisfied sx={{ fontSize: { xs: 62, sm: 62 } }} />, color: '#5B7CFF' },
-    { name: t('emotion_sad'), icon: <SentimentDissatisfied sx={{ fontSize: { xs: 62, sm: 62 } }} />, color: '#8B5CF6' },
-    { name: t('emotion_angry'), icon: <SentimentVeryDissatisfied sx={{ fontSize: { xs: 62, sm: 62 } }} />, color: '#FF4A6E' },
-    { name: t('emotion_surprised'), icon: <EmojiEmotions sx={{ fontSize: { xs: 62, sm: 62 } }} />, color: '#FFB84A' },
+    { name: t('emotion_joy'), icon: <SentimentVerySatisfied sx={{ fontSize: { xs: 101, sm: 121 } }} />, color: '#32B768' },
+    { name: t('emotion_calm'), icon: <SentimentSatisfied sx={{ fontSize: { xs: 101, sm: 121 } }} />, color: '#5B7CFF' },
+    { name: t('emotion_sad'), icon: <SentimentDissatisfied sx={{ fontSize: { xs: 101, sm: 121 } }} />, color: '#8B5CF6' },
+    { name: t('emotion_angry'), icon: <SentimentVeryDissatisfied sx={{ fontSize: { xs: 101, sm: 121 } }} />, color: '#FF4A6E' },
+    { name: t('emotion_surprised'), icon: <EmojiEmotions sx={{ fontSize: { xs: 101, sm: 121 } }} />, color: '#FFB84A' },
   ];
 
   const phrases = [
@@ -171,9 +171,6 @@ const EmotionsTrainer = () => {
                   justifyContent: 'center',
                   mb: { xs: 1.5, sm: 2 },
                   boxShadow: `0 10px 40px 0 ${currentEmotion.color}40`,
-                  '& > svg': {
-                    fontSize: { xs: 101, sm: 121 }
-                  }
                 }}
               >
                 {currentEmotion.icon}
