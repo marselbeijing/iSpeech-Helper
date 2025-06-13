@@ -116,9 +116,14 @@ const SmoothReader = () => {
 
   return (
     <Box sx={{
-      minHeight: '100vh',
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
       width: '100%',
-      overflowY: 'hidden',
+      minHeight: '100vh',
+      overflow: 'hidden',
       backgroundColor: theme.palette.background.default
     }}>
       <Container maxWidth="sm" sx={{
