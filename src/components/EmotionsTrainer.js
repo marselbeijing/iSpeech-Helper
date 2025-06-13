@@ -98,14 +98,15 @@ const EmotionsTrainer = () => {
       justifyContent: 'center'
     }}>
       <Container maxWidth="sm" sx={{ 
-        height: '100%', 
+        height: '100vh', 
+        minHeight: '100vh',
         display: 'flex', 
         flexDirection: 'column',
         overflow: 'hidden',
         position: 'relative',
         p: { xs: 0, sm: 0 },
         width: '100%',
-        maxWidth: '100%'
+        maxWidth: '100%',
       }}>
         <Paper
           elevation={0}
@@ -117,14 +118,13 @@ const EmotionsTrainer = () => {
               : 'linear-gradient(135deg, #fffefb 0%, #fffde4 100%)',
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
             width: '100%',
-            height: 'auto',
-            minHeight: { xs: 'auto', sm: '700px' },
-            maxHeight: { xs: 'calc(100vh - 80px)', sm: '800px' },
+            height: '100vh',
+            minHeight: '100vh',
             textAlign: 'center',
             display: 'flex',
             flexDirection: 'column',
             mb: { xs: 0, sm: 0 },
-            pb: { xs: 7, sm: 4 }
+            pb: { xs: 7, sm: 4 },
           }}
         >
           {/* Синий заголовок */}
