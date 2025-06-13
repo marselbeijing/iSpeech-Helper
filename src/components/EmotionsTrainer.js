@@ -25,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 const EmotionsTrainer = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [currentEmotion, setCurrentEmotion] = useState(null);
   const [currentPhrase, setCurrentPhrase] = useState('');
   const [isStarted, setIsStarted] = useState(true);
@@ -269,7 +269,7 @@ const EmotionsTrainer = () => {
                 mb: 1,
               }}
             >
-              Back
+              {i18n.language === 'ru' ? 'Назад' : 'Back'}
             </Button>
           </Box>
         </Paper>

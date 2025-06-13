@@ -416,7 +416,7 @@ const TongueTwisters = () => {
                   mb: 1,
                 }}
               >
-                Back
+                {i18n.language === 'ru' ? 'Назад' : 'Back'}
               </Button>
             </Box>
           </Box>
