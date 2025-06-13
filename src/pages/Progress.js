@@ -51,8 +51,9 @@ const Progress = () => {
 
   return (
     <Container maxWidth="md" sx={{ 
-      py: { xs: 0, sm: 4 }, 
-      minHeight: '100vh',
+      py: { xs: 0, sm: 4 },
+      height: '100vh',
+      overflowY: 'auto',
       px: { xs: 0, sm: 2 }
     }}>
       {/* Основной контейнер */}
@@ -66,9 +67,7 @@ const Progress = () => {
           marginBottom: { xs: 0, sm: '20px' },
           width: '100%',
           maxWidth: '100%',
-          height: { xs: '100vh', sm: 'auto' },
           mx: 'auto',
-          overflowY: 'auto',
         }}
       >
         {/* Заголовок внутри основного блока */}
