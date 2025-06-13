@@ -118,13 +118,14 @@ const SmoothReader = () => {
     <Box sx={{
       minHeight: '100vh',
       width: '100%',
-      overflowY: 'auto',
+      overflowY: 'hidden',
       backgroundColor: theme.palette.background.default
     }}>
       <Container maxWidth="sm" sx={{
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
+        overflow: 'hidden',
         p: { xs: 0, sm: 2 }
       }}>
         <motion.div
