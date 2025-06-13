@@ -237,6 +237,7 @@ const TongueTwisters = () => {
               background: theme.palette.mode === 'dark' 
                 ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)' 
                 : 'linear-gradient(135deg, #fffefb 0%, #fffde4 100%)',
+              border: 'none',
               width: '100%',
               height: '100%',
               maxHeight: '100vh',
