@@ -408,7 +408,7 @@ const MetronomeReader = () => {
                   mb: 1,
                 }}
               >
-                Back
+                Назад
               </Button>
             </Box>
           </Box>

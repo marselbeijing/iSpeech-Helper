@@ -533,7 +533,7 @@ const DAFMAF = () => {
                 mb: 1,
               }}
             >
-              Back
+              Назад
             </Button>
           </Box>
         </motion.div>
