@@ -24,3 +24,11 @@ window.addEventListener('error', function(event) {
     return;
   }
 });
+
+// Подавление ошибок MetaMask extension not found
+window.addEventListener('error', function(event) {
+  if (event.message && event.message.includes('MetaMask extension not found')) {
+    event.preventDefault();
+    return;
+  }
+});
