@@ -155,14 +155,14 @@ const EmotionsTrainer = () => {
               display: 'flex', 
               flexDirection: 'column', 
               alignItems: 'center', 
-              mb: { xs: 4, sm: 5 },
+              mb: { xs: 6, sm: 7 },
               flex: 1,
               mt: { xs: 2, sm: 3 }
             }}>
               <Box
                 sx={{
-                  width: { xs: 140, sm: 168 },
-                  height: { xs: 140, sm: 168 },
+                  width: { xs: 196, sm: 235 },
+                  height: { xs: 196, sm: 235 },
                   borderRadius: '50%',
                   background: currentEmotion.color,
                   color: 'white',
@@ -170,9 +170,9 @@ const EmotionsTrainer = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   mb: { xs: 1.5, sm: 2 },
-                  boxShadow: `0 4px 16px 0 ${currentEmotion.color}40`,
+                  boxShadow: `0 10px 40px 0 ${currentEmotion.color}40`,
                   '& > svg': {
-                    fontSize: { xs: 72, sm: 86 }
+                    fontSize: { xs: 101, sm: 121 }
                   }
                 }}
               >
@@ -211,7 +211,7 @@ const EmotionsTrainer = () => {
             </Box>
           )}
           
-          <Box sx={{ mb: { xs: 2, sm: 3 } }}>
+          <Box sx={{ mb: { xs: 0, sm: 1 } }}>
             <Button
               variant="contained"
               onClick={handleNextClick}
