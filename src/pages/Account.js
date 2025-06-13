@@ -57,7 +57,6 @@ const Account = () => {
   const [transactions, setTransactions] = useState([]);
   const [payoutStatus, setPayoutStatus] = useState(null);
   const [starsAvailable, setStarsAvailable] = useState(false);
-  const [starsError, setStarsError] = useState('');
 
   useEffect(() => {
     try {
@@ -137,10 +136,8 @@ const Account = () => {
     // Проверяем доступность Telegram Stars
     if (window.Telegram?.WebApp?.Stars) {
       setStarsAvailable(true);
-      setStarsError('');
     } else {
       setStarsAvailable(false);
-      setStarsError('Покупки через Telegram Stars доступны только внутри Telegram Mini App. Откройте приложение в Telegram.');
     }
   }, []);
 
@@ -404,12 +401,6 @@ const Account = () => {
           >
             {t('about_app')}
           </Button>
-
-          {starsError && (
-            <Alert severity="warning" sx={{ mb: 2 }}>
-              {starsError}
-            </Alert>
-          )}
 
           {/* Блок подписок */}
           <Box
