@@ -5,8 +5,8 @@ import './index.css';
 import telegramAnalytics from '@telegram-apps/analytics';
 
 telegramAnalytics.init({
-  token: 'ВАШ_TOKEN', // замените на свой
-  appName: 'ВАШ_APP_NAME', // замените на свой
+  token: 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=',
+  appName: 'ispeechhelper',
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
