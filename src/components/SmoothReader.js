@@ -231,7 +231,7 @@ const SmoothReader = () => {
                 fontWeight: 500,
                 textAlign: 'center',
                 minHeight: 40,
-                maxHeight: { xs: '35vh', sm: 180 },
+                maxHeight: 180,
                 overflowY: 'auto',
                 display: 'flex',
                 flexWrap: 'wrap',
@@ -243,7 +243,6 @@ const SmoothReader = () => {
                 letterSpacing: '-0.01em',
                 wordBreak: 'break-word',
                 width: '100%',
-                flex: { xs: 1, sm: 'none' }
               }}
               ref={textBoxRef}
             >
