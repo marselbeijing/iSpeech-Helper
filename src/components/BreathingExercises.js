@@ -186,7 +186,7 @@ const BreathingExercises = () => {
                   <Box sx={{ p: 0.5, textAlign: 'center' }}>
                     <Typography variant="subtitle2" sx={{ 
                       fontWeight: 700, 
-                      fontSize: i18n.language === 'ru' ? 9 : 11, 
+                      fontSize: 11, 
                       letterSpacing: 1, 
                       color: theme.palette.mode === 'dark' ? '#fff' : '#222'
                     }}>
@@ -233,7 +233,7 @@ const BreathingExercises = () => {
                   <Box sx={{ p: 0.5, textAlign: 'center' }}>
                     <Typography variant="subtitle2" sx={{ 
                       fontWeight: 700, 
-                      fontSize: i18n.language === 'ru' ? 9 : 11, 
+                      fontSize: 11, 
                       letterSpacing: 1, 
                       color: theme.palette.mode === 'dark' ? '#fff' : '#222',
                       mb: 0.2, 
@@ -282,7 +282,7 @@ const BreathingExercises = () => {
                   <Box sx={{ p: 0.5, textAlign: 'center' }}>
                     <Typography variant="subtitle2" sx={{ 
                       fontWeight: 700, 
-                      fontSize: i18n.language === 'ru' ? 9 : 11, 
+                      fontSize: 11, 
                       letterSpacing: 1, 
                       color: theme.palette.mode === 'dark' ? '#fff' : '#222'
                     }}>
