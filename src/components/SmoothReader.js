@@ -114,6 +114,18 @@ const SmoothReader = () => {
     updateProgress('smoothReader');
   };
 
+  // Отключаю прокрутку body на время монтирования страницы
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    const originalHeight = document.body.style.height;
+    document.body.style.overflow = 'hidden';
+    document.body.style.height = '100vh';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.height = originalHeight;
+    };
+  }, []);
+
   return (
     <Box sx={{
       position: 'fixed',
