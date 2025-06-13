@@ -2,6 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
+import telegramAnalytics from '@telegram-apps/analytics';
+
+telegramAnalytics.init({
+  token: 'ВАШ_TOKEN', // замените на свой
+  appName: 'ВАШ_APP_NAME', // замените на свой
+});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

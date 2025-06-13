@@ -8,7 +8,6 @@ import { telegramColors } from './styles/TelegramStyles';
 import WebApp from '@twa-dev/sdk';
 import './i18n';
 import { useTranslation } from 'react-i18next';
-import { TwaAnalyticsProvider, TrackGroups } from '@tonsolutions/telemetree-react';
 
 // Components
 import Root from './components/Root';
@@ -209,21 +208,20 @@ const App = () => {
     },
   });
 
-  // Добавляем параметры для Telemetree
-  const projectId = '846989d7-5b58-4f6a-93ba-715073e6b596';
-  const apiKey = 'b6efef23-b414-42d9-ba9b-e011acf410f5';
+  // Подавление предупреждений о TIMEOUT
+  window.addEventListener('error', function(event) {
+    if (event.message && event.message.includes('TIMEOUT')) {
+      // Не выводим в консоль
+      event.preventDefault();
+      return;
+    }
+  });
 
   return (
-    <TwaAnalyticsProvider
-      projectId={projectId}
-      apiKey={apiKey}
-      trackGroup={TrackGroups.HIGH}
-    >
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <RouterProvider router={router} />
-      </ThemeProvider>
-    </TwaAnalyticsProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <RouterProvider router={router} />
+    </ThemeProvider>
   );
 };
 
