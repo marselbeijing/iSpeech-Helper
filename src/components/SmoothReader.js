@@ -325,14 +325,16 @@ const SmoothReader = () => {
                   sx={{
                     width: 80,
                     height: 80,
+                    minWidth: 0,
+                    p: 0,
                     borderRadius: '50%',
                     background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
                     color: '#fff',
-                    boxShadow: '0 8px 32px 0 rgba(255, 74, 110, 0.3)',
-                    fontSize: 40,
-                    minWidth: 0,
-                    p: 0,
-                    '&:hover': { background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)' },
+                    boxShadow: '0 4px 16px rgba(255, 51, 102, 0.4)',
+                    fontSize: 36,
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
+                    },
                   }}
                 >
                   {isPlaying ? <PauseIcon sx={{ fontSize: 48 }} /> : <PlayArrowIcon sx={{ fontSize: 48 }} />}

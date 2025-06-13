@@ -277,21 +277,17 @@ const MetronomeReader = () => {
                 <Button
                   onClick={handlePlayPause}
                   sx={{
-                    width: 56,
-                    height: 56,
-                    borderRadius: '50%',
+                    width: 80,
+                    height: 80,
                     minWidth: 0,
-                    boxShadow: '0 2px 12px 0 #ff3366a0',
+                    p: 0,
+                    borderRadius: '50%',
                     background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
                     color: '#fff',
-                    fontSize: 32,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.2s',
+                    boxShadow: '0 4px 16px rgba(255, 51, 102, 0.4)',
+                    fontSize: 36,
                     '&:hover': {
                       background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
-                      boxShadow: '0 4px 16px 0 #ff3366a0',
                     },
                   }}
                 >

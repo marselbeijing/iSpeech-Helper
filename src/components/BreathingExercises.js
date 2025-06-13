@@ -455,14 +455,15 @@ const BreathingExercises = () => {
                 <Button
                   onClick={isPlaying ? stopExercise : startExercise}
                   sx={{
-                    width: 64,
-                    height: 64,
+                    width: 80,
+                    height: 80,
                     minWidth: 0,
                     p: 0,
                     borderRadius: '50%',
                     background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
                     color: '#fff',
                     boxShadow: '0 4px 16px rgba(255, 51, 102, 0.4)',
+                    fontSize: 36,
                     '&:hover': {
                       background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
                     },
