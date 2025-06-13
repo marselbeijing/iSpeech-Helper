@@ -93,6 +93,7 @@ const ReferralProgram = () => {
             value={referralLink}
             variant="outlined"
             size="small"
+            name="referralLink"
             InputProps={{
               readOnly: true,
               sx: { bgcolor: 'background.default' }
