@@ -517,24 +517,23 @@ const DAFMAF = () => {
               startIcon={<ArrowBack />}
               onClick={handleBackClick}
               sx={{
-                ...commonStyles.primaryButton(theme),
-                backgroundColor: '#ff3366',
-                color: '#fff',
+                py: 1,
+                px: 2.5,
                 borderRadius: 30,
                 fontWeight: 500,
                 fontSize: '0.95rem',
                 minWidth: 0,
                 width: 'auto',
                 alignSelf: 'center',
-                mt: 1,
-                px: 3,
-                py: 1.2,
+                backgroundColor: '#ff3366',
                 '&:hover': {
                   backgroundColor: '#e0294d',
                 },
+                mt: 3,
+                mb: 1,
               }}
             >
-              {t('back')}
+              Back
             </Button>
           </Box>
         </motion.div>

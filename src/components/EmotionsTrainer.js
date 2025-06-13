@@ -253,24 +253,23 @@ const EmotionsTrainer = () => {
               onClick={handleBackClick}
               startIcon={<ArrowBack />}
               sx={{
+                py: 1,
+                px: 2.5,
                 borderRadius: 30,
-                px: { xs: 2, sm: 2.5 },
-                py: { xs: 0.75, sm: 1 },
                 fontWeight: 500,
-                fontSize: { xs: '0.875rem', sm: '0.95rem' },
+                fontSize: '0.95rem',
                 minWidth: 0,
                 width: 'auto',
                 alignSelf: 'center',
-                background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
-                color: '#fff',
-                boxShadow: '0 8px 32px 0 rgba(255, 74, 110, 0.3)',
-                mt: { xs: 1, sm: 1.5 },
+                backgroundColor: '#ff3366',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
+                  backgroundColor: '#e0294d',
                 },
+                mt: 3,
+                mb: 1,
               }}
             >
-              {t('back')}
+              Back
             </Button>
           </Box>
         </Paper>

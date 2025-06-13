@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
 import stories from '../data/stories';
+import { ArrowBack } from '@mui/icons-material';
 
 const MIN_SPEED = 1;
 const MAX_SPEED = 100;
@@ -347,6 +348,7 @@ const SmoothReader = () => {
               <Button
                 variant="contained"
                 color="primary"
+                startIcon={<ArrowBack />}
                 onClick={() => navigate(-1)}
                 sx={{
                   py: 1,
@@ -361,9 +363,11 @@ const SmoothReader = () => {
                   '&:hover': {
                     backgroundColor: '#e0294d',
                   },
+                  mt: 3,
+                  mb: 1,
                 }}
               >
-                {t('back')}
+                Back
               </Button>
             </Box>
           </Box>

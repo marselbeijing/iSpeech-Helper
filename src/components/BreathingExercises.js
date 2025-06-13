@@ -524,10 +524,11 @@ const BreathingExercises = () => {
                 '&:hover': {
                   backgroundColor: '#e0294d',
                 },
-                mt: 1,
+                mt: 3,
+                mb: 1,
               }}
             >
-              {t('back')}
+              Back
             </Button>
           </Box>
         </motion.div>

@@ -404,9 +404,11 @@ const MetronomeReader = () => {
                   '&:hover': {
                     backgroundColor: '#e0294d',
                   },
+                  mt: 3,
+                  mb: 1,
                 }}
               >
-                {t('back')}
+                Back
               </Button>
             </Box>
           </Box>
