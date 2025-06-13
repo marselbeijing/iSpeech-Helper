@@ -56,6 +56,8 @@ const Account = () => {
   const [referralStats, setReferralStats] = useState(null);
   const [transactions, setTransactions] = useState([]);
   const [payoutStatus, setPayoutStatus] = useState(null);
+  const [starsAvailable, setStarsAvailable] = useState(false);
+  const [starsError, setStarsError] = useState('');
 
   useEffect(() => {
     try {
@@ -130,6 +132,17 @@ const Account = () => {
       loadReferralData();
     }
   }, [user]);
+
+  useEffect(() => {
+    // Проверяем доступность Telegram Stars
+    if (window.Telegram?.WebApp?.Stars) {
+      setStarsAvailable(true);
+      setStarsError('');
+    } else {
+      setStarsAvailable(false);
+      setStarsError('Покупки через Telegram Stars доступны только внутри Telegram Mini App. Откройте приложение в Telegram.');
+    }
+  }, []);
 
   const handleLogout = () => {
     try {
@@ -392,6 +405,12 @@ const Account = () => {
             {t('about_app')}
           </Button>
 
+          {starsError && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              {starsError}
+            </Alert>
+          )}
+
           {/* Блок подписок */}
           <Box
             sx={{
@@ -457,7 +476,7 @@ const Account = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  disabled={isPurchasing || !user}
+                  disabled={!starsAvailable || isPurchasing || !user}
                   sx={{ mt: 2 }}
                   onClick={() => user && handlePurchase('MONTHLY')}
                 >
@@ -497,7 +516,7 @@ const Account = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  disabled={isPurchasing || !user}
+                  disabled={!starsAvailable || isPurchasing || !user}
                   sx={{ mt: 2 }}
                   onClick={() => user && handlePurchase('QUARTERLY')}
                 >
@@ -537,7 +556,7 @@ const Account = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  disabled={isPurchasing || !user}
+                  disabled={!starsAvailable || isPurchasing || !user}
                   sx={{ mt: 2 }}
                   onClick={() => user && handlePurchase('YEARLY')}
                 >
