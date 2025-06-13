@@ -378,11 +378,11 @@ const TongueTwisters = () => {
                 color="primary"
                 onClick={() => getRandomTwister()}
                 sx={{
-                  py: { xs: 0.75, sm: 1 },
-                  px: { xs: 2, sm: 2.5 },
+                  py: 1,
+                  px: 2.5,
                   borderRadius: 30,
                   fontWeight: 500,
-                  fontSize: { xs: '0.875rem', sm: '0.95rem' },
+                  fontSize: '0.95rem',
                   minWidth: 0,
                   width: 'auto',
                   alignSelf: 'center',
