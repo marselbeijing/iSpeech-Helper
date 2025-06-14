@@ -268,6 +268,14 @@ const MetronomeReader = () => {
               valueLabelDisplay="auto"
               slots={{ thumb: CustomThumb }}
             />
+            <Typography
+              variant="caption"
+              align="center"
+              sx={{ mb: 2, display: 'block', color: theme.palette.text.primary, fontWeight: 500 }}
+            >
+              {t('metronome_repeat')}
+            </Typography>
+
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
               <motion.div
                 initial={{ scale: 1 }}
@@ -352,14 +360,6 @@ const MetronomeReader = () => {
               </Box>
             )}
             
-            <Typography
-              variant="caption"
-              align="center"
-              sx={{ mb: 2, display: 'block', color: theme.palette.text.primary, fontWeight: 500 }}
-            >
-              {t('metronome_repeat')}
-            </Typography>
-
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%', mt: 1 }}>
               <Button
                 variant="contained"
