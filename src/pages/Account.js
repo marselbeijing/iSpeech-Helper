@@ -594,7 +594,7 @@ const Account = () => {
               <Typography variant="h6" gutterBottom>
                 {t('about_app')}
               </Typography>
-              <Typography variant="body2" color="text.secondary" paragraph>
+              <Typography variant="body2" color="text.secondary" paragraph sx={{ whiteSpace: 'pre-line' }}>
                 {t('about_app_description')}
               </Typography>
             </Paper>
