@@ -44,7 +44,7 @@ const StarIcon = () => (
 
 const Account = () => {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
@@ -594,8 +594,31 @@ const Account = () => {
               <Typography variant="h6" gutterBottom>
                 {t('about_app')}
               </Typography>
-              <Typography variant="body2" color="text.secondary" paragraph sx={{ whiteSpace: 'pre-line' }}>
-                {t('about_app_description')}
+              <Typography variant="body2" color="text.secondary" paragraph>
+                {i18n.language === 'ru'
+                  ? `iSpeech Helper — специализированное приложение для помощи людям с нарушениями речи. Оно создано для улучшения дикции, артикуляции и общего качества речи с помощью набора эффективных упражнений.\n\nОсновные возможности:\n\n★ Диафрагмальные дыхательные упражнения — развивают контроль над дыханием, способствуют плавности речи.\n★ Скороговорки — тренируют дикцию, артикуляцию и чёткость произношения.\n★ Тренажёр эмоций — учит выражать чувства голосом, делает речь более выразительной.\n★ Плавное чтение — помогает развить ритм и плавность речи, снижает заикание.\n★ Чтение с метрономом — формирует правильный темп и ритмичность речи.\n★ DAF/MAF — техники обратной аудиосвязи и наложения шума для контроля скорости и плавности речи.\n\nПреимущества:\n- Регулярные тренировки заметно улучшают разборчивость и выразительность речи.\n- Персональный подбор упражнений под ваши цели.\n- Система прогресса и достижений.\n- Простой и современный интерфейс для всех возрастов.\n- Поддержка русского и английского языков.`
+                  : `iSpeech Helper is a specialized application designed to assist people with speech disorders. It is developed to improve diction, articulation, and overall speech quality through a set of specialized exercises.`}
+              </Typography>
+              <Typography variant="subtitle2" gutterBottom sx={{ mt: 2, color: 'primary.main' }}>
+                Key Features:
+              </Typography>
+              <Typography variant="body2" color="text.secondary" paragraph>
+                • Breathing exercises for better speech control
+                • Tongue twisters for articulation practice
+                • Emotion training for expressive speech
+                • Smooth reading exercises
+                • Metronome-assisted reading
+                • DAF/MAF techniques for speech rate control
+              </Typography>
+              <Typography variant="subtitle2" gutterBottom sx={{ mt: 2, color: 'primary.main' }}>
+                Benefits:
+              </Typography>
+              <Typography variant="body2" color="text.secondary" paragraph>
+                • Regular practice leads to noticeable improvement in speech clarity
+                • Personalized exercise selection based on individual needs
+                • Progress tracking and achievement system
+                • User-friendly interface suitable for all ages
+                • Available in multiple languages
               </Typography>
             </Paper>
           </Fade>
