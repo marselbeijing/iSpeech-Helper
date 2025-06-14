@@ -363,11 +363,11 @@ const TongueTwisters = () => {
                 fontSize: { xs: '0.75rem', sm: '0.875rem' }
               }}
             >
-              {t('tongue_twisters_instruction')}
+              <span>{t('tongue_twisters_instruction')}</span>
               <br /><br />
-              {i18n.language === 'ru'
+              <span>{i18n.language === 'ru'
                 ? 'Повторите 3–5 раз, стараясь не сбиваться с ритма.'
-                : 'Repeat 3-5 times, trying to maintain the rhythm.'}
+                : 'Repeat 3-5 times, trying to maintain the rhythm.'}</span>
             </Typography>
 
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 1, sm: 1.5 }, width: '100%', mb: { xs: 8, sm: 2 } }}>
