@@ -34,10 +34,11 @@ import { getUserSettings, saveUserSettings } from '../services/storage';
 import { getReferralStats, getReferralTransactions, generateReferralLink, requestPayout } from '../services/referral';
 import ReferralProgram from '../components/ReferralProgram';
 
-const StarIcon = () => (
+const TelegramStarIcon = () => (
   <span style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }}>
     <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M14 2l3.09 6.26L24 9.27l-5 4.87L20.18 22 14 18.27 7.82 22 9 14.14l-5-4.87 6.91-1.01L14 2z" fill="#FFD600" stroke="#FFC107" strokeWidth="1.5"/>
+      <circle cx="14" cy="14" r="14" fill="#FFD600"/>
+      <path d="M14 7.5l2.09 4.23 4.67.68-3.38 3.29.8 4.66L14 17.27l-4.18 2.19.8-4.66-3.38-3.29 4.67-.68L14 7.5z" fill="#fff"/>
     </svg>
   </span>
 );
@@ -461,7 +462,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('month')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    300 <StarIcon />
+                    300 <TelegramStarIcon />
                   </Typography>
                 </Box>
                 <Button
@@ -498,7 +499,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('quarter')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    720 <StarIcon />
+                    720 <TelegramStarIcon />
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
                     {t('discount_20')}
@@ -538,7 +539,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('year')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    2160 <StarIcon />
+                    2160 <TelegramStarIcon />
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
                     {t('discount_40')}
