@@ -363,9 +363,7 @@ const TongueTwisters = () => {
                 fontSize: { xs: '0.75rem', sm: '0.875rem' }
               }}
             >
-              {i18n.language === 'ru' 
-                ? 'Тренируйте дикцию и артикуляцию, повторяя скороговорки вслух.'
-                : 'Practice your diction and articulation by repeating tongue twisters out loud.'}
+              {t('tongue_twisters_instruction')}
               <br /><br />
               {i18n.language === 'ru'
                 ? 'Повторите 3–5 раз, стараясь не сбиваться с ритма.'
