@@ -270,9 +270,9 @@ export const activateReferralSubscription = async (referralId, subscriptionType)
 // Получение суммы подписки
 const getSubscriptionAmount = (type) => {
   const prices = {
-    MONTHLY: 300,
-    QUARTERLY: 720,
-    YEARLY: 2160
+    MONTHLY: 299,
+    QUARTERLY: 808,
+    YEARLY: 2691
   };
   return prices[type] || 0;
 };

@@ -5,17 +5,17 @@ const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 const SUBSCRIPTION_TYPES = {
   MONTHLY: {
     id: 'monthly',
-    stars: 300,
+    stars: 299,
     duration: 30, // дней
   },
   QUARTERLY: {
     id: 'quarterly',
-    stars: 720,
+    stars: 808,
     duration: 90, // дней
   },
   YEARLY: {
     id: 'yearly',
-    stars: 2160,
+    stars: 2691,
     duration: 365, // дней
   },
 };
