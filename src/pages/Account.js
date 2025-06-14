@@ -490,7 +490,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('quarter')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    808 <span style={{fontSize:22,verticalAlign:'middle',marginLeft:4}}>⭐</span>
+                    799 <span style={{fontSize:22,verticalAlign:'middle',marginLeft:4}}>⭐</span>
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
                     {t('discount_20')}
@@ -530,7 +530,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('year')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    2691 <span style={{fontSize:22,verticalAlign:'middle',marginLeft:4}}>⭐</span>
+                    1999 <span style={{fontSize:22,verticalAlign:'middle',marginLeft:4}}>⭐</span>
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
                     {t('discount_40')}

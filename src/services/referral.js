@@ -271,8 +271,8 @@ export const activateReferralSubscription = async (referralId, subscriptionType)
 const getSubscriptionAmount = (type) => {
   const prices = {
     MONTHLY: 299,
-    QUARTERLY: 808,
-    YEARLY: 2691
+    QUARTERLY: 799,
+    YEARLY: 1999
   };
   return prices[type] || 0;
 };

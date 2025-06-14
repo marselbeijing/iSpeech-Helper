@@ -10,12 +10,12 @@ const SUBSCRIPTION_TYPES = {
   },
   QUARTERLY: {
     id: 'quarterly',
-    stars: 808,
+    stars: 799,
     duration: 90, // дней
   },
   YEARLY: {
     id: 'yearly',
-    stars: 2691,
+    stars: 1999,
     duration: 365, // дней
   },
 };
