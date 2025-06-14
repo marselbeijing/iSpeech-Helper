@@ -11,7 +11,6 @@ const initAudioContext = async () => {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       audioContext = new AudioContext();
     } catch (e) {
-      console.warn('Web Audio API не поддерживается в этом браузере');
       return false;
     }
   }
@@ -21,7 +20,6 @@ const initAudioContext = async () => {
     try {
       await audioContext.resume();
     } catch (e) {
-      console.warn('Не удалось возобновить AudioContext:', e);
       return false;
     }
   }
@@ -66,7 +64,6 @@ const generateSound = async (type) => {
     oscillator.start();
     oscillator.stop(audioContext.currentTime + sound.duration);
   } catch (error) {
-    console.warn('Ошибка при создании звука:', error);
   }
 };
 
@@ -83,7 +80,6 @@ export const playSound = async (type) => {
     
     await generateSound(type);
   } catch (error) {
-    console.warn('Ошибка при воспроизведении звука:', error);
   }
 };
 

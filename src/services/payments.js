@@ -6,7 +6,6 @@ export const initPayments = () => {
     if (window.Telegram?.WebApp?.initData) {
       // Проверяем поддержку платежей
       if (window.Telegram.WebApp.isVersionAtLeast('6.0')) {
-        console.log('Payments are supported');
         return true;
       }
     }
@@ -76,7 +75,6 @@ export const checkPaymentStatus = async (paymentId) => {
 export const handleSuccessfulPayment = (payment) => {
   try {
     // Здесь должна быть логика после успешного платежа
-    console.log('Payment successful:', payment);
     return true;
   } catch (error) {
     console.error('Error handling successful payment:', error);

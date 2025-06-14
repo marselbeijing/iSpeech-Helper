@@ -11,6 +11,5 @@ export const sendData = (data) => {
   }
   
   // Если функция недоступна (например, при локальной разработке)
-  console.log('Telegram WebApp sendData is not available, data:', data);
   return false;
 }; 
