@@ -610,6 +610,23 @@ const Account = () => {
 - Система прогресса и достижений. 
 - Простой и современный интерфейс для всех возрастов. 
 - Поддержка русского и английского языков.`}
+                {i18n.language === 'en' && `iSpeech Helper is a specialized application designed to help people with speech disorders. It is created to improve diction, articulation, and overall speech quality through a set of effective exercises.
+
+Key Features:
+
+★ Diaphragmatic breathing exercises — develop breath control and promote smooth speech.
+★ Tongue twisters — train diction, articulation, and clarity of pronunciation.
+★ Emotion trainer — teaches how to express feelings with your voice, making speech more expressive.
+★ Smooth reading — helps develop rhythm and fluency, reduces stuttering.
+★ Metronome-assisted reading — builds correct tempo and speech rhythm.
+★ DAF/MAF — delayed auditory feedback and masking techniques for controlling speech rate and fluency.
+
+Benefits:
+- Regular practice significantly improves speech clarity and expressiveness.
+- Personalized exercise selection for your goals.
+- Progress tracking and achievement system.
+- Simple and modern interface for all ages.
+- Support for Russian and English languages.`}
               </Typography>
             </Paper>
           </Fade>
