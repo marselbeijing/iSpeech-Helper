@@ -356,7 +356,7 @@ const TongueTwisters = () => {
               align="center"
               sx={{ 
                 mb: { xs: 1, sm: 2 }, 
-                mt: { xs: 3, sm: 4 },
+                mt: { xs: 5, sm: 7 },
                 display: 'block', 
                 color: theme.palette.text.primary, 
                 fontWeight: 500,
