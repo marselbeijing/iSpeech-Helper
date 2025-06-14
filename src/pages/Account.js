@@ -35,12 +35,7 @@ import { getReferralStats, getReferralTransactions, generateReferralLink, reques
 import ReferralProgram from '../components/ReferralProgram';
 
 const TelegramStarIcon = () => (
-  <span style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }}>
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="14" cy="14" r="14" fill="#FFD600"/>
-      <path d="M14 7.5l2.09 4.23 4.67.68-3.38 3.29.8 4.66L14 17.27l-4.18 2.19.8-4.66-3.38-3.29 4.67-.68L14 7.5z" fill="#fff"/>
-    </svg>
-  </span>
+  <img src="/assets/telegram-star.png" alt="Telegram Stars" width={28} height={28} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
 );
 
 const Account = () => {
