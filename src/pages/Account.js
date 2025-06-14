@@ -611,27 +611,6 @@ const Account = () => {
 - Простой и современный интерфейс для всех возрастов. 
 - Поддержка русского и английского языков.`}
               </Typography>
-              <Typography variant="subtitle2" gutterBottom sx={{ mt: 2, color: 'primary.main' }}>
-                Key Features:
-              </Typography>
-              <Typography variant="body2" color="text.secondary" paragraph>
-                • Breathing exercises for better speech control
-                • Tongue twisters for articulation practice
-                • Emotion training for expressive speech
-                • Smooth reading exercises
-                • Metronome-assisted reading
-                • DAF/MAF techniques for speech rate control
-              </Typography>
-              <Typography variant="subtitle2" gutterBottom sx={{ mt: 2, color: 'primary.main' }}>
-                Benefits:
-              </Typography>
-              <Typography variant="body2" color="text.secondary" paragraph>
-                • Regular practice leads to noticeable improvement in speech clarity
-                • Personalized exercise selection based on individual needs
-                • Progress tracking and achievement system
-                • User-friendly interface suitable for all ages
-                • Available in multiple languages
-              </Typography>
             </Paper>
           </Fade>
         </Modal>
