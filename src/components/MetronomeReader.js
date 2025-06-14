@@ -268,42 +268,7 @@ const MetronomeReader = () => {
               valueLabelDisplay="auto"
               slots={{ thumb: CustomThumb }}
             />
-            <Typography
-              variant="caption"
-              align="center"
-              sx={{ mb: 2, display: 'block', color: theme.palette.text.primary, fontWeight: 500 }}
-            >
-              {t('metronome_repeat')}
-            </Typography>
 
-            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-              <motion.div
-                initial={{ scale: 1 }}
-                animate={{ scale: isPlaying ? 1.08 : 1 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                <Button
-                  onClick={handlePlayPause}
-                  sx={{
-                    width: 80,
-                    height: 80,
-                    minWidth: 0,
-                    p: 0,
-                    borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
-                    color: '#fff',
-                    boxShadow: '0 4px 16px rgba(255, 51, 102, 0.4)',
-                    fontSize: 36,
-                    '&:hover': {
-                      background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
-                    },
-                  }}
-                >
-                  {isPlaying ? <Pause fontSize="inherit" /> : <PlayArrow fontSize="inherit" />}
-                </Button>
-              </motion.div>
-            </Box>
-            
             {words.length > 0 && (
               <Box
                 sx={{
@@ -359,7 +324,43 @@ const MetronomeReader = () => {
                 })}
               </Box>
             )}
-            
+
+            <Typography
+              variant="caption"
+              align="center"
+              sx={{ mb: 2, display: 'block', color: theme.palette.text.primary, fontWeight: 500 }}
+            >
+              {t('metronome_repeat')}
+            </Typography>
+
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, mb: 2 }}>
+              <motion.div
+                initial={{ scale: 1 }}
+                animate={{ scale: isPlaying ? 1.08 : 1 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
+                <Button
+                  onClick={handlePlayPause}
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    minWidth: 0,
+                    p: 0,
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)',
+                    color: '#fff',
+                    boxShadow: '0 4px 16px rgba(255, 51, 102, 0.4)',
+                    fontSize: 36,
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #ff5e62 0%, #ff3366 100%)',
+                    },
+                  }}
+                >
+                  {isPlaying ? <Pause fontSize="inherit" /> : <PlayArrow fontSize="inherit" />}
+                </Button>
+              </motion.div>
+            </Box>
+
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%', mt: 1 }}>
               <Button
                 variant="contained"
