@@ -279,6 +279,36 @@ const TongueTwisters = () => {
                 {i18n.language === 'ru' ? 'Скороговорки' : 'Tongue Twisters'}
               </Typography>
             </Box>
+            <Typography
+              variant="caption"
+              align="center"
+              sx={{ 
+                mb: { xs: 1, sm: 2 }, 
+                mt: 0,
+                display: 'block', 
+                color: theme.palette.text.primary, 
+                fontWeight: 500,
+                fontSize: { xs: '0.75rem', sm: '0.875rem' }
+              }}
+            >
+              <span>{t('tongue_twisters_instruction')}</span>
+            </Typography>
+            <Typography
+              variant="caption"
+              align="center"
+              sx={{ 
+                mb: { xs: 1, sm: 2 }, 
+                mt: 0,
+                display: 'block', 
+                color: theme.palette.text.primary, 
+                fontWeight: 500,
+                fontSize: { xs: '0.75rem', sm: '0.875rem' }
+              }}
+            >
+              <span>{i18n.language === 'ru'
+                ? 'Повторите 3–5 раз, стараясь не сбиваться с ритма.'
+                : 'Repeat 3-5 times, trying to maintain the rhythm.'}</span>
+            </Typography>
             <Tabs
               value={level}
               onChange={(_, v) => setLevel(v)}
@@ -350,25 +380,6 @@ const TongueTwisters = () => {
                 </motion.div>
               </Box>
             </Box>
-
-            <Typography
-              variant="caption"
-              align="center"
-              sx={{ 
-                mb: { xs: 1, sm: 2 }, 
-                mt: { xs: 5, sm: 7 },
-                display: 'block', 
-                color: theme.palette.text.primary, 
-                fontWeight: 500,
-                fontSize: { xs: '0.75rem', sm: '0.875rem' }
-              }}
-            >
-              <span>{t('tongue_twisters_instruction')}</span>
-              <br /><br />
-              <span>{i18n.language === 'ru'
-                ? 'Повторите 3–5 раз, стараясь не сбиваться с ритма.'
-                : 'Repeat 3-5 times, trying to maintain the rhythm.'}</span>
-            </Typography>
 
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 1, sm: 1.5 }, width: '100%', mb: { xs: 8, sm: 2 } }}>
               <Button
