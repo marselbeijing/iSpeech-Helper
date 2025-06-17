@@ -33,11 +33,10 @@ import { useTranslation } from 'react-i18next';
 import { getUserSettings, saveUserSettings } from '../services/storage';
 import { getReferralStats, getReferralTransactions, generateReferralLink, requestPayout } from '../services/referral';
 import ReferralProgram from '../components/ReferralProgram';
-import { 
-  purchaseSubscription as purchaseWithStars, 
-  isTelegramStarsSupported,
-  SUBSCRIPTION_TYPES 
-} from '../services/payments';
+
+const TelegramStarIcon = () => (
+  <img src="/assets/telegram-star.png" alt="Telegram Stars" width={22} height={22} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
+);
 
 const Account = () => {
   const theme = useTheme();
@@ -54,22 +53,64 @@ const Account = () => {
   const [transactions, setTransactions] = useState([]);
   const [payoutStatus, setPayoutStatus] = useState(null);
   const [starsAvailable, setStarsAvailable] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     try {
       const currentUser = getCurrentUser();
       setUser(currentUser);
-      
-      // Проверяем поддержку Telegram Stars
-      setStarsAvailable(isTelegramStarsSupported());
-      
       setLoading(false);
+
+      if (!currentUser) {
+        const script = document.createElement('script');
+        script.src = 'https://telegram.org/js/telegram-widget.js?22';
+        script.setAttribute('data-telegram-login', 'iSpeechHelperBot');
+        script.setAttribute('data-size', 'large');
+        script.setAttribute('data-radius', '8');
+        script.setAttribute('data-request-access', 'write');
+        script.setAttribute('data-userpic', 'true');
+        script.setAttribute('data-lang', 'ru');
+        script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+        script.async = true;
+        
+        const widgetDiv = document.getElementById('telegram-login-widget');
+        if (widgetDiv) {
+          widgetDiv.innerHTML = '';
+          widgetDiv.appendChild(script);
+        }
+
+        window.onTelegramAuth = async (user) => {
+          try {
+            const userData = await verifyTelegramAuth(user);
+            setUser(userData);
+            playSound('success');
+            vibrate('success');
+          } catch (error) {
+            console.error('Ошибка авторизации:', error);
+            playSound('error');
+            vibrate('error');
+          }
+        };
+
+        return () => {
+          if (widgetDiv) widgetDiv.innerHTML = '';
+          delete window.onTelegramAuth;
+        };
+      }
+
+      // Проверяем статус подписки
+      const checkSubscription = async () => {
+        const status = await checkSubscriptionStatus();
+        setSubscription(status);
+      };
+      
+      if (user) {
+        checkSubscription();
+      }
     } catch (error) {
-      console.error('Error loading user:', error);
+      console.error('Ошибка инициализации:', error);
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -107,70 +148,28 @@ const Account = () => {
     }
   };
 
-  const handlePurchase = async (subscriptionType) => {
-    if (!user) {
-      setErrorMessage('Пользователь не авторизован');
-      setShowError(true);
-      return;
-    }
-
-    if (!starsAvailable) {
-      setErrorMessage('Telegram Stars не поддерживается в этой версии приложения');
-      setShowError(true);
-      return;
-    }
-
-    setIsPurchasing(true);
-    setErrorMessage('');
-
+  const handlePurchase = async (type) => {
     try {
-      playSound('click');
-      vibrate(50);
-
-      const result = await purchaseWithStars(subscriptionType);
+      setIsPurchasing(true);
+      const result = await purchaseSubscription(type);
       
       if (result.success) {
-        // Обновляем информацию о подписке
-        await loadSubscriptionStatus();
-        
+        setSubscription(result.subscription);
         playSound('success');
-        vibrate([100, 50, 100]);
-        
-        // Показываем уведомление об успехе
-        window.Telegram?.WebApp?.showAlert('✅ Подписка успешно активирована!');
+        vibrate('success');
       } else {
-        if (result.status !== 'cancelled') {
-          setErrorMessage(result.error || 'Ошибка при покупке подписки');
-          setShowError(true);
-        }
+        playSound('error');
+        vibrate('error');
+        // TODO: Показать уведомление об ошибке
       }
     } catch (error) {
-      console.error('Ошибка покупки подписки:', error);
-      setErrorMessage(error.message || 'Произошла ошибка при покупке подписки');
-      setShowError(true);
+      console.error('Ошибка при покупке:', error);
       playSound('error');
-      vibrate(200);
+      vibrate('error');
     } finally {
       setIsPurchasing(false);
     }
   };
-
-  const loadSubscriptionStatus = async () => {
-    if (!user) return;
-    
-    try {
-      const status = await checkSubscriptionStatus(user.id);
-      setSubscription(status);
-    } catch (error) {
-      console.error('Error loading subscription status:', error);
-    }
-  };
-
-  useEffect(() => {
-    if (user) {
-      loadSubscriptionStatus();
-    }
-  }, [user]);
 
   const handleSettingChange = (key, value) => {
     const newSettings = { ...settings, [key]: value };
@@ -458,7 +457,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('month')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    299 <span style={{fontSize:22,verticalAlign:'middle',marginLeft:4}}>⭐</span>
+                    300 <TelegramStarIcon />
                   </Typography>
                 </Box>
                 <Button
@@ -495,7 +494,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('quarter')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    799 <span style={{fontSize:22,verticalAlign:'middle',marginLeft:4}}>⭐</span>
+                    720 <TelegramStarIcon />
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
                     {t('discount_20')}
@@ -535,7 +534,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('year')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    1999 <span style={{fontSize:22,verticalAlign:'middle',marginLeft:4}}>⭐</span>
+                    2160 <TelegramStarIcon />
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
                     {t('discount_40')}
@@ -647,7 +646,7 @@ const Account = () => {
           onClose={() => setShowError(false)}
         >
           <Alert severity="error" onClose={() => setShowError(false)}>
-            {errorMessage}
+            {t('error_occurred')}
           </Alert>
         </Snackbar>
       </Container>
