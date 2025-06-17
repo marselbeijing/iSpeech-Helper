@@ -3,8 +3,18 @@ import hashlib
 import hmac
 import os
 import requests
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+# Разрешаем CORS для фронтенда на Vercel и для локальной разработки
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*", "https://i-speech-helper-uce4.vercel.app"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
@@ -16,6 +26,15 @@ def check_telegram_auth(data: dict) -> bool:
     secret_key = hashlib.sha256(TELEGRAM_BOT_TOKEN.encode()).digest()
     hmac_string = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
     return hmac_string == hash_
+
+@app.get("/api/subscriptions/status/{user_id}")
+def get_subscription_status(user_id: str):
+    # Заглушка: всегда возвращаем неактивную подписку
+    return {
+        "userId": user_id,
+        "isActive": False,
+        "expiresAt": None
+    }
 
 @app.post("/send_message")
 async def send_message(request: Request):
