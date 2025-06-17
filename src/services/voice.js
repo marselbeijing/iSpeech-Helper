@@ -45,7 +45,6 @@ export const synthesizeSpeech = async (text) => {
       
       // Ждем загрузки голосов
       const voices = await getVoices();
-      console.log('Доступные голоса для синтеза:', voices);
       
       // Находим русский голос
       const russianVoice = voices.find(voice => 
@@ -54,10 +53,7 @@ export const synthesizeSpeech = async (text) => {
       );
 
       if (russianVoice) {
-        console.log('Выбран русский голос:', russianVoice);
         utterance.voice = russianVoice;
-      } else {
-        console.log('Русский голос не найден, используется голос по умолчанию');
       }
       
       utterance.lang = 'ru-RU';
@@ -69,10 +65,7 @@ export const synthesizeSpeech = async (text) => {
       const source = {
         start: () => {
           return new Promise((resolveStart) => {
-            console.log('Начинаем воспроизведение речи');
-            
             utterance.onend = () => {
-              console.log('Воспроизведение речи завершено');
               if (source.onended) {
                 source.onended();
               }
@@ -119,6 +112,14 @@ export const analyzeText = async (text) => {
   // Возвращаем случайный ответ из списка
   const randomIndex = Math.floor(Math.random() * responses.length);
   const response = responses[randomIndex];
-  console.log('Выбран ответ:', response);
   return response;
+};
+
+// Проверка поддержки Web Speech API
+export const isSpeechApiSupported = () => {
+  return (
+    (window.SpeechRecognition || window.webkitSpeechRecognition) &&
+    window.speechSynthesis &&
+    window.SpeechSynthesisUtterance
+  );
 }; 

@@ -2,7 +2,8 @@ import { getUserSettings } from './storage';
 
 // Проверка поддержки вибрации
 const isVibrationSupported = () => {
-  return 'vibrate' in navigator;
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  return 'vibrate' in navigator && isMobile;
 };
 
 // Проверка, что мы в Telegram WebApp (где вибрация может работать)
@@ -26,9 +27,9 @@ export const vibrate = (type) => {
       return; // Если вибрация отключена в настройках
     }
 
-  if (!isVibrationSupported()) {
-    return;
-  }
+    if (!isVibrationSupported()) {
+      return;
+    }
 
     // В Telegram WebApp используем Telegram API для вибрации
     if (isTelegramWebApp()) {
@@ -51,27 +52,27 @@ export const vibrate = (type) => {
           return;
         }
       } catch (e) {
-        console.warn('Telegram HapticFeedback недоступен:', e);
+        console.error('Telegram HapticFeedback недоступен:', e);
       }
     }
 
     // Fallback для обычных браузеров
-  const pattern = patterns[type];
-  if (pattern) {
-    navigator.vibrate(pattern);
+    const pattern = patterns[type];
+    if (pattern) {
+      navigator.vibrate(pattern);
     }
   } catch (error) {
-    console.warn('Ошибка при вибрации:', error);
+    console.error('Ошибка при вибрации:', error);
   }
 };
 
 // Функция для отключения вибрации
 export const stopVibration = () => {
   try {
-  if (isVibrationSupported()) {
-    navigator.vibrate(0);
+    if (isVibrationSupported()) {
+      navigator.vibrate(0);
     }
   } catch (error) {
-    console.warn('Ошибка при остановке вибрации:', error);
+    console.error('Ошибка при остановке вибрации:', error);
   }
 }; 

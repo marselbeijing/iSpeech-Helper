@@ -16,6 +16,7 @@ import { commonStyles } from '../styles/TelegramStyles';
 import { styled } from '@mui/material/styles';
 import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
+import { isSpeechApiSupported } from '../services/voice';
 
 const CustomThumb = styled('span')(({ theme }) => ({
   width: 24,
@@ -40,6 +41,7 @@ const DAFMAF = () => {
   const [noiseVolume, setNoiseVolume] = useState(0.5);
   const [isMAFEnabled, setIsMAFEnabled] = useState(false);
   const [micPermissionError, setMicPermissionError] = useState(false);
+  const [speechApiError, setSpeechApiError] = useState(false);
   
   const audioContextRef = useRef(null);
   const mediaStreamRef = useRef(null);
@@ -249,11 +251,15 @@ const DAFMAF = () => {
   // Очистка при размонтировании компонента
   useEffect(() => {
     return () => {
-      if (isPlaying) {
-        cleanupAudio();
-      }
+      cleanupAudio();
     };
-  }, [isPlaying, cleanupAudio]);
+  }, [cleanupAudio]);
+
+  useEffect(() => {
+    if (!isSpeechApiSupported()) {
+      setSpeechApiError(true);
+    }
+  }, []);
 
   return (
     <Box sx={{ 
@@ -281,6 +287,13 @@ const DAFMAF = () => {
           transition={{ duration: 0.5 }}
           style={{ width: '100%', height: '100%' }}
         >
+          {speechApiError && (
+            <Box sx={{ p: 2, mb: 2, borderRadius: 2, bgcolor: 'error.light', color: 'error.contrastText', textAlign: 'center', width: '100%' }}>
+              <Typography variant="body2" sx={{ fontWeight: 'medium' }}>
+                Ваш браузер не поддерживает распознавание или синтез речи. Некоторые функции могут быть недоступны.
+              </Typography>
+            </Box>
+          )}
           <Box
             sx={{
               p: { xs: 1.5, sm: 2 },

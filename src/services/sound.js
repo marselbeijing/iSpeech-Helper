@@ -11,6 +11,7 @@ const initAudioContext = async () => {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       audioContext = new AudioContext();
     } catch (e) {
+      console.error('Ошибка инициализации AudioContext:', e);
       return false;
     }
   }
@@ -20,6 +21,7 @@ const initAudioContext = async () => {
     try {
       await audioContext.resume();
     } catch (e) {
+      console.error('Ошибка возобновления AudioContext:', e);
       return false;
     }
   }
@@ -47,23 +49,24 @@ const generateSound = async (type) => {
   const sound = options[type] || options.click;
   
   try {
-  // Создаем осциллятор и усилитель
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  
-  oscillator.type = sound.type;
-  oscillator.frequency.value = sound.freq;
-  
-  gainNode.gain.value = sound.volume;
-  
-  // Соединяем узлы
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-  
-  // Запускаем и останавливаем звук
-  oscillator.start();
-  oscillator.stop(audioContext.currentTime + sound.duration);
+    // Создаем осциллятор и усилитель
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.type = sound.type;
+    oscillator.frequency.value = sound.freq;
+    
+    gainNode.gain.value = sound.volume;
+    
+    // Соединяем узлы
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // Запускаем и останавливаем звук
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + sound.duration);
   } catch (error) {
+    console.error('Ошибка генерации звука:', error);
   }
 };
 
@@ -80,25 +83,26 @@ export const playSound = async (type) => {
     
     await generateSound(type);
   } catch (error) {
+    console.error('Ошибка воспроизведения звука:', error);
   }
 };
 
 // Остановка всех звуков (не требуется для сгенерированных звуков)
 export const stopAllSounds = () => {
-  // Реализация не требуется, так как звуки генерируются и автоматически останавливаются
+  // not implemented
 };
 
 // Функция для установки громкости (не используется в текущей реализации)
 export const setVolume = (volume) => {
-  // Сохраняем значение громкости для будущего использования
+  // not implemented
 };
 
 // Функция для отключения звука (не используется в текущей реализации)
 export const mute = () => {
-  // Отключаем звук
+  // not implemented
 };
 
 // Функция для включения звука (не используется в текущей реализации)
 export const unmute = (volume = 1) => {
-  // Включаем звук
+  // not implemented
 }; 

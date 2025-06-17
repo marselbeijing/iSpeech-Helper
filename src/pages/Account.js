@@ -35,7 +35,7 @@ import { getReferralStats, getReferralTransactions, generateReferralLink, reques
 import ReferralProgram from '../components/ReferralProgram';
 
 const TelegramStarIcon = () => (
-  <img src="/assets/telegram-star.png" alt="Telegram Stars" width={22} height={22} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
+  <img src="/assets/telegram-star.png" alt="Telegram Stars" width={28} height={28} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
 );
 
 const Account = () => {
