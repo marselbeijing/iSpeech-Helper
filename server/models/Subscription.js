@@ -32,12 +32,31 @@ const subscriptionSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  telegramPaymentChargeId: {
+    type: String,
+    required: true,
+  },
+  invoicePayload: {
+    type: String,
+    required: true,
+  },
+  paymentDate: {
+    type: Date,
+    default: Date.now,
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'paid', 'failed', 'refunded'],
+    default: 'pending',
+  },
 }, {
   timestamps: true,
 });
 
 // Индекс для быстрого поиска активных подписок
 subscriptionSchema.index({ userId: 1, isActive: 1 });
+subscriptionSchema.index({ telegramPaymentChargeId: 1 });
+subscriptionSchema.index({ status: 1 });
 
 // Метод для проверки активности подписки
 subscriptionSchema.methods.isValid = function() {

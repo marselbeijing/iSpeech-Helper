@@ -47,22 +47,22 @@ const generateSound = async (type) => {
   const sound = options[type] || options.click;
   
   try {
-    // Создаем осциллятор и усилитель
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.type = sound.type;
-    oscillator.frequency.value = sound.freq;
-    
-    gainNode.gain.value = sound.volume;
-    
-    // Соединяем узлы
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    // Запускаем и останавливаем звук
-    oscillator.start();
-    oscillator.stop(audioContext.currentTime + sound.duration);
+  // Создаем осциллятор и усилитель
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+  
+  oscillator.type = sound.type;
+  oscillator.frequency.value = sound.freq;
+  
+  gainNode.gain.value = sound.volume;
+  
+  // Соединяем узлы
+  oscillator.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+  
+  // Запускаем и останавливаем звук
+  oscillator.start();
+  oscillator.stop(audioContext.currentTime + sound.duration);
   } catch (error) {
   }
 };

@@ -12,7 +12,8 @@
     "mongoose": "^7.5.0",
     "dotenv": "^16.3.1",
     "cors": "^2.8.5",
-    "jsonwebtoken": "^9.0.1"
+    "jsonwebtoken": "^9.0.1",
+    "node-telegram-bot-api": "^0.61.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"

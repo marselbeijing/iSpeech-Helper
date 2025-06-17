@@ -1,83 +1,216 @@
-import WebApp from '@twa-dev/sdk';
+import { getCurrentUser } from './telegram';
 
-// Инициализация платежей
-export const initPayments = () => {
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
+// Конфигурация подписок
+export const SUBSCRIPTION_TYPES = {
+  MONTHLY: {
+    id: 'monthly',
+    stars: 299,
+    duration: 30,
+    title: 'Месячная подписка',
+    description: 'Доступ ко всем функциям на 1 месяц',
+  },
+  QUARTERLY: {
+    id: 'quarterly',
+    stars: 799,
+    duration: 90,
+    title: 'Квартальная подписка',
+    description: 'Доступ ко всем функциям на 3 месяца (скидка 20%)',
+  },
+  YEARLY: {
+    id: 'yearly',
+    stars: 1999,
+    duration: 365,
+    title: 'Годовая подписка',
+    description: 'Доступ ко всем функциям на 1 год (скидка 40%)',
+  },
+};
+
+// Проверка поддержки Telegram Stars
+export const isTelegramStarsSupported = () => {
   try {
-    if (window.Telegram?.WebApp?.initData) {
-      // Проверяем поддержку платежей
-      if (window.Telegram.WebApp.isVersionAtLeast('6.0')) {
-        return true;
-      }
-    }
-    return false;
+    return !!(
+      window.Telegram?.WebApp?.isVersionAtLeast &&
+      window.Telegram.WebApp.isVersionAtLeast('6.9') &&
+      window.Telegram.WebApp.openInvoice
+    );
   } catch (error) {
-    console.error('Error initializing payments:', error);
+    console.error('Ошибка проверки поддержки Telegram Stars:', error);
     return false;
   }
 };
 
-// Создание платежа
-export const createPayment = async (amount, title, description) => {
+// Создание инвойса для подписки
+export const createSubscriptionInvoice = async (subscriptionType) => {
   try {
-    if (!initPayments()) {
-      throw new Error('Payments are not supported');
+    const user = getCurrentUser();
+    if (!user) {
+      throw new Error('Пользователь не авторизован');
     }
 
-    const payment = {
-      title,
-      description,
-      payload: {
-        amount,
-        currency: 'STARS',
-        product_id: `product_${Date.now()}`,
-      },
-    };
+    const config = SUBSCRIPTION_TYPES[subscriptionType];
+    if (!config) {
+      throw new Error('Неверный тип подписки');
+    }
 
-    // Отправляем запрос на создание платежа
-    const result = await window.Telegram.WebApp.showPopup({
-      title: 'Подтверждение платежа',
-      message: `Вы хотите купить "${title}" за ${amount} STARS?`,
-      buttons: [
-        { id: 'confirm', type: 'ok' },
-        { id: 'cancel', type: 'cancel' },
-      ],
+    const response = await fetch(`${API_URL}/payments/create-invoice`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: user.id.toString(),
+        subscriptionType: config.id,
+      }),
     });
 
-    if (result === 'confirm') {
-      // Здесь должна быть интеграция с вашим бэкендом
-      // для создания реального платежа
-      return payment;
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Ошибка создания инвойса');
     }
 
-    return null;
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error('Error creating payment:', error);
-    return null;
+    console.error('Ошибка создания инвойса:', error);
+    throw error;
+  }
+};
+
+// Покупка подписки через Telegram Stars
+export const purchaseSubscription = async (subscriptionType) => {
+  try {
+    if (!isTelegramStarsSupported()) {
+      throw new Error('Telegram Stars не поддерживается в этой версии приложения');
+    }
+
+    const user = getCurrentUser();
+    if (!user) {
+      throw new Error('Пользователь не авторизован');
+    }
+
+    // Создаем инвойс
+    const invoiceData = await createSubscriptionInvoice(subscriptionType);
+    
+    if (!invoiceData.success || !invoiceData.invoiceLink) {
+      throw new Error('Не удалось создать инвойс');
+    }
+
+    // Открываем платежный интерфейс Telegram
+    return new Promise((resolve, reject) => {
+      try {
+        window.Telegram.WebApp.openInvoice(invoiceData.invoiceLink, (status) => {
+          console.log('Payment status:', status);
+          
+          if (status === 'paid') {
+            resolve({
+              success: true,
+              status: 'paid',
+              invoiceId: invoiceData.invoiceId,
+              subscriptionType,
+            });
+          } else if (status === 'cancelled') {
+            resolve({
+              success: false,
+              status: 'cancelled',
+              error: 'Платеж отменен пользователем',
+            });
+          } else if (status === 'failed') {
+            reject(new Error('Платеж не удался'));
+          } else {
+            reject(new Error(`Неизвестный статус платежа: ${status}`));
+          }
+        });
+      } catch (error) {
+        console.error('Ошибка открытия платежного интерфейса:', error);
+        reject(error);
+      }
+    });
+  } catch (error) {
+    console.error('Ошибка покупки подписки:', error);
+    throw error;
   }
 };
 
 // Проверка статуса платежа
-export const checkPaymentStatus = async (paymentId) => {
+export const checkPaymentStatus = async (invoiceId) => {
   try {
-    // Здесь должна быть интеграция с вашим бэкендом
-    // для проверки статуса платежа
-    return {
-      status: 'pending',
-      paymentId,
-    };
+    const response = await fetch(`${API_URL}/payments/status/${invoiceId}`);
+    
+    if (!response.ok) {
+      throw new Error('Ошибка проверки статуса платежа');
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error('Error checking payment status:', error);
-    return null;
+    console.error('Ошибка проверки статуса платежа:', error);
+    throw error;
   }
 };
 
-// Обработка успешного платежа
-export const handleSuccessfulPayment = (payment) => {
+// Возврат средств
+export const refundPayment = async (subscriptionId) => {
   try {
-    // Здесь должна быть логика после успешного платежа
-    return true;
+    const user = getCurrentUser();
+    if (!user) {
+      throw new Error('Пользователь не авторизован');
+    }
+
+    const response = await fetch(`${API_URL}/payments/refund`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: user.id.toString(),
+        subscriptionId,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Ошибка возврата средств');
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error('Error handling successful payment:', error);
+    console.error('Ошибка возврата средств:', error);
+    throw error;
+  }
+};
+
+// Получение информации о подписке
+export const getSubscriptionInfo = (subscriptionType) => {
+  return SUBSCRIPTION_TYPES[subscriptionType] || null;
+};
+
+// Проверка доступности функций премиум подписки
+export const isPremiumFeatureAvailable = async () => {
+  try {
+    const user = getCurrentUser();
+    if (!user) return false;
+
+    const response = await fetch(`${API_URL}/subscriptions/status/${user.id}`);
+    if (!response.ok) return false;
+
+    const data = await response.json();
+    return data.isActive;
+  } catch (error) {
+    console.error('Ошибка проверки премиум функций:', error);
     return false;
   }
+};
+
+export default {
+  SUBSCRIPTION_TYPES,
+  isTelegramStarsSupported,
+  createSubscriptionInvoice,
+  purchaseSubscription,
+  checkPaymentStatus,
+  refundPayment,
+  getSubscriptionInfo,
+  isPremiumFeatureAvailable,
 }; 

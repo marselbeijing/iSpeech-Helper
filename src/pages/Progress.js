@@ -51,7 +51,7 @@ const Progress = () => {
 
   return (
     <Container maxWidth="md" sx={{ 
-      py: { xs: 0, sm: 4 },
+      py: { xs: 0, sm: 4 }, 
       height: '100vh',
       overflowY: 'auto',
       px: { xs: 0, sm: 2 }

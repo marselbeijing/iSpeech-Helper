@@ -33,6 +33,11 @@ import { useTranslation } from 'react-i18next';
 import { getUserSettings, saveUserSettings } from '../services/storage';
 import { getReferralStats, getReferralTransactions, generateReferralLink, requestPayout } from '../services/referral';
 import ReferralProgram from '../components/ReferralProgram';
+import { 
+  purchaseSubscription as purchaseWithStars, 
+  isTelegramStarsSupported,
+  SUBSCRIPTION_TYPES 
+} from '../services/payments';
 
 const Account = () => {
   const theme = useTheme();
@@ -49,64 +54,22 @@ const Account = () => {
   const [transactions, setTransactions] = useState([]);
   const [payoutStatus, setPayoutStatus] = useState(null);
   const [starsAvailable, setStarsAvailable] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     try {
       const currentUser = getCurrentUser();
       setUser(currentUser);
-      setLoading(false);
-
-      if (!currentUser) {
-        const script = document.createElement('script');
-        script.src = 'https://telegram.org/js/telegram-widget.js?22';
-        script.setAttribute('data-telegram-login', 'iSpeechHelperBot');
-        script.setAttribute('data-size', 'large');
-        script.setAttribute('data-radius', '8');
-        script.setAttribute('data-request-access', 'write');
-        script.setAttribute('data-userpic', 'true');
-        script.setAttribute('data-lang', 'ru');
-        script.setAttribute('data-onauth', 'onTelegramAuth(user)');
-        script.async = true;
-        
-        const widgetDiv = document.getElementById('telegram-login-widget');
-        if (widgetDiv) {
-          widgetDiv.innerHTML = '';
-          widgetDiv.appendChild(script);
-        }
-
-        window.onTelegramAuth = async (user) => {
-          try {
-            const userData = await verifyTelegramAuth(user);
-            setUser(userData);
-            playSound('success');
-            vibrate('success');
-          } catch (error) {
-            console.error('Ошибка авторизации:', error);
-            playSound('error');
-            vibrate('error');
-          }
-        };
-
-        return () => {
-          if (widgetDiv) widgetDiv.innerHTML = '';
-          delete window.onTelegramAuth;
-        };
-      }
-
-      // Проверяем статус подписки
-      const checkSubscription = async () => {
-        const status = await checkSubscriptionStatus();
-        setSubscription(status);
-      };
       
-      if (user) {
-        checkSubscription();
-      }
+      // Проверяем поддержку Telegram Stars
+      setStarsAvailable(isTelegramStarsSupported());
+      
+      setLoading(false);
     } catch (error) {
-      console.error('Ошибка инициализации:', error);
+      console.error('Error loading user:', error);
       setLoading(false);
     }
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -144,28 +107,70 @@ const Account = () => {
     }
   };
 
-  const handlePurchase = async (type) => {
+  const handlePurchase = async (subscriptionType) => {
+    if (!user) {
+      setErrorMessage('Пользователь не авторизован');
+      setShowError(true);
+      return;
+    }
+
+    if (!starsAvailable) {
+      setErrorMessage('Telegram Stars не поддерживается в этой версии приложения');
+      setShowError(true);
+      return;
+    }
+
+    setIsPurchasing(true);
+    setErrorMessage('');
+
     try {
-      setIsPurchasing(true);
-      const result = await purchaseSubscription(type);
+      playSound('click');
+      vibrate(50);
+
+      const result = await purchaseWithStars(subscriptionType);
       
       if (result.success) {
-        setSubscription(result.subscription);
+        // Обновляем информацию о подписке
+        await loadSubscriptionStatus();
+        
         playSound('success');
-        vibrate('success');
+        vibrate([100, 50, 100]);
+        
+        // Показываем уведомление об успехе
+        window.Telegram?.WebApp?.showAlert('✅ Подписка успешно активирована!');
       } else {
-        playSound('error');
-        vibrate('error');
-        // TODO: Показать уведомление об ошибке
+        if (result.status !== 'cancelled') {
+          setErrorMessage(result.error || 'Ошибка при покупке подписки');
+          setShowError(true);
+        }
       }
     } catch (error) {
-      console.error('Ошибка при покупке:', error);
+      console.error('Ошибка покупки подписки:', error);
+      setErrorMessage(error.message || 'Произошла ошибка при покупке подписки');
+      setShowError(true);
       playSound('error');
-      vibrate('error');
+      vibrate(200);
     } finally {
       setIsPurchasing(false);
     }
   };
+
+  const loadSubscriptionStatus = async () => {
+    if (!user) return;
+    
+    try {
+      const status = await checkSubscriptionStatus(user.id);
+      setSubscription(status);
+    } catch (error) {
+      console.error('Error loading subscription status:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      loadSubscriptionStatus();
+    }
+  }, [user]);
 
   const handleSettingChange = (key, value) => {
     const newSettings = { ...settings, [key]: value };
@@ -604,7 +609,7 @@ const Account = () => {
 - Поддержка русского и английского языков.`}
                 {i18n.language === 'en' && `iSpeech Helper is a specialized application designed to help people with speech disorders. It is created to improve diction, articulation, and overall speech quality through a set of effective exercises.
 
-Key Features:
+                Key Features:
 
 ★ Diaphragmatic breathing exercises — develop breath control and promote smooth speech.
 ★ Tongue twisters — train diction, articulation, and clarity of pronunciation.
@@ -613,7 +618,7 @@ Key Features:
 ★ Metronome-assisted reading — builds correct tempo and speech rhythm.
 ★ DAF/MAF — delayed auditory feedback and masking techniques for controlling speech rate and fluency.
 
-Benefits:
+                Benefits:
 - Regular practice significantly improves speech clarity and expressiveness.
 - Personalized exercise selection for your goals.
 - Progress tracking and achievement system.
@@ -642,7 +647,7 @@ Benefits:
           onClose={() => setShowError(false)}
         >
           <Alert severity="error" onClose={() => setShowError(false)}>
-            {t('error_occurred')}
+            {errorMessage}
           </Alert>
         </Snackbar>
       </Container>

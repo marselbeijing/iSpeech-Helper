@@ -26,9 +26,9 @@ export const vibrate = (type) => {
       return; // Если вибрация отключена в настройках
     }
 
-    if (!isVibrationSupported()) {
-      return;
-    }
+  if (!isVibrationSupported()) {
+    return;
+  }
 
     // В Telegram WebApp используем Telegram API для вибрации
     if (isTelegramWebApp()) {
@@ -56,9 +56,9 @@ export const vibrate = (type) => {
     }
 
     // Fallback для обычных браузеров
-    const pattern = patterns[type];
-    if (pattern) {
-      navigator.vibrate(pattern);
+  const pattern = patterns[type];
+  if (pattern) {
+    navigator.vibrate(pattern);
     }
   } catch (error) {
     console.warn('Ошибка при вибрации:', error);
@@ -68,8 +68,8 @@ export const vibrate = (type) => {
 // Функция для отключения вибрации
 export const stopVibration = () => {
   try {
-    if (isVibrationSupported()) {
-      navigator.vibrate(0);
+  if (isVibrationSupported()) {
+    navigator.vibrate(0);
     }
   } catch (error) {
     console.warn('Ошибка при остановке вибрации:', error);

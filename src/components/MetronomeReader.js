@@ -268,7 +268,7 @@ const MetronomeReader = () => {
               valueLabelDisplay="auto"
               slots={{ thumb: CustomThumb }}
             />
-
+            
             {words.length > 0 && (
               <Box
                 sx={{
@@ -324,7 +324,7 @@ const MetronomeReader = () => {
                 })}
               </Box>
             )}
-
+            
             <Typography
               variant="caption"
               align="center"
