@@ -53,6 +53,7 @@ const Account = () => {
   const [transactions, setTransactions] = useState([]);
   const [payoutStatus, setPayoutStatus] = useState(null);
   const [starsAvailable, setStarsAvailable] = useState(false);
+  const [subscriptionError, setSubscriptionError] = useState('');
 
   useEffect(() => {
     try {
@@ -100,7 +101,11 @@ const Account = () => {
       // Проверяем статус подписки
       const checkSubscription = async () => {
         const status = await checkSubscriptionStatus();
-        setSubscription(status);
+        if (status && status.error) {
+          setSubscriptionError(status.error);
+        } else {
+          setSubscription(status);
+        }
       };
       
       if (user) {
@@ -647,6 +652,17 @@ const Account = () => {
         >
           <Alert severity="error" onClose={() => setShowError(false)}>
             {t('error_occurred')}
+          </Alert>
+        </Snackbar>
+
+        <Snackbar
+          open={!!subscriptionError}
+          autoHideDuration={6000}
+          onClose={() => setSubscriptionError('')}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert severity="error" onClose={() => setSubscriptionError('')} sx={{ width: '100%' }}>
+            {subscriptionError}
           </Alert>
         </Snackbar>
       </Container>

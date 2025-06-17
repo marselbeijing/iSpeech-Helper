@@ -42,7 +42,8 @@ export const checkSubscriptionStatus = async () => {
     return await response.json();
   } catch (error) {
     console.error('Ошибка при проверке подписки:', error);
-    return null;
+    // Возвращаем специальный объект для UI
+    return { error: 'Сервер недоступен. Проверьте соединение или попробуйте позже.' };
   }
 };
 

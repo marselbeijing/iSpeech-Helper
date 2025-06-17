@@ -100,7 +100,7 @@ export const addReferralTransaction = async (referralId, amount) => {
 // Получение истории транзакций
 export const getReferralTransactions = async () => {
   const user = getCurrentUser();
-  if (!user) return [];
+  if (!user) return { error: 'Пользователь не найден.' };
 
   try {
     const transactionsQuery = query(
@@ -116,7 +116,7 @@ export const getReferralTransactions = async () => {
     })).sort((a, b) => b.date.localeCompare(a.date));
   } catch (error) {
     console.error('Error getting transactions:', error);
-    return [];
+    return { error: 'Ошибка получения истории транзакций.' };
   }
 };
 
@@ -263,7 +263,7 @@ export const activateReferralSubscription = async (referralId, subscriptionType)
     return true;
   } catch (error) {
     console.error('Error activating referral subscription:', error);
-    return false;
+    return { error: 'Ошибка при активации реферальной подписки.' };
   }
 };
 

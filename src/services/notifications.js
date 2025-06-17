@@ -44,7 +44,7 @@ export const createNotification = async (userId, type, data) => {
     return true;
   } catch (error) {
     console.error('Error creating notification:', error);
-    return false;
+    return { error: 'Ошибка создания уведомления. Проверьте соединение.' };
   }
 };
 
@@ -66,7 +66,7 @@ export const getUserNotifications = async (userId, limit = 20) => {
     }));
   } catch (error) {
     console.error('Error getting notifications:', error);
-    return [];
+    return { error: 'Ошибка получения уведомлений. Проверьте соединение.' };
   }
 };
 
@@ -81,7 +81,7 @@ export const markNotificationAsRead = async (notificationId) => {
     return true;
   } catch (error) {
     console.error('Error marking notification as read:', error);
-    return false;
+    return { error: 'Ошибка при отметке уведомления как прочитанного.' };
   }
 };
 
@@ -92,7 +92,7 @@ export const requestNotificationPermission = async () => {
     return permission === 'granted';
   } catch (error) {
     console.error('Error requesting notification permission:', error);
-    return false;
+    return { error: 'Ошибка при запросе разрешения на уведомления.' };
   }
 };
 
