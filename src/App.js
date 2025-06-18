@@ -198,16 +198,15 @@ const App = () => {
   
   useEffect(() => {
     // Инициализация Telegram Analytics SDK
-    telegramAnalytics.init({
-      token: TELEGRAM_ANALYTICS_TOKEN,
-      appName: 'ispeechhelper',
-    });
-    // Отправка события запуска приложения
-    telegramAnalytics.track('app_start', {
-      timestamp: Date.now(),
-      user_agent: navigator.userAgent,
-      platform: window.Telegram?.WebApp?.platform || 'web',
-    });
+    try {
+      telegramAnalytics.init({
+        token: TELEGRAM_ANALYTICS_TOKEN,
+        appName: 'ispeechhelper',
+      });
+      console.log('Telegram Analytics SDK инициализирован успешно');
+    } catch (error) {
+      console.warn('Ошибка инициализации Telegram Analytics SDK:', error);
+    }
   }, []);
   
   // Создаем тему на основе настроек
