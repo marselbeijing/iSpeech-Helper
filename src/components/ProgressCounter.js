@@ -3,13 +3,10 @@ import {
   Box, 
   Typography, 
   CircularProgress, 
-  useTheme,
-  Badge,
-  Button
+  useTheme
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getUserStats, updateProgress } from '../services/storage';
-import { ArrowBack } from '@mui/icons-material';
+import { getUserStats } from '../services/storage';
 import { useTranslation } from 'react-i18next';
 
 const ProgressCounter = ({ showDetails = false }) => {
@@ -43,10 +40,6 @@ const ProgressCounter = ({ showDetails = false }) => {
   
   // Посчитаем количество выполненных достижений
   const completedAchievements = stats.achievements.filter(a => a.completed).length;
-  
-  const handleBackClick = () => {
-    // Implementation of handleBackClick function
-  };
 
   return (
     <AnimatePresence>

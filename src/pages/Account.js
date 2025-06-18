@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Container,
-  Typography,
   Box,
-  Paper,
+  Typography,
+  Container,
   Button,
-  Avatar,
   useTheme,
+  Card,
+  CardContent,
+  Switch,
+  FormControlLabel,
   CircularProgress,
   Modal,
   Fade,
   IconButton,
   Snackbar,
   Alert,
-  Divider,
 } from '@mui/material';
 import {
-  Telegram as TelegramIcon,
   Close as CloseIcon,
-  ContentCopy as ContentCopyIcon,
-  Share as ShareIcon,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { verifyTelegramAuth, getCurrentUser, logout } from '../services/telegram';
@@ -29,7 +27,7 @@ import TelegramLogin from '../components/TelegramLogin';
 import { checkSubscriptionStatus, purchaseSubscription } from '../services/subscription';
 import { useTranslation } from 'react-i18next';
 import { getUserSettings, saveUserSettings } from '../services/storage';
-import { getReferralStats, getReferralTransactions, generateReferralLink, requestPayout } from '../services/referral';
+import { getReferralStats, getReferralTransactions, requestPayout } from '../services/referral';
 import ReferralProgram from '../components/ReferralProgram';
 
 const TelegramStarIcon = () => (
@@ -47,9 +45,6 @@ const Account = () => {
   const [settings, setSettings] = useState(getUserSettings());
   const [showCopied, setShowCopied] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [referralStats, setReferralStats] = useState(null);
-  const [transactions, setTransactions] = useState([]);
-  const [payoutStatus, setPayoutStatus] = useState(null);
   const [starsAvailable, setStarsAvailable] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState('');
 
@@ -137,10 +132,8 @@ const Account = () => {
     if (user) {
       const loadReferralData = async () => {
         try {
-          const stats = await getReferralStats();
-          const txHistory = await getReferralTransactions();
-          setReferralStats(stats);
-          setTransactions(txHistory);
+          await getReferralStats();
+          await getReferralTransactions();
         } catch (error) {
           console.error('Error loading referral data:', error);
         }
@@ -157,17 +150,6 @@ const Account = () => {
       setStarsAvailable(false);
     }
   }, []);
-
-  const handleLogout = () => {
-    try {
-      playSound('click');
-      vibrate('click');
-      logout();
-      setUser(null);
-    } catch (error) {
-      console.error('Ошибка выхода:', error);
-    }
-  };
 
   const handlePurchase = async (type) => {
     try {
@@ -193,67 +175,7 @@ const Account = () => {
     }
   };
 
-  const handleSettingChange = (key, value) => {
-    const newSettings = { ...settings, [key]: value };
-    setSettings(newSettings);
-    saveUserSettings(newSettings);
-  };
 
-  const generateReferralLink = () => {
-    // В реальном приложении здесь будет генерация уникальной ссылки
-    return `https://ispeech.app/ref/${settings.userId || 'demo'}`;
-  };
-
-  const copyToClipboard = async () => {
-    try {
-      const link = await generateReferralLink();
-      await navigator.clipboard.writeText(link);
-      setShowCopied(true);
-      playSound('success');
-      vibrate('success');
-    } catch (err) {
-      setShowError(true);
-      playSound('error');
-      vibrate('error');
-    }
-  };
-
-  const shareLink = async () => {
-    try {
-      const link = await generateReferralLink();
-      await navigator.share({
-        title: 'iSpeech Helper',
-        text: t('referral_share_text'),
-        url: link,
-      });
-      playSound('success');
-      vibrate('success');
-    } catch (err) {
-      setShowError(true);
-      playSound('error');
-      vibrate('error');
-    }
-  };
-
-  const handleRequestPayout = async () => {
-    try {
-      const result = await requestPayout();
-      setPayoutStatus(result);
-      if (result.success) {
-        const stats = await getReferralStats();
-        setReferralStats(stats);
-        playSound('success');
-        vibrate('success');
-      } else {
-        playSound('error');
-        vibrate('error');
-      }
-    } catch (error) {
-      console.error('Error requesting payout:', error);
-      playSound('error');
-      vibrate('error');
-    }
-  };
 
   if (loading) {
     return (

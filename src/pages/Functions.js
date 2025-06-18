@@ -10,13 +10,11 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   useTheme,
-  ListItemIcon,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import {
   DarkMode as DarkModeIcon,
   VolumeUp as VolumeIcon,
-  Vibration as VibrationIcon,
   Translate as LanguageIcon,
   ArrowBack,
   Support as SupportIcon,
@@ -158,14 +156,6 @@ const Functions = () => {
     playSound('click');
     vibrate('click');
     navigate('/');
-  };
-
-  // Обработчик изменения языка
-  const handleLanguageChange = () => {
-    const newLang = settings.language === 'ru' ? 'en' : 'ru';
-    setSettings(prev => ({ ...prev, language: newLang }));
-    localStorage.setItem('lang', newLang);
-    i18n.changeLanguage(newLang);
   };
 
   return (

@@ -3,7 +3,6 @@ import {
   Container,
   Typography,
   Box,
-  Paper,
   Button,
   Grid,
   useTheme,
@@ -22,7 +21,7 @@ const BreathingExercises = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentPhase, setCurrentPhase] = useState('inhale'); // inhale, hold, exhale, rest
   const [totalCycles] = useState(5);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const phases = useMemo(() => ({
     inhale: { duration: 4, label: t('breathing_inhale') },
@@ -51,7 +50,7 @@ const BreathingExercises = () => {
     setCurrentPhase('inhale');
     playSound('click');
     vibrate('click');
-  }, [totalCycles]);
+  }, []);
 
   const stopExercise = useCallback(() => {
     setIsPlaying(false);
@@ -59,7 +58,7 @@ const BreathingExercises = () => {
     playSound('click');
     vibrate('click');
     handleExerciseComplete();
-  }, [totalCycles]);
+  }, []);
 
   // Цвета для разных фаз
   const getColors = useCallback((phase) => {

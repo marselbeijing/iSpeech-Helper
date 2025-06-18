@@ -167,14 +167,10 @@ const TongueTwisters = () => {
   const [isVisible, setIsVisible] = useState(true);
   const textBoxRef = useRef(null);
 
-  useEffect(() => {
-    getRandomTwister(level);
-  }, [level, i18n.language]);
-
-  const getRandomTwister = (lvl = level) => {
+  const getRandomTwister = React.useCallback((lvl = level) => {
     setIsVisible(false);
     setTimeout(() => {
-      const arr = i18n.language === 'ru' ? tongueTwistersRU[lvl] : tongueTwistersEN[lvl];
+      const arr = i18n.language === 'ru' ? tongueTwistersRU[levels[lvl].value] || tongueTwistersRU.beginner : tongueTwistersEN[levels[lvl].value] || tongueTwistersEN.beginner;
       const randomIndex = Math.floor(Math.random() * arr.length);
       setCurrentTwister(arr[randomIndex]);
       setIsVisible(true);
@@ -187,7 +183,13 @@ const TongueTwisters = () => {
         }
       }, 350);
     }, 300);
-  };
+  }, [level, i18n.language]);
+
+  useEffect(() => {
+    getRandomTwister(level);
+  }, [level, i18n.language, getRandomTwister]);
+
+
 
   const handleBackClick = () => {
     playSound('click');
@@ -367,7 +369,6 @@ const TongueTwisters = () => {
             <Tabs
               value={level}
               onChange={(_, v) => {
-                const oldLevel = level;
                 setLevel(v);
               }}
               variant="fullWidth"

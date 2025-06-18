@@ -36,7 +36,6 @@ const SmoothReader = () => {
   const [speed, setSpeed] = useState(DEFAULT_SPEED);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [storyIndex, setStoryIndex] = useState(0);
-  const intervalRef = useRef(null);
   const textBoxRef = useRef(null);
   const lastActiveRef = useRef(null);
   const startTimeRef = useRef(null);
@@ -98,7 +97,6 @@ const SmoothReader = () => {
   };
 
   const handleSliderChange = (_, value) => {
-    const oldSpeed = speed;
     setSpeed(value);
   };
 

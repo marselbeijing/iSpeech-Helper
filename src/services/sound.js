@@ -2,7 +2,6 @@ import { getUserSettings } from './storage';
 
 // Создаем аудио-контекст при необходимости
 let audioContext = null;
-let isAudioInitialized = false;
 let isAudioBlocked = false;
 
 // Функция для инициализации аудио-контекста
@@ -43,7 +42,6 @@ const initAudioContext = async () => {
     }
   }
   
-  isAudioInitialized = true;
   return true;
 };
 
@@ -111,22 +109,4 @@ export const initAudio = async () => {
   return await initAudioContext();
 };
 
-// Остановка всех звуков (не требуется для сгенерированных звуков)
-export const stopAllSounds = () => {
-  // not implemented
-};
-
-// Функция для установки громкости (не используется в текущей реализации)
-export const setVolume = (volume) => {
-  // not implemented
-};
-
-// Функция для отключения звука (не используется в текущей реализации)
-export const mute = () => {
-  // not implemented
-};
-
-// Функция для включения звука (не используется в текущей реализации)
-export const unmute = (volume = 1) => {
-  // not implemented
-}; 
+ 

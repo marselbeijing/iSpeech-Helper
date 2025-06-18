@@ -7,7 +7,7 @@ import {
   Paper,
   useTheme,
 } from '@mui/material';
-import { motion } from 'framer-motion';
+
 import { useNavigate } from 'react-router-dom';
 import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
@@ -25,22 +25,16 @@ import { useTranslation } from 'react-i18next';
 const EmotionsTrainer = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [currentEmotion, setCurrentEmotion] = useState(null);
   const [currentPhrase, setCurrentPhrase] = useState('');
-  const [isStarted, setIsStarted] = useState(true);
 
   React.useEffect(() => {
     getRandomEmotionAndPhrase();
     // eslint-disable-next-line
   }, []);
 
-  const handleStartTraining = () => {
-    setIsStarted(true);
-    getRandomEmotionAndPhrase();
-    playSound('click');
-    vibrate('click');
-  };
+
 
   const getRandomEmotionAndPhrase = () => {
     const randomEmotionIndex = Math.floor(Math.random() * emotions.length);

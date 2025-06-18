@@ -94,7 +94,6 @@ const router = createBrowserRouter([
 // Main App component
 const App = () => {
   const { i18n } = useTranslation();
-  const [darkMode, setDarkMode] = useState(false);
   const [themeMode, setThemeMode] = useState('light');
   
   // Функция для проверки доступности функций Telegram WebApp
@@ -110,7 +109,6 @@ const App = () => {
   };
   
   const updateTheme = (isDark) => {
-    setDarkMode(isDark);
     setThemeMode(isDark ? 'dark' : 'light');
     
     if (window.Telegram?.WebApp?.isExpanded && isColorMethodsSupported()) {
@@ -160,7 +158,7 @@ const App = () => {
       document.removeEventListener('click', handleFirstUserInteraction);
       document.removeEventListener('touchstart', handleFirstUserInteraction);
     };
-  }, [i18n.language]);
+  }, [i18n.language, updateTheme]);
 
   // Обработчик события изменения темы из настроек
   useEffect(() => {
@@ -171,7 +169,7 @@ const App = () => {
 
     window.addEventListener('themeChanged', handleThemeChange);
     return () => window.removeEventListener('themeChanged', handleThemeChange);
-  }, []);
+  }, [updateTheme]);
   
   useEffect(() => {
     const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -193,16 +191,14 @@ const App = () => {
 
     // Обработка изменения темы
     if (isTelegramWebAppAvailable()) {
-      try {
-        const colorScheme = window.Telegram.WebApp.colorScheme;
-        setDarkMode(colorScheme === 'dark');
-        setThemeMode(colorScheme === 'dark' ? 'dark' : 'light');
+              try {
+          const colorScheme = window.Telegram.WebApp.colorScheme;
+          setThemeMode(colorScheme === 'dark' ? 'dark' : 'light');
         setColors();
 
         window.Telegram.WebApp.onEvent('themeChanged', () => {
           try {
             const newColorScheme = window.Telegram.WebApp.colorScheme;
-            setDarkMode(newColorScheme === 'dark');
             setThemeMode(newColorScheme === 'dark' ? 'dark' : 'light');
             setColors();
           } catch (error) {
@@ -215,15 +211,13 @@ const App = () => {
     } else {
       // Если Telegram WebApp недоступен, используем системные настройки
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      setDarkMode(mediaQuery.matches);
       setThemeMode(mediaQuery.matches ? 'dark' : 'light');
 
       mediaQuery.addEventListener('change', (e) => {
-        setDarkMode(e.matches);
         setThemeMode(e.matches ? 'dark' : 'light');
       });
     }
-  }, []);
+  }, [isColorMethodsSupported]);
   
   useEffect(() => {
     // Функция проверки доступности Telegram WebApp

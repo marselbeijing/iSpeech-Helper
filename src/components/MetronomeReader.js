@@ -4,7 +4,6 @@ import {
   Typography,
   Box,
   Slider,
-  Paper,
   useTheme,
   Button,
 } from '@mui/material';
@@ -70,7 +69,7 @@ const MetronomeReader = () => {
       if (audioContextRef.current) audioContextRef.current.close();
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [t]);
+  }, [t, handleGenerateAffirmation]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -85,7 +84,7 @@ const MetronomeReader = () => {
       }, 350);
     }
     return () => cancelAnimationFrame(animationFrameRef.current);
-  }, [isPlaying, bpm, words.length]);
+  }, [isPlaying, bpm, words.length, scheduler]);
 
   useEffect(() => {
     if (lastActiveRef.current && textBoxRef.current) {
@@ -148,7 +147,6 @@ const MetronomeReader = () => {
 
   const handleBpmChange = (event, newValue) => {
     if (typeof newValue === 'number') {
-      const oldBpm = bpm;
       setBpm(newValue);
       playSound('click');
       vibrate('click');

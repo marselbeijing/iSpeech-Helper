@@ -10,7 +10,7 @@ const Root = () => {
   
   // Отслеживаем навигацию между страницами
   useEffect(() => {
-    const pageName = location.pathname === '/' ? 'home' : location.pathname.slice(1);
+    // Можно добавить логику отслеживания навигации здесь при необходимости
   }, [location]);
   
   return (

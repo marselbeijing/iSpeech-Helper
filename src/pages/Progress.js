@@ -12,7 +12,7 @@ import {
   DialogActions,
 } from '@mui/material';
 import { ArrowBack, RestartAlt } from '@mui/icons-material';
-import { motion } from 'framer-motion';
+
 import { useNavigate } from 'react-router-dom';
 import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
