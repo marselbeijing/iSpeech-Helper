@@ -4,10 +4,20 @@ import App from './App';
 import './index.css';
 import telegramAnalytics from '@telegram-apps/analytics';
 
-telegramAnalytics.init({
-  token: process.env.REACT_APP_TG_ANALYTICS_TOKEN,
-  appName: 'ispeechhelper',
-});
+// Инициализируем Telegram Analytics только если есть токен
+const analyticsToken = process.env.REACT_APP_TG_ANALYTICS_TOKEN;
+if (analyticsToken && analyticsToken !== 'undefined') {
+  try {
+    telegramAnalytics.init({
+      token: analyticsToken,
+      appName: 'ispeechhelper',
+    });
+  } catch (error) {
+    console.warn('Telegram Analytics не инициализирован:', error.message);
+  }
+} else {
+  console.log('Telegram Analytics токен не найден, пропускаем инициализацию');
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -16,18 +26,31 @@ root.render(
   </React.StrictMode>
 );
 
-// Подавление предупреждений о TIMEOUT
+// Подавление различных ошибок
 window.addEventListener('error', function(event) {
-  if (event.message && event.message.includes('TIMEOUT')) {
-    // Не выводим в консоль
+  const message = event.message || '';
+  
+  // Подавляем ошибки, которые не критичны для работы приложения
+  if (
+    message.includes('TIMEOUT') ||
+    message.includes('MetaMask extension not found') ||
+    message.includes('Token is not provided') ||
+    message.includes('ChromeTransport')
+  ) {
     event.preventDefault();
     return;
   }
 });
 
-// Подавление ошибок MetaMask extension not found
-window.addEventListener('error', function(event) {
-  if (event.message && event.message.includes('MetaMask extension not found')) {
+// Подавление unhandled promise rejections
+window.addEventListener('unhandledrejection', function(event) {
+  const reason = event.reason?.message || event.reason || '';
+  
+  if (
+    reason.includes('MetaMask') ||
+    reason.includes('Token is not provided') ||
+    reason.includes('ChromeTransport')
+  ) {
     event.preventDefault();
     return;
   }

@@ -67,7 +67,7 @@ export const checkSubscriptionStatus = async () => {
 
     // Создаем AbortController для таймаута
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 секунд для Render.com
 
     pendingRequest = fetch(url, {
       method: 'GET',
@@ -125,6 +125,16 @@ export const checkSubscriptionStatus = async () => {
     
     if (error.message.includes('CORS')) {
       return { error: 'Ошибка настройки сервера. Обратитесь к администратору.' };
+    }
+    
+    // Если это таймаут, возвращаем данные по умолчанию
+    if (error.message.includes('Время ожидания запроса истекло')) {
+      console.warn('Таймаут запроса, возвращаем данные по умолчанию');
+      return {
+        isActive: false,
+        type: null,
+        expiresAt: null,
+      };
     }
     
     return { error: `Ошибка сервера: ${error.message}` };
