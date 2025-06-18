@@ -203,7 +203,7 @@ const App = () => {
       appName: 'ispeechhelper',
     });
     // Отправка события запуска приложения
-    telegramAnalytics.sendEvent('app_start', {
+    telegramAnalytics.track('app_start', {
       timestamp: Date.now(),
       user_agent: navigator.userAgent,
       platform: window.Telegram?.WebApp?.platform || 'web',
