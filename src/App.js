@@ -127,6 +127,30 @@ const App = () => {
 
     // Отслеживание запуска приложения
     analyticsService.trackAppStart();
+    
+    // Добавляем глобальные функции отладки
+    window.debugAnalytics = () => {
+      console.log('🔍 Debug Analytics: Проверяем состояние...');
+      console.log('Token:', process.env.REACT_APP_TG_ANALYTICS_TOKEN ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
+      console.log('Token length:', process.env.REACT_APP_TG_ANALYTICS_TOKEN?.length || 0);
+      console.log('Telegram WebApp:', !!window.Telegram?.WebApp);
+      console.log('Analytics service:', analyticsService);
+      
+      return {
+        token: !!process.env.REACT_APP_TG_ANALYTICS_TOKEN,
+        tokenLength: process.env.REACT_APP_TG_ANALYTICS_TOKEN?.length || 0,
+        webApp: !!window.Telegram?.WebApp,
+        service: analyticsService
+      };
+    };
+    
+    window.testAnalyticsEvent = () => {
+      console.log('🧪 Отправляем тестовое событие...');
+      analyticsService.trackFeatureUsage('debug_test', 'manual_test');
+      return 'Тестовое событие отправлено';
+    };
+    
+    console.log('✅ Функции отладки добавлены: window.debugAnalytics() и window.testAnalyticsEvent()');
 
     // Загружаем сохраненные настройки
     const savedSettings = getUserSettings();
