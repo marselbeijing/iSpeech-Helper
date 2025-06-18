@@ -23,7 +23,8 @@ import { verifyTelegramAuth, getCurrentUser } from '../services/telegram';
 import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import TelegramLogin from '../components/TelegramLogin';
-import { checkSubscriptionStatus, purchaseSubscription } from '../services/subscription';
+import { checkSubscriptionStatus } from '../services/subscription';
+import { purchaseWithStars, isStarsAvailable } from '../services/stars';
 import { useTranslation } from 'react-i18next';
 
 import { getReferralStats, getReferralTransactions } from '../services/referral';
@@ -143,32 +144,35 @@ const Account = () => {
 
   useEffect(() => {
     // Проверяем доступность Telegram Stars
-    if (window.Telegram?.WebApp?.Stars) {
-      setStarsAvailable(true);
-    } else {
-      setStarsAvailable(false);
-    }
+    setStarsAvailable(isStarsAvailable());
   }, []);
 
   const handlePurchase = async (type) => {
     try {
       setIsPurchasing(true);
       
-      const result = await purchaseSubscription(type);
+      const result = await purchaseWithStars(type);
       
       if (result.success) {
-        setSubscription(result.subscription);
+        // Обновляем статус подписки после успешной покупки
+        const updatedSubscription = await checkSubscriptionStatus();
+        setSubscription(updatedSubscription);
         playSound('success');
         vibrate('success');
+      } else if (result.cancelled) {
+        // Пользователь отменил платеж - не показываем ошибку
+        console.log('Платеж отменен пользователем');
       } else {
+        console.error('Ошибка платежа:', result.error);
         playSound('error');
         vibrate('error');
-        // TODO: Показать уведомление об ошибке
+        setSubscriptionError(result.error || 'Ошибка при покупке подписки');
       }
     } catch (error) {
       console.error('Ошибка при покупке:', error);
       playSound('error');
       vibrate('error');
+      setSubscriptionError(error.message || 'Ошибка при покупке подписки');
     } finally {
       setIsPurchasing(false);
     }
