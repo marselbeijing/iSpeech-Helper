@@ -228,4 +228,46 @@ setTimeout(() => {
   window.checkTelegramAnalytics();
 }, 2000);
 
+console.log('🔧 Отладочные функции загружены. Используйте checkTelegramAnalytics() для проверки.');
+
+// Специальная функция для тестирования в Telegram Web
+window.testTelegramWeb = function() {
+  console.log('🌐 === ТЕСТИРОВАНИЕ В TELEGRAM WEB ===');
+  
+  // Проверка URL и referrer
+  console.log('🔗 Текущий URL:', window.location.href);
+  console.log('🔗 Referrer:', document.referrer);
+  console.log('🔗 User Agent:', navigator.userAgent);
+  
+  // Проверка Telegram WebApp контекста
+  if (window.Telegram && window.Telegram.WebApp) {
+    console.log('✅ Telegram WebApp обнаружен');
+    console.log('📱 Платформа:', window.Telegram.WebApp.platform);
+    console.log('🆔 Версия:', window.Telegram.WebApp.version);
+    console.log('🎨 Цветовая схема:', window.Telegram.WebApp.colorScheme);
+    console.log('👤 Данные пользователя:', window.Telegram.WebApp.initDataUnsafe?.user || 'Недоступно');
+    console.log('🔧 Расширен:', window.Telegram.WebApp.isExpanded);
+  } else {
+    console.log('❌ Telegram WebApp НЕ обнаружен');
+  }
+  
+  // Проверка Analytics SDK
+  if (typeof window.telegramAnalytics !== 'undefined') {
+    console.log('✅ Telegram Analytics SDK (CDN) загружен');
+  }
+  
+  if (typeof telegramAnalytics !== 'undefined') {
+    console.log('✅ Telegram Analytics SDK (NPM) доступен');
+    console.log('📋 Методы SDK:', Object.keys(telegramAnalytics));
+  }
+  
+  // Проверка сетевых запросов
+  console.log('📡 Для проверки отправки данных:');
+  console.log('   1. Откройте DevTools → Network');
+  console.log('   2. Фильтр: tganalytics.xyz');
+  console.log('   3. Обновите страницу или выполните действия');
+  
+  console.log('🌐 === КОНЕЦ ТЕСТИРОВАНИЯ ===');
+};
+
 console.log('🔧 Отладочные функции загружены. Используйте checkTelegramAnalytics() для проверки.'); 

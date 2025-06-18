@@ -56,10 +56,36 @@ const AnalyticsTest = () => {
       window.checkTelegramAnalytics();
     }
     
+    // Специальная проверка для Telegram Web
+    if (window.testTelegramWeb) {
+      window.testTelegramWeb();
+    }
+    
     // Проверяем сетевые запросы
     console.log('📡 Проверьте вкладку Network в DevTools для исходящих запросов к tganalytics.xyz');
     
     checkAnalyticsStatus();
+  };
+
+  const testInTelegramWeb = () => {
+    console.log('🌐 Специальный тест для Telegram Web');
+    
+    // Проверяем контекст Telegram
+    const isTelegramContext = window.Telegram && window.Telegram.WebApp;
+    console.log('📱 Контекст Telegram:', isTelegramContext ? 'Да' : 'Нет');
+    
+    if (isTelegramContext) {
+      console.log('✅ Приложение запущено в Telegram Web');
+      console.log('🔗 URL:', window.location.href);
+      console.log('📱 Платформа:', window.Telegram.WebApp.platform);
+    } else {
+      console.log('⚠️ Приложение НЕ в контексте Telegram');
+      console.log('💡 Откройте приложение через бота в Telegram Web');
+    }
+    
+    if (window.testTelegramWeb) {
+      window.testTelegramWeb();
+    }
   };
 
   const StatusChip = ({ condition, label }) => (
@@ -113,6 +139,16 @@ const AnalyticsTest = () => {
           >
             🔄 Обновить проверку
           </Button>
+
+          <Button 
+            variant="outlined" 
+            onClick={testInTelegramWeb}
+            fullWidth
+            sx={{ mt: 1 }}
+            color="primary"
+          >
+            🌐 Тест Telegram Web
+          </Button>
         </CardContent>
       </Card>
 
@@ -144,7 +180,16 @@ const AnalyticsTest = () => {
             <Typography component="li" variant="body2" sx={{ mb: 1 }}>
               Выполните команду: <code>checkTelegramAnalytics()</code>
             </Typography>
+            <Typography component="li" variant="body2" sx={{ mb: 1, color: 'primary.main', fontWeight: 'bold' }}>
+              🌐 Для Telegram Web: <code>testTelegramWeb()</code>
+            </Typography>
           </Box>
+
+          <Alert severity="success" sx={{ mt: 2 }}>
+            <Typography variant="body2">
+              <strong>🌐 Telegram Web:</strong> Откройте приложение через вашего бота в web.telegram.org для полного тестирования аналитики
+            </Typography>
+          </Alert>
         </CardContent>
       </Card>
     </Box>
