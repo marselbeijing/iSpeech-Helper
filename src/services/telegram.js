@@ -1,6 +1,6 @@
 // Telegram Bot API configuration
 const TELEGRAM_BOT_NAME = 'iSpeechHelper_bot';
-const TELEGRAM_BOT_TOKEN = '7743960366:AAEwZM2KhTJYiQpnSuyZVr9dEkM7WGacMi0';
+// const TELEGRAM_BOT_TOKEN = '7743960366:AAEwZM2KhTJYiQpnSuyZVr9dEkM7WGacMi0'; // Не используется в клиентском коде
 
 // Telegram Login Widget configuration
 export const telegramLoginConfig = {

@@ -1,4 +1,4 @@
-import axios from 'axios';
+// import axios from 'axios'; // Не используется
 
 // Инициализация распознавания речи
 export const initSpeechRecognition = () => {

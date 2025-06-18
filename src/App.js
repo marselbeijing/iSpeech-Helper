@@ -4,7 +4,7 @@ import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
-import WebApp from '@twa-dev/sdk';
+
 import './i18n';
 import { useTranslation } from 'react-i18next';
 import { initTelegramWebApp } from './services/telegram';
@@ -93,7 +93,7 @@ const router = createBrowserRouter([
 
 // Main App component
 const App = () => {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const [darkMode, setDarkMode] = useState(false);
   const [themeMode, setThemeMode] = useState('light');
   

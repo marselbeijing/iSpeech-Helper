@@ -9,7 +9,7 @@ import {
   Alert,
   Stack
 } from '@mui/material';
-import { CheckCircle, Error, Info } from '@mui/icons-material';
+import { CheckCircle, Error } from '@mui/icons-material';
 
 const AnalyticsTest = () => {
   const [analyticsStatus, setAnalyticsStatus] = useState({

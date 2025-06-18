@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material/styles';
+// import { createTheme } from '@mui/material/styles'; // Не используется
 import { telegramColors } from './styles/TelegramStyles';
 
 // Базовая тема с цветами Telegram

@@ -237,10 +237,12 @@ export const getSubscriptionInfo = (type) => {
   return SUBSCRIPTION_TYPES[type] || null;
 };
 
-export default {
+const subscriptionService = {
   initTelegramStars,
   checkSubscriptionStatus,
   purchaseSubscription,
   getSubscriptionInfo,
   clearSubscriptionCache,
-}; 
+};
+
+export default subscriptionService; 
