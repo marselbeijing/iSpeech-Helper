@@ -50,7 +50,7 @@ const MetronomeReader = () => {
   const textBoxRef = useRef(null);
   const lastActiveRef = useRef(null);
 
-  const handleGenerateAffirmation = () => {
+  const handleGenerateAffirmation = React.useCallback(() => {
     const affirmationKeys = Array.from({length: 25}, (_, i) => `affirmation_${i + 1}`);
     const randomKey = affirmationKeys[Math.floor(Math.random() * affirmationKeys.length)];
     const affirmation = t(randomKey);
@@ -60,7 +60,23 @@ const MetronomeReader = () => {
     wordsRef.current = splitWords;
     setCurrentWordIndex(-1);
     setIsPlaying(false);
-  };
+  }, [t]);
+
+  const scheduler = React.useCallback(() => {
+    const currentTime = audioContextRef.current.currentTime;
+    while (nextNoteTimeRef.current < currentTime + 0.1) {
+      scheduleNote(nextNoteTimeRef.current);
+      nextNoteTimeRef.current += 60.0 / bpm;
+      if (isPlaying && words.length > 0) {
+        setCurrentWordIndex(prev => {
+          if (prev === -1) return 0;
+          if (prev + 1 >= words.length) return 0;
+          return prev + 1;
+        });
+      }
+    }
+    animationFrameRef.current = requestAnimationFrame(scheduler);
+  }, [bpm, words.length, isPlaying]);
 
   useEffect(() => {
     audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
@@ -69,7 +85,7 @@ const MetronomeReader = () => {
       if (audioContextRef.current) audioContextRef.current.close();
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [t, handleGenerateAffirmation]);
+  }, [handleGenerateAffirmation]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -84,7 +100,7 @@ const MetronomeReader = () => {
       }, 350);
     }
     return () => cancelAnimationFrame(animationFrameRef.current);
-  }, [isPlaying, bpm, words.length, scheduler]);
+  }, [isPlaying, scheduler]);
 
   useEffect(() => {
     if (lastActiveRef.current && textBoxRef.current) {
@@ -109,22 +125,6 @@ const MetronomeReader = () => {
     osc.stop(time + 0.1);
     scheduledNotesRef.current.push({ osc, gainNode, time });
     scheduledNotesRef.current = scheduledNotesRef.current.filter(note => note.time > time - 0.5);
-  };
-
-  const scheduler = () => {
-    const currentTime = audioContextRef.current.currentTime;
-    while (nextNoteTimeRef.current < currentTime + 0.1) {
-      scheduleNote(nextNoteTimeRef.current);
-      nextNoteTimeRef.current += 60.0 / bpm;
-      if (isPlaying && words.length > 0) {
-        setCurrentWordIndex(prev => {
-          if (prev === -1) return 0;
-          if (prev + 1 >= words.length) return 0;
-          return prev + 1;
-        });
-      }
-    }
-    animationFrameRef.current = requestAnimationFrame(scheduler);
   };
 
   const handlePlayPause = () => {

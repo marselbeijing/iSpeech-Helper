@@ -5,10 +5,7 @@ import {
   Container,
   Button,
   useTheme,
-  Card,
-  CardContent,
-  Switch,
-  FormControlLabel,
+
   CircularProgress,
   Modal,
   Fade,
@@ -21,15 +18,15 @@ import {
 import {
   Close as CloseIcon,
 } from '@mui/icons-material';
-import { motion } from 'framer-motion';
-import { verifyTelegramAuth, getCurrentUser, logout } from '../services/telegram';
+
+import { verifyTelegramAuth, getCurrentUser } from '../services/telegram';
 import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import TelegramLogin from '../components/TelegramLogin';
 import { checkSubscriptionStatus, purchaseSubscription } from '../services/subscription';
 import { useTranslation } from 'react-i18next';
-import { getUserSettings, saveUserSettings } from '../services/storage';
-import { getReferralStats, getReferralTransactions, requestPayout } from '../services/referral';
+import { getUserSettings } from '../services/storage';
+import { getReferralStats, getReferralTransactions } from '../services/referral';
 import ReferralProgram from '../components/ReferralProgram';
 
 const TelegramStarIcon = () => (
@@ -44,7 +41,7 @@ const Account = () => {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [subscription, setSubscription] = useState(null);
   const [isPurchasing, setIsPurchasing] = useState(false);
-  const [settings, setSettings] = useState(getUserSettings());
+
   const [showCopied, setShowCopied] = useState(false);
   const [showError, setShowError] = useState(false);
   const [starsAvailable, setStarsAvailable] = useState(false);

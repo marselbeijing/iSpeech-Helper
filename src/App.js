@@ -102,13 +102,12 @@ const App = () => {
   };
 
   // Функция для проверки поддержки методов установки цветов
-  const isColorMethodsSupported = () => {
-    if (!isTelegramWebAppAvailable()) return false;
-    const version = window.Telegram.WebApp.version;
-    return version && parseFloat(version) > 6.0;
-  };
+  const isColorMethodsSupported = React.useCallback(() => {
+    return window.Telegram?.WebApp?.setHeaderColor && 
+           window.Telegram?.WebApp?.setBackgroundColor;
+  }, []);
   
-  const updateTheme = (isDark) => {
+  const updateTheme = React.useCallback((isDark) => {
     setThemeMode(isDark ? 'dark' : 'light');
     
     if (window.Telegram?.WebApp?.isExpanded && isColorMethodsSupported()) {
@@ -119,7 +118,7 @@ const App = () => {
         console.warn('Error setting Telegram WebApp colors:', error);
       }
     }
-  };
+  }, [isColorMethodsSupported]);
 
   // Безопасная инициализация Telegram WebApp и загрузка настроек
   useEffect(() => {
