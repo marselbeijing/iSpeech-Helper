@@ -47,37 +47,21 @@ export const isStarsAvailable = () => {
   const webApp = window.Telegram?.WebApp;
   if (!webApp) return false;
   
-  // Проверяем наличие функции showInvoice - это главный индикатор
+  // Единственный надежный способ - проверить наличие showInvoice
   const hasInvoiceSupport = typeof webApp.showInvoice === 'function';
   
-  // Дополнительные проверки для мобильного устройства
+  // Дополнительная информация для отладки
   const isMobileDevice = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  
-  // Безопасная проверка версии
-  let hasNativeFeatures = false;
-  try {
-    hasNativeFeatures = webApp.isVersionAtLeast && typeof webApp.isVersionAtLeast === 'function' && webApp.isVersionAtLeast('6.0');
-  } catch (error) {
-    console.log('Ошибка при проверке версии WebApp:', error);
-    hasNativeFeatures = false;
-  }
   
   console.log('Telegram WebApp platform:', webApp.platform);
   console.log('Has showInvoice:', hasInvoiceSupport);
   console.log('Is mobile device (UA):', isMobileDevice);
   console.log('Is touch device:', isTouchDevice);
-  console.log('Has native features:', hasNativeFeatures);
   console.log('WebApp version:', webApp.version);
   
-  // Если есть showInvoice - точно поддерживается
-  if (hasInvoiceSupport) return true;
-  
-  // Если это мобильное устройство с поддержкой нативных функций - пробуем
-  if (isMobileDevice && hasNativeFeatures) return true;
-  
-  // Иначе - не поддерживается
-  return false;
+  // Возвращаем true только если есть showInvoice
+  return hasInvoiceSupport;
 };
 
 // Создание инвойса для покупки
@@ -149,7 +133,7 @@ export const purchaseWithStars = async (planType) => {
       const invoice = await createInvoice(planType);
       console.log('Инвойс создан, пытаемся инициировать платеж...');
       
-      // Пытаемся показать инвойс
+      // Проверяем только showInvoice - это единственный надежный метод
       if (typeof webApp.showInvoice === 'function') {
         console.log('Показываем инвойс через showInvoice');
         try {
@@ -183,54 +167,10 @@ export const purchaseWithStars = async (planType) => {
           console.error('Ошибка при вызове showInvoice:', invoiceError);
           throw invoiceError;
         }
-      } else if (typeof webApp.openInvoice === 'function') {
-        // Альтернативный метод для некоторых версий
-        console.log('Пытаемся использовать openInvoice');
-        try {
-          webApp.openInvoice(invoice, (status) => {
-            console.log('Статус платежа (openInvoice):', status);
-            if (status === 'paid') {
-              resolve({
-                success: true,
-                planType: planType,
-                amount: SUBSCRIPTION_PLANS[planType].amount,
-              });
-            } else {
-              resolve({
-                success: false,
-                cancelled: true,
-                error: 'Платеж не завершен',
-              });
-            }
-          });
-        } catch (invoiceError) {
-          console.error('Ошибка при вызове openInvoice:', invoiceError);
-          throw invoiceError;
-        }
-      } else if (webApp.sendData && typeof webApp.sendData === 'function') {
-        // Попытка через sendData для старых версий
-        console.log('Пытаемся использовать sendData');
-        try {
-          const paymentData = {
-            action: 'purchase',
-            planType: planType,
-            amount: SUBSCRIPTION_PLANS[planType].amount,
-            invoice: invoice
-          };
-          webApp.sendData(JSON.stringify(paymentData));
-          resolve({
-            success: false,
-            cancelled: true,
-            error: 'Платеж инициирован через sendData - проверьте результат в боте',
-          });
-        } catch (sendDataError) {
-          console.error('Ошибка при вызове sendData:', sendDataError);
-          throw sendDataError;
-        }
       } else {
-        // Если ничего не работает, показываем информационное сообщение
-        console.log('Никакие методы платежа недоступны, показываем alert');
-        const message = `Для покупки ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} звезд обновите Telegram до последней версии или используйте официальное мобильное приложение.`;
+        // Если showInvoice недоступен, показываем информационное сообщение
+        console.log('showInvoice недоступен, показываем информационное сообщение');
+        const message = `Покупка ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} звезд доступна только в официальном мобильном приложении Telegram.\n\nОткройте это приложение в мобильном Telegram для совершения покупки.`;
         
         if (typeof webApp.showAlert === 'function') {
           try {
@@ -238,7 +178,7 @@ export const purchaseWithStars = async (planType) => {
               resolve({
                 success: false,
                 cancelled: true,
-                error: 'Требуется обновление Telegram или использование мобильного приложения',
+                error: 'Для покупки используйте мобильное приложение Telegram',
               });
             });
           } catch (alertError) {
@@ -248,7 +188,7 @@ export const purchaseWithStars = async (planType) => {
             resolve({
               success: false,
               cancelled: true,
-              error: 'Требуется обновление Telegram или использование мобильного приложения',
+              error: 'Для покупки используйте мобильное приложение Telegram',
             });
           }
         } else {
@@ -257,7 +197,7 @@ export const purchaseWithStars = async (planType) => {
           resolve({
             success: false,
             cancelled: true,
-            error: 'Требуется обновление Telegram или использование мобильного приложения',
+            error: 'Для покупки используйте мобильное приложение Telegram',
           });
         }
       }
