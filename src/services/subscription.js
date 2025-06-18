@@ -127,7 +127,10 @@ export const checkSubscriptionStatus = async () => {
     return await pendingRequest;
 
   } catch (error) {
-    console.error('Ошибка при проверке подписки:', error);
+    // Тихо логируем только если это не таймаут
+    if (!error.message.includes('Время ожидания') && error.name !== 'AbortError') {
+      console.error('Ошибка при проверке подписки:', error);
+    }
     
     // Очищаем ожидающий запрос при ошибке
     pendingRequest = null;
@@ -143,7 +146,7 @@ export const checkSubscriptionStatus = async () => {
     
     // Если это таймаут, возвращаем данные по умолчанию и не показываем ошибку
     if (error.message.includes('Время ожидания запроса истекло') || error.name === 'AbortError') {
-      console.log('Timeout при проверке подписки - возвращаем значения по умолчанию');
+      // Тихо возвращаем значения по умолчанию без логирования ошибки
       return {
         isActive: false,
         type: null,

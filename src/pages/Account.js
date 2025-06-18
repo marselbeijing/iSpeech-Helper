@@ -110,13 +110,17 @@ const Account = () => {
         try {
           const status = await checkSubscriptionStatus();
           if (status && status.error) {
-            setSubscriptionError(status.error);
+            // Не показываем ошибки таймаута пользователю
+            if (!status.error.includes('Время ожидания') && !status.error.includes('timeout')) {
+              setSubscriptionError(status.error);
+            }
           } else {
             setSubscription(status);
             setSubscriptionError(''); // Очищаем ошибку при успехе
           }
         } catch (error) {
-          console.error('Ошибка проверки подписки:', error);
+          // Тихо логируем ошибку, но не показываем пользователю
+          console.log('Проверка подписки недоступна:', error.message);
           // Устанавливаем дефолтное состояние подписки при ошибке
           setSubscription({
             isActive: false,
@@ -339,10 +343,10 @@ const Account = () => {
                   boxShadow: '0 2px 8px rgba(60,60,120,0.10)',
                 }}
               />
-              <Typography variant="h6" fontWeight={600} mb={0.5}>
+              <Typography variant="h6" fontWeight={600} mb={0.5} textAlign="center">
                 {user.firstName} {user.lastName}
               </Typography>
-              <Typography variant="body2" color="text.secondary" mb={2}>
+              <Typography variant="body2" color="text.secondary" mb={2} textAlign="center">
                 @{user.username}
               </Typography>
               
