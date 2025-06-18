@@ -23,6 +23,7 @@ import BreathingExercises from './components/BreathingExercises';
 import TongueTwisters from './components/TongueTwisters';
 import MetronomeReader from './components/MetronomeReader';
 import EmotionsTrainer from './components/EmotionsTrainer';
+import AnalyticsTest from './pages/AnalyticsTest';
 
 const TELEGRAM_ANALYTICS_TOKEN = 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=';
 
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
       {
         path: '/emotions',
         element: <EmotionsTrainer />
+      },
+      {
+        path: '/analytics-test',
+        element: <AnalyticsTest />
       }
     ]
   }
@@ -199,13 +204,24 @@ const App = () => {
   useEffect(() => {
     // Инициализация Telegram Analytics SDK
     try {
+      console.log('🔍 Проверка доступности telegramAnalytics:', typeof telegramAnalytics);
+      console.log('🔍 Методы SDK:', Object.keys(telegramAnalytics));
+      
       telegramAnalytics.init({
         token: TELEGRAM_ANALYTICS_TOKEN,
         appName: 'ispeechhelper',
       });
-      console.log('Telegram Analytics SDK инициализирован успешно');
+      
+      console.log('✅ Telegram Analytics SDK инициализирован успешно');
+      console.log('📊 Токен:', TELEGRAM_ANALYTICS_TOKEN.substring(0, 20) + '...');
+      
+      // Проверяем, что SDK загружен в window
+      if (window.telegramAnalytics) {
+        console.log('✅ window.telegramAnalytics доступен');
+      }
+      
     } catch (error) {
-      console.warn('Ошибка инициализации Telegram Analytics SDK:', error);
+      console.error('❌ Ошибка инициализации Telegram Analytics SDK:', error);
     }
   }, []);
   

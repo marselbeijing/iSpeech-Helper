@@ -1,0 +1,154 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Box, 
+  Typography, 
+  Button, 
+  Card, 
+  CardContent, 
+  Chip,
+  Alert,
+  Stack
+} from '@mui/material';
+import { CheckCircle, Error, Info } from '@mui/icons-material';
+
+const AnalyticsTest = () => {
+  const [analyticsStatus, setAnalyticsStatus] = useState({
+    sdkLoaded: false,
+    initialized: false,
+    telegramWebApp: false,
+    errors: []
+  });
+
+  useEffect(() => {
+    checkAnalyticsStatus();
+  }, []);
+
+  const checkAnalyticsStatus = () => {
+    const status = {
+      sdkLoaded: false,
+      initialized: false,
+      telegramWebApp: false,
+      errors: []
+    };
+
+    // Проверка загрузки SDK
+    if (typeof window.telegramAnalytics !== 'undefined' || typeof telegramAnalytics !== 'undefined') {
+      status.sdkLoaded = true;
+    } else {
+      status.errors.push('SDK не загружен');
+    }
+
+    // Проверка Telegram WebApp
+    if (window.Telegram && window.Telegram.WebApp) {
+      status.telegramWebApp = true;
+    } else {
+      status.errors.push('Telegram WebApp недоступен');
+    }
+
+    setAnalyticsStatus(status);
+  };
+
+  const runAnalyticsTest = () => {
+    console.log('🧪 Запуск тестирования аналитики...');
+    
+    // Вызываем отладочную функцию
+    if (window.checkTelegramAnalytics) {
+      window.checkTelegramAnalytics();
+    }
+    
+    // Проверяем сетевые запросы
+    console.log('📡 Проверьте вкладку Network в DevTools для исходящих запросов к tganalytics.xyz');
+    
+    checkAnalyticsStatus();
+  };
+
+  const StatusChip = ({ condition, label }) => (
+    <Chip
+      icon={condition ? <CheckCircle /> : <Error />}
+      label={label}
+      color={condition ? 'success' : 'error'}
+      variant="outlined"
+    />
+  );
+
+  return (
+    <Box sx={{ p: 3, maxWidth: 600, mx: 'auto' }}>
+      <Typography variant="h4" gutterBottom align="center">
+        🔬 Тест Telegram Analytics
+      </Typography>
+
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Статус компонентов
+          </Typography>
+          
+          <Stack spacing={1} sx={{ mb: 2 }}>
+            <StatusChip 
+              condition={analyticsStatus.sdkLoaded} 
+              label="Telegram Analytics SDK" 
+            />
+            <StatusChip 
+              condition={analyticsStatus.telegramWebApp} 
+              label="Telegram WebApp" 
+            />
+          </Stack>
+
+          {analyticsStatus.errors.length > 0 && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              <Typography variant="subtitle2">Обнаружены проблемы:</Typography>
+              <ul>
+                {analyticsStatus.errors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            </Alert>
+          )}
+
+          <Button 
+            variant="contained" 
+            onClick={runAnalyticsTest}
+            fullWidth
+            sx={{ mt: 2 }}
+          >
+            🔄 Обновить проверку
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            📋 Инструкции по тестированию
+          </Typography>
+          
+          <Alert severity="info" sx={{ mb: 2 }}>
+            <Typography variant="body2">
+              <strong>Как проверить работу аналитики:</strong>
+            </Typography>
+          </Alert>
+
+          <Box component="ol" sx={{ pl: 2 }}>
+            <Typography component="li" variant="body2" sx={{ mb: 1 }}>
+              Откройте <strong>DevTools</strong> (F12) → вкладка <strong>Console</strong>
+            </Typography>
+            <Typography component="li" variant="body2" sx={{ mb: 1 }}>
+              Найдите сообщения с эмодзи 🔍 ✅ ❌ 📊
+            </Typography>
+            <Typography component="li" variant="body2" sx={{ mb: 1 }}>
+              Перейдите на вкладку <strong>Network</strong>
+            </Typography>
+            <Typography component="li" variant="body2" sx={{ mb: 1 }}>
+              Ищите запросы к <code>tganalytics.xyz</code>
+            </Typography>
+            <Typography component="li" variant="body2" sx={{ mb: 1 }}>
+              Выполните команду: <code>checkTelegramAnalytics()</code>
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
+  );
+};
+
+export default AnalyticsTest; 
