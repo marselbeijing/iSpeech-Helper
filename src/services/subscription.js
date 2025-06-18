@@ -2,6 +2,12 @@ import { getCurrentUser } from './telegram';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://ispeech-backend.onrender.com/api';
 
+// Кэш для результатов проверки подписки
+let subscriptionCache = null;
+let cacheTimestamp = null;
+let pendingRequest = null;
+const CACHE_DURATION = 30000; // 30 секунд
+
 const SUBSCRIPTION_TYPES = {
   MONTHLY: {
     id: 'monthly',
@@ -28,7 +34,12 @@ export const initTelegramStars = () => {
   return null;
 };
 
-// Проверка статуса подписки
+// Проверка актуальности кэша
+const isCacheValid = () => {
+  return subscriptionCache && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION);
+};
+
+// Проверка статуса подписки с кэшированием
 export const checkSubscriptionStatus = async () => {
   try {
     const user = getCurrentUser();
@@ -37,36 +48,64 @@ export const checkSubscriptionStatus = async () => {
       return { error: 'Пользователь не авторизован' };
     }
 
+    // Проверяем кэш
+    if (isCacheValid()) {
+      console.log('Используем кэшированные данные подписки');
+      return subscriptionCache;
+    }
+
+    // Если уже есть ожидающий запрос, возвращаем его
+    if (pendingRequest) {
+      console.log('Ожидаем завершения текущего запроса');
+      return await pendingRequest;
+    }
+
+    // Создаем новый запрос
     console.log(`Проверяем подписку для пользователя: ${user.id}`);
     const url = `${API_URL}/subscriptions/status/${user.id}`;
     console.log(`Запрос к: ${url}`);
 
-    const response = await fetch(url, {
+    pendingRequest = fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
+      timeout: 10000, // 10 секунд таймаут
+    }).then(async (response) => {
+      console.log(`Ответ сервера: ${response.status} ${response.statusText}`);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.log('Подписка не найдена (404)');
+          return {
+            isActive: false,
+            type: null,
+            expiresAt: null,
+          };
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('Данные подписки получены:', data);
+      
+      // Сохраняем в кэш
+      subscriptionCache = data;
+      cacheTimestamp = Date.now();
+      
+      return data;
+    }).finally(() => {
+      // Очищаем ожидающий запрос
+      pendingRequest = null;
     });
 
-    console.log(`Ответ сервера: ${response.status} ${response.statusText}`);
+    return await pendingRequest;
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        console.log('Подписка не найдена (404)');
-        return {
-          isActive: false,
-          type: null,
-          expiresAt: null,
-        };
-      }
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    console.log('Данные подписки получены:', data);
-    return data;
   } catch (error) {
     console.error('Ошибка при проверке подписки:', error);
+    
+    // Очищаем ожидающий запрос при ошибке
+    pendingRequest = null;
     
     // Обработка разных типов ошибок
     if (error.name === 'TypeError' && error.message.includes('fetch')) {
@@ -79,6 +118,13 @@ export const checkSubscriptionStatus = async () => {
     
     return { error: `Ошибка сервера: ${error.message}` };
   }
+};
+
+// Очистка кэша (например, после покупки подписки)
+export const clearSubscriptionCache = () => {
+  subscriptionCache = null;
+  cacheTimestamp = null;
+  pendingRequest = null;
 };
 
 // Покупка подписки
@@ -125,6 +171,10 @@ export const purchaseSubscription = async (type) => {
       }
 
       const data = await response.json();
+      
+      // Очищаем кэш после успешной покупки
+      clearSubscriptionCache();
+      
       return {
         success: true,
         subscription: data.subscription,
@@ -154,4 +204,5 @@ export default {
   checkSubscriptionStatus,
   purchaseSubscription,
   getSubscriptionInfo,
+  clearSubscriptionCache,
 }; 
