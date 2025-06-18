@@ -25,7 +25,7 @@ import { vibrate } from '../services/vibration';
 import TelegramLogin from '../components/TelegramLogin';
 import { checkSubscriptionStatus, purchaseSubscription } from '../services/subscription';
 import { useTranslation } from 'react-i18next';
-import { getUserSettings } from '../services/storage';
+
 import { getReferralStats, getReferralTransactions } from '../services/referral';
 import ReferralProgram from '../components/ReferralProgram';
 
