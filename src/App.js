@@ -202,27 +202,59 @@ const App = () => {
   }, []);
   
   useEffect(() => {
-    // Инициализация Telegram Analytics SDK
-    try {
-      console.log('🔍 Проверка доступности telegramAnalytics:', typeof telegramAnalytics);
-      console.log('🔍 Методы SDK:', Object.keys(telegramAnalytics));
-      
-      telegramAnalytics.init({
-        token: TELEGRAM_ANALYTICS_TOKEN,
-        appName: 'ispeechhelper',
-      });
-      
-      console.log('✅ Telegram Analytics SDK инициализирован успешно');
-      console.log('📊 Токен:', TELEGRAM_ANALYTICS_TOKEN.substring(0, 20) + '...');
-      
-      // Проверяем, что SDK загружен в window
-      if (window.telegramAnalytics) {
-        console.log('✅ window.telegramAnalytics доступен');
+    // Функция проверки доступности Telegram WebApp
+    const checkTelegramWebApp = () => {
+      if (window.Telegram && window.Telegram.WebApp) {
+        console.log('✅ Telegram WebApp загружен');
+        console.log('📱 Платформа:', window.Telegram.WebApp.platform);
+        console.log('🆔 Версия:', window.Telegram.WebApp.version);
+        console.log('👤 Пользователь:', window.Telegram.WebApp.initDataUnsafe?.user || 'Недоступно');
+        return true;
       }
-      
-    } catch (error) {
-      console.error('❌ Ошибка инициализации Telegram Analytics SDK:', error);
-    }
+      return false;
+    };
+
+    // Инициализация Telegram Analytics SDK
+    const initAnalytics = () => {
+      try {
+        console.log('🔍 Проверка доступности telegramAnalytics:', typeof telegramAnalytics);
+        console.log('🔍 Методы SDK:', Object.keys(telegramAnalytics));
+        
+        telegramAnalytics.init({
+          token: TELEGRAM_ANALYTICS_TOKEN,
+          appName: 'ispeechhelper',
+        });
+        
+        console.log('✅ Telegram Analytics SDK инициализирован успешно');
+        console.log('📊 Токен:', TELEGRAM_ANALYTICS_TOKEN.substring(0, 20) + '...');
+        
+        // Проверяем доступность Telegram WebApp
+        if (checkTelegramWebApp()) {
+          console.log('🌐 Приложение работает в Telegram WebApp контексте');
+        } else {
+          console.log('🌐 Приложение работает в обычном браузере');
+          // Ждем загрузки Telegram WebApp (для браузерной версии)
+          let attempts = 0;
+          const maxAttempts = 10;
+          const checkInterval = setInterval(() => {
+            attempts++;
+            if (checkTelegramWebApp()) {
+              console.log('✅ Telegram WebApp загружен после ожидания');
+              clearInterval(checkInterval);
+            } else if (attempts >= maxAttempts) {
+              console.log('⚠️ Telegram WebApp не загружен после ожидания');
+              clearInterval(checkInterval);
+            }
+          }, 500);
+        }
+        
+      } catch (error) {
+        console.error('❌ Ошибка инициализации Telegram Analytics SDK:', error);
+      }
+    };
+
+    // Запускаем инициализацию
+    initAnalytics();
   }, []);
   
   // Создаем тему на основе настроек

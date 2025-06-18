@@ -215,9 +215,10 @@ function checkTelegramAnalytics() {
   if (window.Telegram && window.Telegram.WebApp) {
     console.log('✅ Telegram WebApp доступен');
     console.log('📱 Платформа:', window.Telegram.WebApp.platform);
-    console.log('🆔 Пользователь ID:', window.Telegram.WebApp.initDataUnsafe?.user?.id || 'Неизвестно');
+    console.log('🆔 Пользователь ID:', window.Telegram.WebApp.initDataUnsafe?.user?.id || 'Недоступно');
   } else {
-    console.log('⚠️ Telegram WebApp НЕ доступен (возможно, не в Telegram)');
+    console.log('❌ Telegram WebApp НЕ доступен');
+    console.log('💡 Возможно, нужно подождать загрузки или запустить в Telegram');
   }
   
   console.log('=== КОНЕЦ ПРОВЕРКИ ===');
@@ -240,25 +241,23 @@ function testTelegramWeb() {
     console.log('🎨 Цветовая схема:', window.Telegram.WebApp.colorScheme);
     console.log('👤 Данные пользователя:', window.Telegram.WebApp.initDataUnsafe?.user || 'Недоступно');
     console.log('🔧 Расширен:', window.Telegram.WebApp.isExpanded);
+    console.log('🔧 Главная кнопка видна:', window.Telegram.WebApp.MainButton?.isVisible);
   } else {
     console.log('❌ Telegram WebApp НЕ обнаружен');
+    console.log('💡 Убедитесь, что приложение запущено в Telegram Web');
+    
+    // Попытка найти признаки Telegram
+    const hasTelegramInUrl = window.location.href.includes('telegram') || document.referrer.includes('telegram');
+    console.log('🔍 Признаки Telegram в URL:', hasTelegramInUrl);
+    
+    // Проверка загрузки скрипта
+    const telegramScript = document.querySelector('script[src*="telegram-web-app.js"]');
+    console.log('🔍 Скрипт Telegram WebApp подключен:', !!telegramScript);
   }
   
-  // Проверка Analytics SDK
-  if (typeof window.telegramAnalytics !== 'undefined') {
-    console.log('✅ Telegram Analytics SDK (CDN) загружен');
-  }
-  
-  if (typeof telegramAnalytics !== 'undefined') {
-    console.log('✅ Telegram Analytics SDK (NPM) доступен');
-    console.log('📋 Методы SDK:', Object.keys(telegramAnalytics));
-  }
-  
-  // Проверка сетевых запросов
-  console.log('📡 Для проверки отправки данных:');
-  console.log('   1. Откройте DevTools → Network');
-  console.log('   2. Фильтр: tganalytics.xyz');
-  console.log('   3. Обновите страницу или выполните действия');
+  // Проверка Network запросов
+  console.log('📡 Проверьте вкладку Network для запросов к tganalytics.xyz');
+  console.log('📊 Если видите запросы со статусом 200 - аналитика работает!');
   
   console.log('🌐 === КОНЕЦ ТЕСТИРОВАНИЯ ===');
 }
@@ -277,9 +276,40 @@ window.analyticsStatus = function() {
   console.log('📊 === КОНЕЦ ПРОВЕРКИ ===');
 };
 
-// Автоматическая проверка через 2 секунды после загрузки
-setTimeout(() => {
-  checkTelegramAnalytics();
-}, 2000);
+// Функция для ожидания загрузки Telegram WebApp
+window.waitForTelegram = function() {
+  console.log('⏳ Ожидание загрузки Telegram WebApp...');
+  let attempts = 0;
+  const maxAttempts = 20;
+  
+  const checkInterval = setInterval(() => {
+    attempts++;
+    if (window.Telegram && window.Telegram.WebApp) {
+      console.log('✅ Telegram WebApp загружен после', attempts, 'попыток');
+      clearInterval(checkInterval);
+      checkTelegramAnalytics();
+    } else if (attempts >= maxAttempts) {
+      console.log('❌ Telegram WebApp не загружен после', maxAttempts, 'попыток');
+      clearInterval(checkInterval);
+    } else {
+      console.log('⏳ Попытка', attempts, 'из', maxAttempts);
+    }
+  }, 500);
+};
 
-console.log('🔧 Отладочные функции загружены. Используйте checkTelegramAnalytics() для проверки.'); 
+// Автоматическая проверка через 3 секунды после загрузки
+setTimeout(() => {
+  console.log('🔧 Автоматическая проверка Telegram Analytics...');
+  if (window.Telegram && window.Telegram.WebApp) {
+    checkTelegramAnalytics();
+  } else {
+    console.log('⏳ Telegram WebApp еще не загружен, запускаю ожидание...');
+    window.waitForTelegram();
+  }
+}, 3000);
+
+console.log('🔧 Отладочные функции загружены:');
+console.log('  - checkTelegramAnalytics() - полная проверка');
+console.log('  - testTelegramWeb() - тест для Telegram Web');
+console.log('  - analyticsStatus() - быстрая проверка');
+console.log('  - waitForTelegram() - ожидание загрузки WebApp'); 
