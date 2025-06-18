@@ -144,7 +144,11 @@ const Account = () => {
 
   useEffect(() => {
     // Проверяем доступность Telegram Stars
-    setStarsAvailable(isStarsAvailable());
+    const available = isStarsAvailable();
+    console.log('Telegram Stars доступен:', available);
+    console.log('Telegram WebApp:', !!window.Telegram?.WebApp);
+    console.log('showInvoice:', !!window.Telegram?.WebApp?.showInvoice);
+    setStarsAvailable(available);
   }, []);
 
   const handlePurchase = async (type) => {

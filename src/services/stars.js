@@ -43,7 +43,7 @@ const SUBSCRIPTION_PLANS = {
 
 // Проверка доступности Telegram Stars
 export const isStarsAvailable = () => {
-  return !!(window.Telegram?.WebApp?.initDataUnsafe?.user && window.Telegram?.WebApp?.showInvoice);
+  return !!(window.Telegram?.WebApp && window.Telegram?.WebApp?.showInvoice);
 };
 
 // Создание инвойса для покупки
