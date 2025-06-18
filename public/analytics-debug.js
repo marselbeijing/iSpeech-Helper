@@ -269,11 +269,32 @@ window.testTelegramWeb = testTelegramWeb;
 // Быстрая проверка статуса
 window.analyticsStatus = function() {
   console.log('📊 === БЫСТРАЯ ПРОВЕРКА АНАЛИТИКИ ===');
-  console.log('✅ SDK загружен:', typeof telegramAnalytics !== 'undefined');
+  console.log('✅ SDK загружен (NPM):', typeof telegramAnalytics !== 'undefined');
+  console.log('✅ SDK загружен (window):', typeof window.telegramAnalyticsSDK !== 'undefined');
   console.log('✅ Telegram WebApp:', !!(window.Telegram && window.Telegram.WebApp));
   console.log('✅ Пользователь ID:', window.Telegram?.WebApp?.initDataUnsafe?.user?.id || 'Неизвестно');
   console.log('📡 Проверьте Network → Фильтр: tganalytics.xyz');
   console.log('📊 === КОНЕЦ ПРОВЕРКИ ===');
+};
+
+// Функция для быстрого тестирования в консоли
+window.quickTest = function() {
+  console.log('🚀 === БЫСТРЫЙ ТЕСТ ===');
+  console.log('SDK (NPM):', typeof telegramAnalytics !== 'undefined');
+  console.log('SDK (window):', typeof window.telegramAnalyticsSDK !== 'undefined');
+  console.log('WebApp:', !!(window.Telegram && window.Telegram.WebApp));
+  console.log('User ID:', window.Telegram?.WebApp?.initDataUnsafe?.user?.id || 'Недоступно');
+  
+  if (window.telegramAnalyticsSDK) {
+    console.log('✅ SDK методы:', Object.keys(window.telegramAnalyticsSDK));
+  }
+  
+  if (window.Telegram?.WebApp) {
+    console.log('✅ WebApp платформа:', window.Telegram.WebApp.platform);
+    console.log('✅ WebApp версия:', window.Telegram.WebApp.version);
+  }
+  
+  console.log('🚀 === КОНЕЦ ТЕСТА ===');
 };
 
 // Функция для ожидания загрузки Telegram WebApp
@@ -309,6 +330,7 @@ setTimeout(() => {
 }, 3000);
 
 console.log('🔧 Отладочные функции загружены:');
+console.log('  - quickTest() - быстрый тест (рекомендуется)');
 console.log('  - checkTelegramAnalytics() - полная проверка');
 console.log('  - testTelegramWeb() - тест для Telegram Web');
 console.log('  - analyticsStatus() - быстрая проверка');

@@ -228,6 +228,10 @@ const App = () => {
         console.log('✅ Telegram Analytics SDK инициализирован успешно');
         console.log('📊 Токен:', TELEGRAM_ANALYTICS_TOKEN.substring(0, 20) + '...');
         
+        // Делаем SDK доступным в консоли для тестирования
+        window.telegramAnalyticsSDK = telegramAnalytics;
+        window.TELEGRAM_ANALYTICS_TOKEN = TELEGRAM_ANALYTICS_TOKEN;
+        
         // Проверяем доступность Telegram WebApp
         if (checkTelegramWebApp()) {
           console.log('🌐 Приложение работает в Telegram WebApp контексте');
