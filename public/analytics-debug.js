@@ -128,4 +128,64 @@ console.log('✅ Analytics Debug готов! Доступные команды:'
 console.log('  - window.checkAnalytics() - проверка состояния');
 console.log('  - window.sendTestEvent() - отправка тестового события');
 console.log('  - window.checkToken() - проверка токена');
-console.log('  - window.fullAnalyticsCheck() - полная диагностика'); 
+console.log('  - window.fullAnalyticsCheck() - полная диагностика');
+
+// === Глобальные функции отладки Telegram Analytics ===
+
+const ANALYTICS_TOKEN = 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=';
+
+window.debugAnalytics = function() {
+  console.log('🔍 Debug Analytics: Проверяем состояние...');
+  console.log('Token из константы:', ANALYTICS_TOKEN ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
+  console.log('Token length:', ANALYTICS_TOKEN.length);
+  console.log('Telegram WebApp:', !!window.Telegram?.WebApp);
+  console.log('telegramAnalytics:', typeof window.telegramAnalytics);
+  console.log('analyticsService:', typeof window.analyticsService);
+  return {
+    token: ANALYTICS_TOKEN,
+    tokenLength: ANALYTICS_TOKEN.length,
+    webApp: !!window.Telegram?.WebApp,
+    telegramAnalytics: typeof window.telegramAnalytics,
+    analyticsService: typeof window.analyticsService
+  };
+};
+
+window.initAnalyticsWithToken = function() {
+  console.log('🔧 Инициализируем аналитику с фиксированным токеном...');
+  try {
+    if (window.telegramAnalytics && typeof window.telegramAnalytics.init === 'function') {
+      window.telegramAnalytics.init({
+        token: ANALYTICS_TOKEN,
+        appName: 'ispeechhelper',
+      });
+      console.log('✅ Аналитика инициализирована с фиксированным токеном');
+      return { success: true, message: 'Аналитика инициализирована' };
+    } else {
+      console.log('❌ telegramAnalytics недоступен');
+      return { success: false, message: 'telegramAnalytics недоступен' };
+    }
+  } catch (error) {
+    console.error('❌ Ошибка инициализации:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+window.testAnalyticsEvent = function() {
+  console.log('🧪 Отправляем тестовое событие...');
+  if (window.analyticsService && typeof window.analyticsService.trackFeatureUsage === 'function') {
+    window.analyticsService.trackFeatureUsage('debug_test', 'manual_test');
+    return 'Тестовое событие отправлено';
+  } else {
+    return 'analyticsService не найден или trackFeatureUsage не функция';
+  }
+};
+
+window.testTelegramAnalytics = function() {
+  if (window.analyticsService && typeof window.analyticsService.testAnalytics === 'function') {
+    return window.analyticsService.testAnalytics();
+  } else {
+    return 'analyticsService не найден или testAnalytics не функция';
+  }
+};
+
+console.log('✅ analytics-debug.js: Глобальные функции отладки добавлены: window.debugAnalytics(), window.initAnalyticsWithToken(), window.testAnalyticsEvent(), window.testTelegramAnalytics()'); 
