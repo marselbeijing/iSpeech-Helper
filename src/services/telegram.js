@@ -48,4 +48,53 @@ export const logout = () => {
 // Function to check if user is authenticated
 export const isAuthenticated = () => {
   return !!getCurrentUser();
+};
+
+// Безопасная инициализация Telegram WebApp
+export const initTelegramWebApp = () => {
+  try {
+    if (window.Telegram?.WebApp) {
+      const webapp = window.Telegram.WebApp;
+      
+      // Подавляем ошибки Telegram WebApp
+      const originalConsoleError = console.error;
+      console.error = function(...args) {
+        const message = args.join(' ');
+        if (
+          message.includes('TIMEOUT') ||
+          message.includes('TelegramClient') ||
+          message.includes('_updateLoop') ||
+          message.includes('Not connected') ||
+          message.includes('Connection closed')
+        ) {
+          return; // Подавляем эти ошибки
+        }
+        originalConsoleError.apply(console, args);
+      };
+
+      // Инициализируем WebApp
+      webapp.ready();
+      webapp.expand();
+      
+      return webapp;
+    }
+    return null;
+  } catch (error) {
+    console.log('Telegram WebApp не доступен или произошла ошибка инициализации');
+    return null;
+  }
+};
+
+// Получение пользователя из Telegram WebApp
+export const getTelegramWebAppUser = () => {
+  try {
+    const webapp = window.Telegram?.WebApp;
+    if (webapp?.initDataUnsafe?.user) {
+      return webapp.initDataUnsafe.user;
+    }
+    return null;
+  } catch (error) {
+    console.log('Не удалось получить пользователя из Telegram WebApp');
+    return null;
+  }
 }; 

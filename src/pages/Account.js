@@ -11,7 +11,6 @@ import {
   Modal,
   Fade,
   IconButton,
-  TextField,
   Snackbar,
   Alert,
   Divider,
@@ -114,9 +113,16 @@ const Account = () => {
             setSubscriptionError(status.error);
           } else {
             setSubscription(status);
+            setSubscriptionError(''); // Очищаем ошибку при успехе
           }
         } catch (error) {
           console.error('Ошибка проверки подписки:', error);
+          // Устанавливаем дефолтное состояние подписки при ошибке
+          setSubscription({
+            isActive: false,
+            type: null,
+            expiresAt: null,
+          });
         }
       };
       
@@ -344,29 +350,6 @@ const Account = () => {
                 </Box>
               )}
 
-              <Box sx={{ mt: 2, mb: 3 }}>
-                <Typography variant="subtitle2" color="text.secondary" mb={0.5}>
-                  {t('statistics')}
-                </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3 }}>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">
-                      {t('exercises')}
-                    </Typography>
-                    <Typography variant="h6" color="primary.main">
-                      0
-                    </Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">
-                      {t('minutes')}
-                    </Typography>
-                    <Typography variant="h6" color="secondary.main">
-                      0
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
               <Button
                 variant="contained"
                 color="error"

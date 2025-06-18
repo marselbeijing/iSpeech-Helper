@@ -33,12 +33,33 @@ window.addEventListener('error', function(event) {
     message.includes('TIMEOUT') ||
     message.includes('TelegramClient') ||
     message.includes('_updateLoop') ||
+    message.includes('Not connected') ||
+    message.includes('Connection closed while receiving data') ||
+    message.includes('Время ожидания запроса истекло') ||
     message.includes('MetaMask extension not found') ||
     message.includes('Token is not provided') ||
     message.includes('ChromeTransport') ||
     message.includes('chrome runtime disconnected') ||
     message.includes('chrome.runtime') ||
     message.includes('Extension context invalidated')
+  ) {
+    event.preventDefault();
+    return;
+  }
+});
+
+// Подавление необработанных promise rejection'ов
+window.addEventListener('unhandledrejection', function(event) {
+  const message = event.reason?.message || event.reason || '';
+  
+  if (
+    typeof message === 'string' && (
+      message.includes('TIMEOUT') ||
+      message.includes('TelegramClient') ||
+      message.includes('Not connected') ||
+      message.includes('Connection closed') ||
+      message.includes('Время ожидания запроса истекло')
+    )
   ) {
     event.preventDefault();
     return;

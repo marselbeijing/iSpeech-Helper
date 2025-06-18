@@ -8,6 +8,7 @@ import { telegramColors } from './styles/TelegramStyles';
 import WebApp from '@twa-dev/sdk';
 import './i18n';
 import { useTranslation } from 'react-i18next';
+import { initTelegramWebApp } from './services/telegram';
 
 // Components
 import Root from './components/Root';
@@ -114,8 +115,16 @@ const App = () => {
     }
   };
 
-  // Загрузка сохраненных настроек при запуске
+  // Безопасная инициализация Telegram WebApp и загрузка настроек
   useEffect(() => {
+    // Инициализируем Telegram WebApp безопасно
+    try {
+      initTelegramWebApp();
+    } catch (error) {
+      console.log('Telegram WebApp инициализация пропущена');
+    }
+
+    // Загружаем сохраненные настройки
     const savedSettings = getUserSettings();
     if (savedSettings) {
       updateTheme(savedSettings.darkMode || false);

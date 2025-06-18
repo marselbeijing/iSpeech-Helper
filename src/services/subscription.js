@@ -39,13 +39,42 @@ const isCacheValid = () => {
   return subscriptionCache && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION);
 };
 
+// Функция выполнения запроса с retry
+const fetchWithRetry = async (url, options, maxRetries = 2) => {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 секунд
+
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+      return response;
+    } catch (error) {
+      if (attempt === maxRetries) {
+        throw error;
+      }
+      
+      // Ждем перед повторной попыткой
+      await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+    }
+  }
+};
+
 // Проверка статуса подписки с кэшированием
 export const checkSubscriptionStatus = async () => {
   try {
     const user = getCurrentUser();
     if (!user) {
       console.log('Пользователь не найден при проверке подписки');
-      return { error: 'Пользователь не авторизован' };
+      return { 
+        isActive: false,
+        type: null,
+        expiresAt: null,
+      };
     }
 
     // Проверяем кэш
@@ -61,19 +90,12 @@ export const checkSubscriptionStatus = async () => {
     // Создаем новый запрос
     const url = `${API_URL}/subscriptions/status/${user.id}`;
 
-    // Создаем AbortController для таймаута
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 секунд для Render.com
-
-    pendingRequest = fetch(url, {
+    pendingRequest = fetchWithRetry(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      signal: controller.signal,
-          }).then(async (response) => {
-      clearTimeout(timeoutId);
-
+    }).then(async (response) => {
       if (!response.ok) {
         if (response.status === 404) {
           return {
@@ -93,7 +115,6 @@ export const checkSubscriptionStatus = async () => {
       
       return data;
     }).catch((error) => {
-      clearTimeout(timeoutId);
       if (error.name === 'AbortError') {
         throw new Error('Время ожидания запроса истекло');
       }
@@ -120,8 +141,9 @@ export const checkSubscriptionStatus = async () => {
       return { error: 'Ошибка настройки сервера. Обратитесь к администратору.' };
     }
     
-    // Если это таймаут, возвращаем данные по умолчанию
-    if (error.message.includes('Время ожидания запроса истекло')) {
+    // Если это таймаут, возвращаем данные по умолчанию и не показываем ошибку
+    if (error.message.includes('Время ожидания запроса истекло') || error.name === 'AbortError') {
+      console.log('Timeout при проверке подписки - возвращаем значения по умолчанию');
       return {
         isActive: false,
         type: null,
