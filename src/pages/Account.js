@@ -148,12 +148,28 @@ const Account = () => {
     console.log('Telegram Stars доступен:', available);
     console.log('Telegram WebApp:', !!window.Telegram?.WebApp);
     console.log('showInvoice:', !!window.Telegram?.WebApp?.showInvoice);
+    console.log('User:', !!user);
+    console.log('isPurchasing:', isPurchasing);
     setStarsAvailable(available);
-  }, []);
+  }, [user, isPurchasing]);
 
   const handlePurchase = async (type) => {
     try {
       setIsPurchasing(true);
+      
+      // Проверяем наличие пользователя
+      if (!user) {
+        console.log('Пользователь не авторизован');
+        setSubscriptionError('Пожалуйста, авторизуйтесь через Telegram');
+        return;
+      }
+      
+      // Проверяем доступность Telegram Stars
+      if (!isStarsAvailable()) {
+        console.log('Telegram Stars недоступен');
+        setSubscriptionError('Покупки доступны только в мобильном приложении Telegram');
+        return;
+      }
       
       const result = await purchaseWithStars(type);
       
@@ -375,9 +391,9 @@ const Account = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  disabled={!starsAvailable || isPurchasing || !user}
+                  disabled={isPurchasing}
                   sx={{ mt: 2 }}
-                  onClick={() => user && handlePurchase('MONTHLY')}
+                  onClick={() => handlePurchase('MONTHLY')}
                 >
                   {isPurchasing ? t('processing') : t('buy')}
                 </Button>
@@ -415,9 +431,9 @@ const Account = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  disabled={!starsAvailable || isPurchasing || !user}
+                  disabled={isPurchasing}
                   sx={{ mt: 2 }}
-                  onClick={() => user && handlePurchase('QUARTERLY')}
+                  onClick={() => handlePurchase('QUARTERLY')}
                 >
                   {isPurchasing ? t('processing') : t('buy')}
                 </Button>
@@ -455,9 +471,9 @@ const Account = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  disabled={!starsAvailable || isPurchasing || !user}
+                  disabled={isPurchasing}
                   sx={{ mt: 2 }}
-                  onClick={() => user && handlePurchase('YEARLY')}
+                  onClick={() => handlePurchase('YEARLY')}
                 >
                   {isPurchasing ? t('processing') : t('buy')}
                 </Button>
