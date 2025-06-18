@@ -17,7 +17,6 @@ import {
 } from '@mui/material';
 import {
   Telegram as TelegramIcon,
-  Logout as LogoutIcon,
   Close as CloseIcon,
   ContentCopy as ContentCopyIcon,
   Share as ShareIcon,
@@ -350,23 +349,7 @@ const Account = () => {
                 </Box>
               )}
 
-              <Button
-                variant="contained"
-                color="error"
-                startIcon={<LogoutIcon fontSize="small" />}
-                onClick={handleLogout}
-                sx={{
-                  borderRadius: 30,
-                  px: 4,
-                  py: 1.2,
-                  fontWeight: 500,
-                  fontSize: '1rem',
-                  mt: 2,
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.10)',
-                }}
-              >
-                {t('logout')}
-              </Button>
+
             </>
           ) : (
             <TelegramLogin />
