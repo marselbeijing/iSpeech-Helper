@@ -9,6 +9,7 @@ import './i18n';
 import { useTranslation } from 'react-i18next';
 import { initTelegramWebApp } from './services/telegram';
 import telegramAnalytics from '@telegram-apps/analytics';
+import { initAudio } from './services/sound';
 
 // Components
 import Root from './components/Root';
@@ -136,6 +137,29 @@ const App = () => {
     if (savedSettings) {
       updateTheme(savedSettings.darkMode || false);
     }
+
+    // Добавляем обработчик для инициализации аудио после первого клика
+    const handleFirstUserInteraction = async () => {
+      try {
+        await initAudio();
+        console.log('🔊 AudioContext инициализирован после пользовательского жеста');
+      } catch (error) {
+        console.warn('Не удалось инициализировать AudioContext:', error.message);
+      }
+      // Удаляем обработчики после первого взаимодействия
+      document.removeEventListener('click', handleFirstUserInteraction);
+      document.removeEventListener('touchstart', handleFirstUserInteraction);
+    };
+
+    // Добавляем обработчики для различных типов взаимодействия
+    document.addEventListener('click', handleFirstUserInteraction, { once: true });
+    document.addEventListener('touchstart', handleFirstUserInteraction, { once: true });
+
+    // Cleanup функция
+    return () => {
+      document.removeEventListener('click', handleFirstUserInteraction);
+      document.removeEventListener('touchstart', handleFirstUserInteraction);
+    };
   }, [i18n.language]);
 
   // Обработчик события изменения темы из настроек

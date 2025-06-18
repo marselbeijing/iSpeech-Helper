@@ -3,15 +3,27 @@ import { getUserSettings } from './storage';
 // Создаем аудио-контекст при необходимости
 let audioContext = null;
 let isAudioInitialized = false;
+let isAudioBlocked = false;
 
 // Функция для инициализации аудио-контекста
 const initAudioContext = async () => {
+  // Если аудио заблокировано, не пытаемся инициализировать
+  if (isAudioBlocked) {
+    return false;
+  }
+
   if (!audioContext) {
     try {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) {
+        console.warn('AudioContext не поддерживается в этом браузере');
+        isAudioBlocked = true;
+        return false;
+      }
       audioContext = new AudioContext();
     } catch (e) {
-      console.error('Ошибка инициализации AudioContext:', e);
+      console.warn('Не удалось создать AudioContext:', e.message);
+      isAudioBlocked = true;
       return false;
     }
   }
@@ -20,8 +32,13 @@ const initAudioContext = async () => {
   if (audioContext.state === 'suspended') {
     try {
       await audioContext.resume();
+      if (audioContext.state === 'suspended') {
+        // Если контекст все еще приостановлен, значит нужен пользовательский жест
+        console.warn('AudioContext требует пользовательский жест для активации');
+        return false;
+      }
     } catch (e) {
-      console.error('Ошибка возобновления AudioContext:', e);
+      console.warn('Не удалось возобновить AudioContext:', e.message);
       return false;
     }
   }
@@ -66,7 +83,7 @@ const generateSound = async (type) => {
     oscillator.start();
     oscillator.stop(audioContext.currentTime + sound.duration);
   } catch (error) {
-    console.error('Ошибка генерации звука:', error);
+    console.warn('Ошибка генерации звука:', error.message);
   }
 };
 
@@ -83,8 +100,15 @@ export const playSound = async (type) => {
     
     await generateSound(type);
   } catch (error) {
-    console.error('Ошибка воспроизведения звука:', error);
+    // Тихо игнорируем ошибки звука, чтобы не нарушать UX
+    console.warn('Ошибка воспроизведения звука:', error.message);
   }
+};
+
+// Функция для принудительной инициализации аудио после пользовательского жеста
+export const initAudio = async () => {
+  isAudioBlocked = false;
+  return await initAudioContext();
 };
 
 // Остановка всех звуков (не требуется для сгенерированных звуков)
