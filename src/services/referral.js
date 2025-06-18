@@ -8,4 +8,6 @@ export const hasUsedReferralCode = async () => false;
 export const activateReferralCode = async () => ({ success: false, message: 'Недоступно' });
 export const activateReferralSubscription = async () => ({ error: 'Недоступно' });
 export const generateReferralCode = (id) => '';
-export const getSubscriptionAmount = (type) => 0; 
+export const getSubscriptionAmount = (type) => 0;
+export const generateReferralLink = () => `https://ispeech.app/ref/demo`;
+export const requestPayout = async () => ({ success: false, message: 'Недоступно' }); 
