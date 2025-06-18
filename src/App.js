@@ -9,7 +9,7 @@ import WebApp from '@twa-dev/sdk';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 import { initTelegramWebApp } from './services/telegram';
-import analyticsService from './services/analytics';
+import analyticsService from './services/analytics-simple';
 
 // Components
 import Root from './components/Root';
