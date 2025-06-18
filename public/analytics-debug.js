@@ -1,3 +1,5 @@
+// analytics-debug.js очищен для новой интеграции Telegram Analytics SDK
+
 // Скрипт для отладки Telegram Analytics
 console.log('🔧 Analytics Debug: Скрипт загружен');
 

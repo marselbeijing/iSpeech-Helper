@@ -8,7 +8,6 @@ import WebApp from '@twa-dev/sdk';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 import { initTelegramWebApp } from './services/telegram';
-import analyticsService from './services/analytics-test';
 
 // Components
 import Root from './components/Root';
@@ -23,57 +22,6 @@ import BreathingExercises from './components/BreathingExercises';
 import TongueTwisters from './components/TongueTwisters';
 import MetronomeReader from './components/MetronomeReader';
 import EmotionsTrainer from './components/EmotionsTrainer';
-
-// Определяем токен напрямую для отладки
-const ANALYTICS_TOKEN = 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=';
-
-// === Глобальные функции отладки ===
-window.debugAnalytics = () => {
-  console.log('🔍 Debug Analytics: Проверяем состояние...');
-  console.log('Token from env:', process.env.REACT_APP_TG_ANALYTICS_TOKEN ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
-  console.log('Token from const:', ANALYTICS_TOKEN ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
-  console.log('Token length env:', process.env.REACT_APP_TG_ANALYTICS_TOKEN?.length || 0);
-  console.log('Token length const:', ANALYTICS_TOKEN?.length || 0);
-  console.log('Telegram WebApp:', !!window.Telegram?.WebApp);
-  console.log('Analytics service:', window.analyticsService || 'нет');
-  return {
-    tokenFromEnv: !!process.env.REACT_APP_TG_ANALYTICS_TOKEN,
-    tokenFromConst: !!ANALYTICS_TOKEN,
-    tokenLengthEnv: process.env.REACT_APP_TG_ANALYTICS_TOKEN?.length || 0,
-    tokenLengthConst: ANALYTICS_TOKEN?.length || 0,
-    webApp: !!window.Telegram?.WebApp,
-    service: window.analyticsService || null
-  };
-};
-window.testAnalyticsEvent = () => {
-  console.log('🧪 Отправляем тестовое событие...');
-  if (window.analyticsService) {
-    window.analyticsService.trackFeatureUsage('debug_test', 'manual_test');
-    return 'Тестовое событие отправлено';
-  } else {
-    return 'analyticsService не найден';
-  }
-};
-window.initAnalyticsWithToken = () => {
-  console.log('🔧 Инициализируем аналитику с фиксированным токеном...');
-  try {
-    if (window.telegramAnalytics) {
-      window.telegramAnalytics.init({
-        token: ANALYTICS_TOKEN,
-        appName: 'ispeechhelper',
-      });
-      console.log('✅ Аналитика инициализирована с фиксированным токеном');
-      return { success: true, message: 'Аналитика инициализирована' };
-    } else {
-      console.log('❌ telegramAnalytics недоступен');
-      return { success: false, message: 'telegramAnalytics недоступен' };
-    }
-  } catch (error) {
-    console.error('❌ Ошибка инициализации:', error);
-    return { success: false, error: error.message };
-  }
-};
-console.log('✅ Глобальные функции отладки добавлены: window.debugAnalytics(), window.testAnalyticsEvent(), window.initAnalyticsWithToken()');
 
 // Router configuration
 const router = createBrowserRouter([
@@ -175,9 +123,6 @@ const App = () => {
       console.log('Telegram WebApp инициализация пропущена');
     }
 
-    // Отслеживание запуска приложения
-    analyticsService.trackAppStart();
-    
     // Загружаем сохраненные настройки
     const savedSettings = getUserSettings();
     if (savedSettings) {
