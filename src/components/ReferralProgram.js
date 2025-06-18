@@ -89,11 +89,13 @@ const ReferralProgram = () => {
       <Box sx={{ mb: 3 }}>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <TextField
+            id="referral-link-input"
             fullWidth
             value={referralLink}
             variant="outlined"
             size="small"
             name="referralLink"
+            label="Реферальная ссылка"
             InputProps={{
               readOnly: true,
               sx: { bgcolor: 'background.default' }

@@ -31,6 +31,8 @@ window.addEventListener('error', function(event) {
   // Подавляем ошибки, которые не критичны для работы приложения
   if (
     message.includes('TIMEOUT') ||
+    message.includes('TelegramClient') ||
+    message.includes('_updateLoop') ||
     message.includes('MetaMask extension not found') ||
     message.includes('Token is not provided') ||
     message.includes('ChromeTransport') ||
@@ -53,7 +55,10 @@ window.addEventListener('unhandledrejection', function(event) {
     reason.includes('ChromeTransport') ||
     reason.includes('chrome runtime disconnected') ||
     reason.includes('chrome.runtime') ||
-    reason.includes('Extension context invalidated')
+    reason.includes('Extension context invalidated') ||
+    reason.includes('TIMEOUT') ||
+    reason.includes('TelegramClient') ||
+    reason.includes('_updateLoop')
   ) {
     event.preventDefault();
     return;
