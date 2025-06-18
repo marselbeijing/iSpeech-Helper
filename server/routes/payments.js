@@ -29,54 +29,118 @@ const SUBSCRIPTION_CONFIG = {
   },
 };
 
-// Создание инвойса для подписки
+// Конфигурация подписок
+const SUBSCRIPTION_PLANS = {
+  MONTHLY: {
+    id: 'monthly_premium',
+    title: 'Месячная подписка Premium',
+    description: 'Полный доступ ко всем функциям на 1 месяц',
+    amount: 300,
+    duration: 30,
+  },
+  QUARTERLY: {
+    id: 'quarterly_premium', 
+    title: 'Квартальная подписка Premium',
+    description: 'Полный доступ ко всем функциям на 3 месяца (скидка 20%)',
+    amount: 720,
+    duration: 90,
+  },
+  YEARLY: {
+    id: 'yearly_premium',
+    title: 'Годовая подписка Premium', 
+    description: 'Полный доступ ко всем функциям на 1 год (скидка 40%)',
+    amount: 2160,
+    duration: 365,
+  },
+};
+
+// Создание инвойса
 router.post('/create-invoice', async (req, res) => {
   try {
-    const { userId, subscriptionType } = req.body;
+    const { userId, planType, userInfo } = req.body;
 
-    if (!userId || !subscriptionType) {
-      return res.status(400).json({ error: 'userId и subscriptionType обязательны' });
+    if (!userId || !planType) {
+      return res.status(400).json({ 
+        error: 'Отсутствуют обязательные поля: userId, planType' 
+      });
     }
 
-    const config = SUBSCRIPTION_CONFIG[subscriptionType];
-    if (!config) {
-      return res.status(400).json({ error: 'Неверный тип подписки' });
+    const plan = SUBSCRIPTION_PLANS[planType];
+    if (!plan) {
+      return res.status(400).json({ 
+        error: 'Неверный тип подписки' 
+      });
     }
 
     // Создаем уникальный payload
-    const payload = `sub_${subscriptionType}_${userId}_${Date.now()}`;
+    const payload = JSON.stringify({
+      userId: userId,
+      planType: planType,
+      planId: plan.id,
+      timestamp: Date.now(),
+    });
 
     // Создаем инвойс в базе данных
     const invoice = new Invoice({
-      userId,
-      subscriptionType,
-      stars: config.stars,
-      title: config.title,
-      description: config.description,
-      payload,
+      userId: userId.toString(),
+      subscriptionType: planType.toLowerCase(),
+      stars: plan.amount,
+      payload: payload,
+      status: 'created',
+      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 часа
     });
 
     await invoice.save();
 
-    // Создаем ссылку на инвойс через Telegram Bot API
-    const invoiceLink = await bot.createInvoiceLink(
-      config.title,
-      config.description,
-      payload,
-      '', // provider_token должен быть пустым для Telegram Stars
-      'XTR', // валюта - Telegram Stars
-      [{ amount: config.stars, label: config.title }]
-    );
+    // Отправляем инвойс пользователю через бота
+    const bot = req.app.get('telegramBot');
+    if (bot) {
+      try {
+        await bot.sendInvoice(userId, {
+          title: plan.title,
+          description: plan.description,
+          payload: payload,
+          provider_token: '', // Пустой для Telegram Stars
+          currency: 'XTR',
+          prices: [{ label: plan.title, amount: plan.amount }],
+          start_parameter: `premium_${planType.toLowerCase()}`,
+          photo_url: 'https://i-speech-helper-uce4.vercel.app/assets/telegram-star.png',
+          photo_size: 512,
+          photo_width: 512,
+          photo_height: 512,
+          need_name: false,
+          need_phone_number: false,
+          need_email: false,
+          need_shipping_address: false,
+          send_phone_number_to_provider: false,
+          send_email_to_provider: false,
+          is_flexible: false,
+        });
 
-    res.json({
-      success: true,
-      invoiceLink,
-      invoiceId: invoice._id,
-      payload,
-    });
+        res.json({
+          success: true,
+          invoiceId: invoice._id,
+          message: 'Инвойс отправлен в чат с ботом'
+        });
+      } catch (botError) {
+        console.error('Ошибка отправки инвойса через бота:', botError);
+        res.status(500).json({
+          error: 'Ошибка отправки инвойса через бота',
+          details: botError.message
+        });
+      }
+    } else {
+      res.status(500).json({
+        error: 'Бот недоступен'
+      });
+    }
+
   } catch (error) {
     console.error('Ошибка создания инвойса:', error);
-    res.status(500).json({ error: 'Ошибка создания инвойса' });
+    res.status(500).json({
+      error: 'Внутренняя ошибка сервера',
+      details: error.message
+    });
   }
 });
 

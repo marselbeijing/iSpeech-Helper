@@ -168,22 +168,94 @@ export const purchaseWithStars = async (planType) => {
           throw invoiceError;
         }
       } else {
-        // Если showInvoice недоступен, показываем информационное сообщение
-        console.log('showInvoice недоступен, показываем информационное сообщение');
-        const message = `Покупка ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} звезд доступна только в официальном мобильном приложении Telegram.\n\nОткройте это приложение в мобильном Telegram для совершения покупки.`;
+        // Альтернативный метод - отправка инвойса через бота
+        console.log('showInvoice недоступен, пытаемся альтернативный метод');
         
-        if (typeof webApp.showAlert === 'function') {
-          try {
-            webApp.showAlert(message, () => {
+        const user = getCurrentUser();
+        if (!user) {
+          throw new Error('Пользователь не авторизован');
+        }
+
+        try {
+          // Создаем инвойс на сервере через API
+          const apiUrl = process.env.NODE_ENV === 'production' 
+            ? 'https://your-backend-url.com/api/create-invoice'
+            : 'http://localhost:5000/api/create-invoice';
+            
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: user.id,
+              planType: planType,
+              userInfo: {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                username: user.username
+              }
+            }),
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            
+            // Показываем сообщение пользователю с инструкциями
+            const message = `Инвойс создан! 
+
+Перейдите в чат с ботом @iSpeechHelper_bot для оплаты ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} звезд.
+
+После оплаты ваша подписка активируется автоматически.`;
+            
+            if (typeof webApp.showAlert === 'function') {
+              webApp.showAlert(message, () => {
+                // Открываем чат с ботом
+                if (typeof webApp.openTelegramLink === 'function') {
+                  webApp.openTelegramLink('https://t.me/iSpeechHelper_bot');
+                }
+                resolve({
+                  success: false,
+                  cancelled: true,
+                  error: 'Перейдите в чат с ботом для оплаты',
+                });
+              });
+            } else {
+              alert(message);
+              resolve({
+                success: false,
+                cancelled: true,
+                error: 'Перейдите в чат с ботом для оплаты',
+              });
+            }
+          } else {
+            throw new Error('Ошибка создания инвойса на сервере');
+          }
+        } catch (serverError) {
+          console.error('Ошибка при создании инвойса через сервер:', serverError);
+          
+          // Fallback - показываем стандартное сообщение
+          const message = `Покупка ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} звезд доступна только в официальном мобильном приложении Telegram.\n\nОткройте это приложение в мобильном Telegram для совершения покупки.`;
+          
+          if (typeof webApp.showAlert === 'function') {
+            try {
+              webApp.showAlert(message, () => {
+                resolve({
+                  success: false,
+                  cancelled: true,
+                  error: 'Для покупки используйте мобильное приложение Telegram',
+                });
+              });
+            } catch (alertError) {
+              console.error('Ошибка при вызове showAlert:', alertError);
+              alert(message);
               resolve({
                 success: false,
                 cancelled: true,
                 error: 'Для покупки используйте мобильное приложение Telegram',
               });
-            });
-          } catch (alertError) {
-            console.error('Ошибка при вызове showAlert:', alertError);
-            // Fallback к обычному alert
+            }
+          } else {
             alert(message);
             resolve({
               success: false,
@@ -191,14 +263,6 @@ export const purchaseWithStars = async (planType) => {
               error: 'Для покупки используйте мобильное приложение Telegram',
             });
           }
-        } else {
-          // Fallback для случаев когда и showAlert недоступен
-          alert(message);
-          resolve({
-            success: false,
-            cancelled: true,
-            error: 'Для покупки используйте мобильное приложение Telegram',
-          });
         }
       }
 
