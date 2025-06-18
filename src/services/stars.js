@@ -43,7 +43,8 @@ const SUBSCRIPTION_PLANS = {
 
 // Проверка доступности Telegram Stars
 export const isStarsAvailable = () => {
-  return !!(window.Telegram?.WebApp && window.Telegram?.WebApp?.showInvoice);
+  // В браузерной версии Telegram всегда доступно
+  return !!(window.Telegram?.WebApp);
 };
 
 // Создание инвойса для покупки
@@ -106,36 +107,48 @@ export const purchaseWithStars = async (planType) => {
 
       const invoice = await createInvoice(planType);
       
-      // Показываем инвойс пользователю
-      window.Telegram.WebApp.showInvoice(invoice, (status) => {
-        if (status === 'paid') {
-          // Платеж успешен
-          resolve({
-            success: true,
-            planType: planType,
-            amount: SUBSCRIPTION_PLANS[planType].amount,
-          });
-        } else if (status === 'cancelled') {
-          // Платеж отменен пользователем
+      // Проверяем наличие showInvoice
+      if (window.Telegram.WebApp.showInvoice) {
+        // Показываем инвойс пользователю
+        window.Telegram.WebApp.showInvoice(invoice, (status) => {
+          if (status === 'paid') {
+            // Платеж успешен
+            resolve({
+              success: true,
+              planType: planType,
+              amount: SUBSCRIPTION_PLANS[planType].amount,
+            });
+          } else if (status === 'cancelled') {
+            // Платеж отменен пользователем
+            resolve({
+              success: false,
+              cancelled: true,
+              error: 'Платеж отменен пользователем',
+            });
+          } else if (status === 'failed') {
+            // Платеж не удался
+            resolve({
+              success: false,
+              error: 'Платеж не удался',
+            });
+          } else {
+            // Неизвестный статус
+            resolve({
+              success: false,
+              error: `Неизвестный статус платежа: ${status}`,
+            });
+          }
+        });
+      } else {
+        // Fallback для браузерной версии - показываем уведомление
+        window.Telegram.WebApp.showAlert(`Покупка ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} звезд будет доступна в мобильном приложении Telegram.`, () => {
           resolve({
             success: false,
             cancelled: true,
-            error: 'Платеж отменен пользователем',
+            error: 'Покупки доступны только в мобильном приложении Telegram',
           });
-        } else if (status === 'failed') {
-          // Платеж не удался
-          resolve({
-            success: false,
-            error: 'Платеж не удался',
-          });
-        } else {
-          // Неизвестный статус
-          resolve({
-            success: false,
-            error: `Неизвестный статус платежа: ${status}`,
-          });
-        }
-      });
+        });
+      }
 
     } catch (error) {
       console.error('Ошибка при покупке:', error);
