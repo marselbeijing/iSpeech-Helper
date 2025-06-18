@@ -204,11 +204,14 @@ function checkTelegramAnalytics() {
     console.log('❌ Telegram Analytics SDK НЕ загружен');
   }
   
-  // Проверка пакета @telegram-apps/analytics
-  if (typeof telegramAnalytics !== 'undefined') {
-    console.log('✅ NPM пакет @telegram-apps/analytics доступен');
+  // Проверка пакета @telegram-apps/analytics (в React импортируется как модуль)
+  if (typeof window.telegramAnalyticsSDK !== 'undefined') {
+    console.log('✅ NPM пакет @telegram-apps/analytics доступен (через window.telegramAnalyticsSDK)');
+  } else if (typeof telegramAnalytics !== 'undefined') {
+    console.log('✅ NPM пакет @telegram-apps/analytics доступен (глобально)');
   } else {
-    console.log('❌ NPM пакет @telegram-apps/analytics НЕ доступен');
+    console.log('ℹ️ NPM пакет @telegram-apps/analytics импортирован как ES6 модуль (это нормально)');
+    console.log('💡 SDK работает в React компонентах, но недоступен в консоли');
   }
   
   // Проверка Telegram WebApp
@@ -269,8 +272,13 @@ window.testTelegramWeb = testTelegramWeb;
 // Быстрая проверка статуса
 window.analyticsStatus = function() {
   console.log('📊 === БЫСТРАЯ ПРОВЕРКА АНАЛИТИКИ ===');
-  console.log('✅ SDK загружен (NPM):', typeof telegramAnalytics !== 'undefined');
-  console.log('✅ SDK загружен (window):', typeof window.telegramAnalyticsSDK !== 'undefined');
+  const hasSDKGlobal = typeof telegramAnalytics !== 'undefined';
+  const hasSDKWindow = typeof window.telegramAnalyticsSDK !== 'undefined';
+  console.log('✅ SDK загружен (глобально):', hasSDKGlobal);
+  console.log('✅ SDK загружен (window):', hasSDKWindow);
+  if (!hasSDKGlobal && !hasSDKWindow) {
+    console.log('ℹ️ SDK импортирован как ES6 модуль - это нормально для React');
+  }
   console.log('✅ Telegram WebApp:', !!(window.Telegram && window.Telegram.WebApp));
   console.log('✅ Пользователь ID:', window.Telegram?.WebApp?.initDataUnsafe?.user?.id || 'Неизвестно');
   console.log('📡 Проверьте Network → Фильтр: tganalytics.xyz');
@@ -280,13 +288,18 @@ window.analyticsStatus = function() {
 // Функция для быстрого тестирования в консоли
 window.quickTest = function() {
   console.log('🚀 === БЫСТРЫЙ ТЕСТ ===');
-  console.log('SDK (NPM):', typeof telegramAnalytics !== 'undefined');
-  console.log('SDK (window):', typeof window.telegramAnalyticsSDK !== 'undefined');
+  const hasSDKGlobal = typeof telegramAnalytics !== 'undefined';
+  const hasSDKWindow = typeof window.telegramAnalyticsSDK !== 'undefined';
+  console.log('SDK (глобально):', hasSDKGlobal);
+  console.log('SDK (window):', hasSDKWindow);
   console.log('WebApp:', !!(window.Telegram && window.Telegram.WebApp));
   console.log('User ID:', window.Telegram?.WebApp?.initDataUnsafe?.user?.id || 'Недоступно');
   
   if (window.telegramAnalyticsSDK) {
     console.log('✅ SDK методы:', Object.keys(window.telegramAnalyticsSDK));
+  } else if (!hasSDKGlobal && !hasSDKWindow) {
+    console.log('ℹ️ SDK работает внутри React компонентов');
+    console.log('💡 Проверьте Network вкладку для запросов к tganalytics.xyz');
   }
   
   if (window.Telegram?.WebApp) {
@@ -334,4 +347,8 @@ console.log('  - quickTest() - быстрый тест (рекомендуетс
 console.log('  - checkTelegramAnalytics() - полная проверка');
 console.log('  - testTelegramWeb() - тест для Telegram Web');
 console.log('  - analyticsStatus() - быстрая проверка');
-console.log('  - waitForTelegram() - ожидание загрузки WebApp'); 
+console.log('  - waitForTelegram() - ожидание загрузки WebApp');
+console.log('');
+console.log('ℹ️ ВАЖНО: Если вы видите "SDK НЕ доступен" - это нормально!');
+console.log('💡 В React приложениях SDK импортируется как модуль и работает внутри компонентов.');
+console.log('📡 Главный показатель работы - запросы к tganalytics.xyz в Network вкладке.'); 
