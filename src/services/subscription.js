@@ -32,18 +32,52 @@ export const initTelegramStars = () => {
 export const checkSubscriptionStatus = async () => {
   try {
     const user = getCurrentUser();
-    if (!user) return null;
-
-    const response = await fetch(`${API_URL}/subscriptions/status/${user.id}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch subscription status');
+    if (!user) {
+      console.log('Пользователь не найден при проверке подписки');
+      return { error: 'Пользователь не авторизован' };
     }
 
-    return await response.json();
+    console.log(`Проверяем подписку для пользователя: ${user.id}`);
+    const url = `${API_URL}/subscriptions/status/${user.id}`;
+    console.log(`Запрос к: ${url}`);
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    console.log(`Ответ сервера: ${response.status} ${response.statusText}`);
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.log('Подписка не найдена (404)');
+        return {
+          isActive: false,
+          type: null,
+          expiresAt: null,
+        };
+      }
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('Данные подписки получены:', data);
+    return data;
   } catch (error) {
     console.error('Ошибка при проверке подписки:', error);
-    // Возвращаем специальный объект для UI
-    return { error: 'Сервер недоступен. Проверьте соединение или попробуйте позже.' };
+    
+    // Обработка разных типов ошибок
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      return { error: 'Проблема с сетью. Проверьте соединение с интернетом.' };
+    }
+    
+    if (error.message.includes('CORS')) {
+      return { error: 'Ошибка настройки сервера. Обратитесь к администратору.' };
+    }
+    
+    return { error: `Ошибка сервера: ${error.message}` };
   }
 };
 

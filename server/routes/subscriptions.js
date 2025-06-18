@@ -6,6 +6,7 @@ const Subscription = require('../models/Subscription');
 router.get('/status/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
+    console.log(`Checking subscription status for user: ${userId}`);
     
     const subscription = await Subscription.findOne({
       userId,
@@ -14,21 +15,23 @@ router.get('/status/:userId', async (req, res) => {
     }).sort({ expiresAt: -1 });
 
     if (!subscription) {
-      return res.json({
+      console.log(`No active subscription found for user: ${userId}`);
+      return res.status(200).json({
         isActive: false,
         type: null,
         expiresAt: null,
       });
     }
 
-    res.json({
+    console.log(`Active subscription found for user: ${userId}, type: ${subscription.type}`);
+    res.status(200).json({
       isActive: true,
       type: subscription.type,
       expiresAt: subscription.expiresAt,
     });
   } catch (error) {
-    console.error('Error getting subscription status:', error);
-    res.status(500).json({ error: 'Failed to get subscription status' });
+    console.error(`Error getting subscription status for user ${req.params.userId}:`, error);
+    res.status(500).json({ error: 'Failed to get subscription status', details: error.message });
   }
 });
 
