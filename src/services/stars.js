@@ -47,19 +47,29 @@ export const isStarsAvailable = () => {
   const webApp = window.Telegram?.WebApp;
   if (!webApp) return false;
   
-  // Дополнительные проверки для мобильного приложения
-  const isMobile = webApp.platform !== 'unknown' && 
-                   webApp.platform !== 'web' && 
-                   webApp.platform !== 'weba';
-  
+  // Проверяем наличие функции showInvoice - это главный индикатор
   const hasInvoiceSupport = typeof webApp.showInvoice === 'function';
+  
+  // Дополнительные проверки для мобильного устройства
+  const isMobileDevice = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const hasNativeFeatures = webApp.isVersionAtLeast && webApp.isVersionAtLeast('6.0');
   
   console.log('Telegram WebApp platform:', webApp.platform);
   console.log('Has showInvoice:', hasInvoiceSupport);
-  console.log('Is mobile:', isMobile);
+  console.log('Is mobile device (UA):', isMobileDevice);
+  console.log('Is touch device:', isTouchDevice);
+  console.log('Has native features:', hasNativeFeatures);
+  console.log('WebApp version:', webApp.version);
   
-  // Возвращаем true если есть поддержка инвойсов ИЛИ это мобильная платформа
-  return hasInvoiceSupport || isMobile;
+  // Если есть showInvoice - точно поддерживается
+  if (hasInvoiceSupport) return true;
+  
+  // Если это мобильное устройство с поддержкой нативных функций - пробуем
+  if (isMobileDevice && hasNativeFeatures) return true;
+  
+  // Иначе - не поддерживается
+  return false;
 };
 
 // Создание инвойса для покупки
@@ -152,17 +162,51 @@ export const purchaseWithStars = async (planType) => {
             });
           }
         });
+      } else if (typeof webApp.openInvoice === 'function') {
+        // Альтернативный метод для некоторых версий
+        console.log('Пытаемся использовать openInvoice');
+        webApp.openInvoice(invoice, (status) => {
+          console.log('Статус платежа (openInvoice):', status);
+          if (status === 'paid') {
+            resolve({
+              success: true,
+              planType: planType,
+              amount: SUBSCRIPTION_PLANS[planType].amount,
+            });
+          } else {
+            resolve({
+              success: false,
+              cancelled: true,
+              error: 'Платеж не завершен',
+            });
+          }
+        });
+      } else if (webApp.sendData) {
+        // Попытка через sendData для старых версий
+        console.log('Пытаемся использовать sendData');
+        const paymentData = {
+          action: 'purchase',
+          planType: planType,
+          amount: SUBSCRIPTION_PLANS[planType].amount,
+          invoice: invoice
+        };
+        webApp.sendData(JSON.stringify(paymentData));
+        resolve({
+          success: false,
+          cancelled: true,
+          error: 'Платеж инициирован через sendData - проверьте результат в боте',
+        });
       } else {
-        // Если showInvoice недоступен, показываем информационное сообщение
-        console.log('showInvoice недоступен, показываем alert');
-        const message = `Для покупки ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} звезд откройте приложение в мобильном Telegram.`;
+        // Если ничего не работает, показываем информационное сообщение
+        console.log('Никакие методы платежа недоступны, показываем alert');
+        const message = `Для покупки ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} звезд обновите Telegram до последней версии или используйте официальное мобильное приложение.`;
         
         if (typeof webApp.showAlert === 'function') {
           webApp.showAlert(message, () => {
             resolve({
               success: false,
               cancelled: true,
-              error: 'Покупки доступны только в мобильном приложении Telegram',
+              error: 'Требуется обновление Telegram или использование мобильного приложения',
             });
           });
         } else {
@@ -171,7 +215,7 @@ export const purchaseWithStars = async (planType) => {
           resolve({
             success: false,
             cancelled: true,
-            error: 'Покупки доступны только в мобильном приложении Telegram',
+            error: 'Требуется обновление Telegram или использование мобильного приложения',
           });
         }
       }
