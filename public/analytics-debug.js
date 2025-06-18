@@ -193,7 +193,7 @@ window.testTelegramAnalytics = function() {
 console.log('✅ analytics-debug.js: Глобальные функции отладки добавлены: window.debugAnalytics(), window.initAnalyticsWithToken(), window.testAnalyticsEvent(), window.testTelegramAnalytics()');
 
 // Отладочные функции для проверки Telegram Analytics SDK
-window.checkTelegramAnalytics = function() {
+function checkTelegramAnalytics() {
   console.log('=== ПРОВЕРКА TELEGRAM ANALYTICS SDK ===');
   
   // Проверка доступности SDK
@@ -221,17 +221,10 @@ window.checkTelegramAnalytics = function() {
   }
   
   console.log('=== КОНЕЦ ПРОВЕРКИ ===');
-};
-
-// Автоматическая проверка через 2 секунды после загрузки
-setTimeout(() => {
-  window.checkTelegramAnalytics();
-}, 2000);
-
-console.log('🔧 Отладочные функции загружены. Используйте checkTelegramAnalytics() для проверки.');
+}
 
 // Специальная функция для тестирования в Telegram Web
-window.testTelegramWeb = function() {
+function testTelegramWeb() {
   console.log('🌐 === ТЕСТИРОВАНИЕ В TELEGRAM WEB ===');
   
   // Проверка URL и referrer
@@ -268,6 +261,25 @@ window.testTelegramWeb = function() {
   console.log('   3. Обновите страницу или выполните действия');
   
   console.log('🌐 === КОНЕЦ ТЕСТИРОВАНИЯ ===');
+}
+
+// Добавляем функции в window объект
+window.checkTelegramAnalytics = checkTelegramAnalytics;
+window.testTelegramWeb = testTelegramWeb;
+
+// Быстрая проверка статуса
+window.analyticsStatus = function() {
+  console.log('📊 === БЫСТРАЯ ПРОВЕРКА АНАЛИТИКИ ===');
+  console.log('✅ SDK загружен:', typeof telegramAnalytics !== 'undefined');
+  console.log('✅ Telegram WebApp:', !!(window.Telegram && window.Telegram.WebApp));
+  console.log('✅ Пользователь ID:', window.Telegram?.WebApp?.initDataUnsafe?.user?.id || 'Неизвестно');
+  console.log('📡 Проверьте Network → Фильтр: tganalytics.xyz');
+  console.log('📊 === КОНЕЦ ПРОВЕРКИ ===');
 };
+
+// Автоматическая проверка через 2 секунды после загрузки
+setTimeout(() => {
+  checkTelegramAnalytics();
+}, 2000);
 
 console.log('🔧 Отладочные функции загружены. Используйте checkTelegramAnalytics() для проверки.'); 
