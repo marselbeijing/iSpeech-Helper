@@ -55,6 +55,7 @@ const Account = () => {
   const [starsAvailable, setStarsAvailable] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState('');
 
+  // Инициализация пользователя (только один раз)
   useEffect(() => {
     try {
       const currentUser = getCurrentUser();
@@ -97,23 +98,29 @@ const Account = () => {
           delete window.onTelegramAuth;
         };
       }
-
-      // Проверяем статус подписки
-      const checkSubscription = async () => {
-        const status = await checkSubscriptionStatus();
-        if (status && status.error) {
-          setSubscriptionError(status.error);
-        } else {
-          setSubscription(status);
-        }
-      };
-      
-      if (user) {
-        checkSubscription();
-      }
     } catch (error) {
       console.error('Ошибка инициализации:', error);
       setLoading(false);
+    }
+  }, []); // Убираем зависимость от user
+
+  // Проверка подписки (только когда user изменяется)
+  useEffect(() => {
+    if (user) {
+      const checkSubscription = async () => {
+        try {
+          const status = await checkSubscriptionStatus();
+          if (status && status.error) {
+            setSubscriptionError(status.error);
+          } else {
+            setSubscription(status);
+          }
+        } catch (error) {
+          console.error('Ошибка проверки подписки:', error);
+        }
+      };
+      
+      checkSubscription();
     }
   }, [user]);
 

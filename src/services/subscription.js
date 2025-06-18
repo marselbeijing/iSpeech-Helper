@@ -65,13 +65,18 @@ export const checkSubscriptionStatus = async () => {
     const url = `${API_URL}/subscriptions/status/${user.id}`;
     console.log(`Запрос к: ${url}`);
 
+    // Создаем AbortController для таймаута
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 секунд
+
     pendingRequest = fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
-      timeout: 10000, // 10 секунд таймаут
+      signal: controller.signal,
     }).then(async (response) => {
+      clearTimeout(timeoutId);
       console.log(`Ответ сервера: ${response.status} ${response.statusText}`);
 
       if (!response.ok) {
@@ -94,6 +99,12 @@ export const checkSubscriptionStatus = async () => {
       cacheTimestamp = Date.now();
       
       return data;
+    }).catch((error) => {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('Время ожидания запроса истекло');
+      }
+      throw error;
     }).finally(() => {
       // Очищаем ожидающий запрос
       pendingRequest = null;
