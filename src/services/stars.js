@@ -178,9 +178,7 @@ export const purchaseWithStars = async (planType) => {
 
         try {
           // Создаем инвойс на сервере через API
-          const apiUrl = process.env.NODE_ENV === 'production' 
-            ? 'https://ispeech-server.vercel.app/api/create-invoice'
-            : 'http://localhost:5000/api/create-invoice';
+          const apiUrl = 'http://localhost:5000/api/create-invoice';
             
           const response = await fetch(apiUrl, {
             method: 'POST',
