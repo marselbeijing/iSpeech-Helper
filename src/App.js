@@ -8,6 +8,7 @@ import WebApp from '@twa-dev/sdk';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 import { initTelegramWebApp } from './services/telegram';
+import telegramAnalytics from '@telegram-apps/analytics';
 
 // Components
 import Root from './components/Root';
@@ -22,6 +23,8 @@ import BreathingExercises from './components/BreathingExercises';
 import TongueTwisters from './components/TongueTwisters';
 import MetronomeReader from './components/MetronomeReader';
 import EmotionsTrainer from './components/EmotionsTrainer';
+
+const TELEGRAM_ANALYTICS_TOKEN = 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=';
 
 // Router configuration
 const router = createBrowserRouter([
@@ -191,6 +194,20 @@ const App = () => {
         setThemeMode(e.matches ? 'dark' : 'light');
       });
     }
+  }, []);
+  
+  useEffect(() => {
+    // Инициализация Telegram Analytics SDK
+    telegramAnalytics.init({
+      token: TELEGRAM_ANALYTICS_TOKEN,
+      appName: 'ispeechhelper',
+    });
+    // Отправка события запуска приложения
+    telegramAnalytics.track('app_start', {
+      timestamp: Date.now(),
+      user_agent: navigator.userAgent,
+      platform: window.Telegram?.WebApp?.platform || 'web',
+    });
   }, []);
   
   // Создаем тему на основе настроек
