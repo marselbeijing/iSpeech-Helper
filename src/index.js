@@ -2,20 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
-import telegramAnalytics from '@telegram-apps/analytics';
+import analyticsService from './services/analytics';
 
-// Инициализируем Telegram Analytics только если есть токен
-const analyticsToken = process.env.REACT_APP_TG_ANALYTICS_TOKEN;
-if (analyticsToken && analyticsToken !== 'undefined') {
-  try {
-    telegramAnalytics.init({
-      token: analyticsToken,
-      appName: 'ispeechhelper',
-    });
-  } catch (error) {
-    // Тихо игнорируем ошибку инициализации
-  }
-}
+// Analytics уже инициализируется в сервисе
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

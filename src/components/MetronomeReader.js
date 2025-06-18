@@ -19,6 +19,7 @@ import { vibrate } from '../services/vibration';
 import { styled } from '@mui/material/styles';
 import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
+import analyticsService from '../services/analytics';
 
 // Кастомный шарик для Slider
 const CustomThumb = styled('span')(({ theme, ownerState }) => ({
@@ -135,11 +136,20 @@ const MetronomeReader = () => {
       nextNoteTimeRef.current = audioContextRef.current.currentTime;
       scheduler();
       setIsPlaying(true);
+      analyticsService.trackExerciseStart('metronome_reader', {
+        bpm: bpm,
+        words_count: words.length,
+      });
       playSound('click');
       vibrate('click');
     } else {
       cancelAnimationFrame(animationFrameRef.current);
       setIsPlaying(false);
+      analyticsService.trackExerciseComplete('metronome_reader', 0, {
+        bpm: bpm,
+        words_count: words.length,
+        words_completed: currentWordIndex + 1,
+      });
       playSound('click');
       vibrate('click');
       handleExerciseComplete();
@@ -148,7 +158,9 @@ const MetronomeReader = () => {
 
   const handleBpmChange = (event, newValue) => {
     if (typeof newValue === 'number') {
+      const oldBpm = bpm;
       setBpm(newValue);
+      analyticsService.trackSettingsChange('metronome_bpm', oldBpm, newValue);
       playSound('click');
       vibrate('click');
     }

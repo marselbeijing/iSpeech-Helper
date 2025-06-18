@@ -31,6 +31,7 @@ import { useTranslation } from 'react-i18next';
 import { getUserSettings, saveUserSettings } from '../services/storage';
 import { getReferralStats, getReferralTransactions, generateReferralLink, requestPayout } from '../services/referral';
 import ReferralProgram from '../components/ReferralProgram';
+import analyticsService from '../services/analytics';
 
 const TelegramStarIcon = () => (
   <img src="/assets/telegram-star.png" alt="Telegram Stars" width={28} height={28} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
@@ -168,19 +169,30 @@ const Account = () => {
   const handlePurchase = async (type) => {
     try {
       setIsPurchasing(true);
+      analyticsService.trackSubscriptionAction('purchase_attempt', type);
+      
       const result = await purchaseSubscription(type);
       
       if (result.success) {
         setSubscription(result.subscription);
+        analyticsService.trackSubscriptionAction('purchase_success', type, {
+          subscription_details: result.subscription,
+        });
         playSound('success');
         vibrate('success');
       } else {
+        analyticsService.trackSubscriptionAction('purchase_failed', type, {
+          error: result.error || 'Unknown error',
+        });
         playSound('error');
         vibrate('error');
         // TODO: Показать уведомление об ошибке
       }
     } catch (error) {
       console.error('Ошибка при покупке:', error);
+      analyticsService.trackSubscriptionAction('purchase_failed', type, {
+        error: error.message,
+      });
       playSound('error');
       vibrate('error');
     } finally {

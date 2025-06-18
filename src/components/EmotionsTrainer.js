@@ -21,6 +21,7 @@ import {
   Refresh,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import analyticsService from '../services/analytics';
 
 const EmotionsTrainer = () => {
   const theme = useTheme();
@@ -38,6 +39,7 @@ const EmotionsTrainer = () => {
   const handleStartTraining = () => {
     setIsStarted(true);
     getRandomEmotionAndPhrase();
+    analyticsService.trackExerciseStart('emotions_trainer');
     playSound('click');
     vibrate('click');
   };
@@ -51,6 +53,9 @@ const EmotionsTrainer = () => {
 
   const handleNextClick = () => {
     getRandomEmotionAndPhrase();
+    analyticsService.trackFeatureUsage('emotions_trainer', 'next_emotion', {
+      previous_emotion: currentEmotion?.name,
+    });
     playSound('click');
     vibrate('click');
   };

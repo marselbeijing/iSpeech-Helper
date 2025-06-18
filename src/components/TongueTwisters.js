@@ -14,6 +14,7 @@ import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
+import analyticsService from '../services/analytics';
 
 const tongueTwistersRU = {
   beginner: [
@@ -178,6 +179,11 @@ const TongueTwisters = () => {
       const randomIndex = Math.floor(Math.random() * arr.length);
       setCurrentTwister(arr[randomIndex]);
       setIsVisible(true);
+      analyticsService.trackFeatureUsage('tongue_twisters', 'new_twister', {
+        level: lvl,
+        language: i18n.language,
+        twister_length: arr[randomIndex].length,
+      });
       playSound('click');
       vibrate('click');
       handleExerciseComplete();
@@ -366,7 +372,11 @@ const TongueTwisters = () => {
             </Typography>
             <Tabs
               value={level}
-              onChange={(_, v) => setLevel(v)}
+              onChange={(_, v) => {
+                const oldLevel = level;
+                setLevel(v);
+                analyticsService.trackSettingsChange('tongue_twister_level', oldLevel, v);
+              }}
               variant="fullWidth"
               sx={{ mb: { xs: 1, sm: 2 }, width: '100%' }}
             >

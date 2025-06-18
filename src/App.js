@@ -9,6 +9,7 @@ import WebApp from '@twa-dev/sdk';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 import { initTelegramWebApp } from './services/telegram';
+import analyticsService from './services/analytics';
 
 // Components
 import Root from './components/Root';
@@ -124,12 +125,21 @@ const App = () => {
       console.log('Telegram WebApp инициализация пропущена');
     }
 
+    // Отслеживание запуска приложения
+    analyticsService.trackAppLaunch({
+      platform: WebApp.platform,
+      version: WebApp.version,
+      theme: WebApp.colorScheme,
+      user_id: WebApp.initDataUnsafe?.user?.id,
+      language: i18n.language,
+    });
+
     // Загружаем сохраненные настройки
     const savedSettings = getUserSettings();
     if (savedSettings) {
       updateTheme(savedSettings.darkMode || false);
     }
-  }, []);
+  }, [i18n.language]);
 
   // Обработчик события изменения темы из настроек
   useEffect(() => {
