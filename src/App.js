@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
@@ -24,6 +23,9 @@ import BreathingExercises from './components/BreathingExercises';
 import TongueTwisters from './components/TongueTwisters';
 import MetronomeReader from './components/MetronomeReader';
 import EmotionsTrainer from './components/EmotionsTrainer';
+
+// Определяем токен напрямую для отладки
+const ANALYTICS_TOKEN = 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=';
 
 // Router configuration
 const router = createBrowserRouter([
@@ -131,14 +133,18 @@ const App = () => {
     // Добавляем глобальные функции отладки
     window.debugAnalytics = () => {
       console.log('🔍 Debug Analytics: Проверяем состояние...');
-      console.log('Token:', process.env.REACT_APP_TG_ANALYTICS_TOKEN ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
-      console.log('Token length:', process.env.REACT_APP_TG_ANALYTICS_TOKEN?.length || 0);
+      console.log('Token from env:', process.env.REACT_APP_TG_ANALYTICS_TOKEN ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
+      console.log('Token from const:', ANALYTICS_TOKEN ? 'НАЙДЕН' : 'НЕ НАЙДЕН');
+      console.log('Token length env:', process.env.REACT_APP_TG_ANALYTICS_TOKEN?.length || 0);
+      console.log('Token length const:', ANALYTICS_TOKEN?.length || 0);
       console.log('Telegram WebApp:', !!window.Telegram?.WebApp);
       console.log('Analytics service:', analyticsService);
       
       return {
-        token: !!process.env.REACT_APP_TG_ANALYTICS_TOKEN,
-        tokenLength: process.env.REACT_APP_TG_ANALYTICS_TOKEN?.length || 0,
+        tokenFromEnv: !!process.env.REACT_APP_TG_ANALYTICS_TOKEN,
+        tokenFromConst: !!ANALYTICS_TOKEN,
+        tokenLengthEnv: process.env.REACT_APP_TG_ANALYTICS_TOKEN?.length || 0,
+        tokenLengthConst: ANALYTICS_TOKEN?.length || 0,
         webApp: !!window.Telegram?.WebApp,
         service: analyticsService
       };
@@ -150,7 +156,28 @@ const App = () => {
       return 'Тестовое событие отправлено';
     };
     
-    console.log('✅ Функции отладки добавлены: window.debugAnalytics() и window.testAnalyticsEvent()');
+    window.initAnalyticsWithToken = () => {
+      console.log('🔧 Инициализируем аналитику с фиксированным токеном...');
+      try {
+        // Попробуем инициализировать с фиксированным токеном
+        if (window.telegramAnalytics) {
+          window.telegramAnalytics.init({
+            token: ANALYTICS_TOKEN,
+            appName: 'ispeechhelper',
+          });
+          console.log('✅ Аналитика инициализирована с фиксированным токеном');
+          return { success: true, message: 'Аналитика инициализирована' };
+        } else {
+          console.log('❌ telegramAnalytics недоступен');
+          return { success: false, message: 'telegramAnalytics недоступен' };
+        }
+      } catch (error) {
+        console.error('❌ Ошибка инициализации:', error);
+        return { success: false, error: error.message };
+      }
+    };
+    
+    console.log('✅ Функции отладки добавлены: window.debugAnalytics(), window.testAnalyticsEvent(), window.initAnalyticsWithToken()');
 
     // Загружаем сохраненные настройки
     const savedSettings = getUserSettings();
