@@ -43,8 +43,23 @@ const SUBSCRIPTION_PLANS = {
 
 // Проверка доступности Telegram Stars
 export const isStarsAvailable = () => {
-  // В браузерной версии Telegram всегда доступно
-  return !!(window.Telegram?.WebApp);
+  // Проверяем наличие Telegram WebApp и функции showInvoice
+  const webApp = window.Telegram?.WebApp;
+  if (!webApp) return false;
+  
+  // Дополнительные проверки для мобильного приложения
+  const isMobile = webApp.platform !== 'unknown' && 
+                   webApp.platform !== 'web' && 
+                   webApp.platform !== 'weba';
+  
+  const hasInvoiceSupport = typeof webApp.showInvoice === 'function';
+  
+  console.log('Telegram WebApp platform:', webApp.platform);
+  console.log('Has showInvoice:', hasInvoiceSupport);
+  console.log('Is mobile:', isMobile);
+  
+  // Возвращаем true если есть поддержка инвойсов ИЛИ это мобильная платформа
+  return hasInvoiceSupport || isMobile;
 };
 
 // Создание инвойса для покупки
@@ -101,38 +116,36 @@ export const createInvoice = async (planType) => {
 export const purchaseWithStars = async (planType) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (!isStarsAvailable()) {
-        throw new Error('Telegram Stars недоступен в этой среде');
+      const webApp = window.Telegram?.WebApp;
+      if (!webApp) {
+        throw new Error('Telegram WebApp недоступен');
       }
 
       const invoice = await createInvoice(planType);
       
-      // Проверяем наличие showInvoice
-      if (window.Telegram.WebApp.showInvoice) {
-        // Показываем инвойс пользователю
-        window.Telegram.WebApp.showInvoice(invoice, (status) => {
+      // Пытаемся показать инвойс
+      if (typeof webApp.showInvoice === 'function') {
+        console.log('Показываем инвойс через showInvoice');
+        webApp.showInvoice(invoice, (status) => {
+          console.log('Статус платежа:', status);
           if (status === 'paid') {
-            // Платеж успешен
             resolve({
               success: true,
               planType: planType,
               amount: SUBSCRIPTION_PLANS[planType].amount,
             });
           } else if (status === 'cancelled') {
-            // Платеж отменен пользователем
             resolve({
               success: false,
               cancelled: true,
               error: 'Платеж отменен пользователем',
             });
           } else if (status === 'failed') {
-            // Платеж не удался
             resolve({
               success: false,
               error: 'Платеж не удался',
             });
           } else {
-            // Неизвестный статус
             resolve({
               success: false,
               error: `Неизвестный статус платежа: ${status}`,
@@ -140,14 +153,27 @@ export const purchaseWithStars = async (planType) => {
           }
         });
       } else {
-        // Fallback для браузерной версии - показываем уведомление
-        window.Telegram.WebApp.showAlert(`Покупка ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} звезд будет доступна в мобильном приложении Telegram.`, () => {
+        // Если showInvoice недоступен, показываем информационное сообщение
+        console.log('showInvoice недоступен, показываем alert');
+        const message = `Для покупки ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} звезд откройте приложение в мобильном Telegram.`;
+        
+        if (typeof webApp.showAlert === 'function') {
+          webApp.showAlert(message, () => {
+            resolve({
+              success: false,
+              cancelled: true,
+              error: 'Покупки доступны только в мобильном приложении Telegram',
+            });
+          });
+        } else {
+          // Fallback для случаев когда и showAlert недоступен
+          alert(message);
           resolve({
             success: false,
             cancelled: true,
             error: 'Покупки доступны только в мобильном приложении Telegram',
           });
-        });
+        }
       }
 
     } catch (error) {

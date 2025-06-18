@@ -164,13 +164,6 @@ const Account = () => {
         return;
       }
       
-      // Проверяем доступность Telegram Stars
-      if (!isStarsAvailable()) {
-        console.log('Telegram Stars недоступен');
-        setSubscriptionError('Покупки доступны только в мобильном приложении Telegram');
-        return;
-      }
-      
       const result = await purchaseWithStars(type);
       
       if (result.success) {
