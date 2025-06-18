@@ -88,6 +88,16 @@ class TelegramAnalyticsService {
     });
   }
 
+  // Алиас для совместимости
+  trackAppLaunch(additionalData = {}) {
+    this.sendEvent('app_launch', {
+      platform: this.getPlatform(),
+      user_id: window.Telegram?.WebApp?.initDataUnsafe?.user?.id,
+      language_code: window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code || 'ru',
+      ...additionalData,
+    });
+  }
+
   // Отслеживание навигации между страницами
   trackPageView(pageName, additionalData = {}) {
     this.sendEvent('page_view', {

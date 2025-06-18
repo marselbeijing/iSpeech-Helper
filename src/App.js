@@ -126,13 +126,7 @@ const App = () => {
     }
 
     // Отслеживание запуска приложения
-    analyticsService.trackAppLaunch({
-      platform: WebApp.platform,
-      version: WebApp.version,
-      theme: WebApp.colorScheme,
-      user_id: WebApp.initDataUnsafe?.user?.id,
-      language: i18n.language,
-    });
+    analyticsService.trackAppStart();
 
     // Загружаем сохраненные настройки
     const savedSettings = getUserSettings();
