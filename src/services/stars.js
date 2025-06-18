@@ -53,7 +53,15 @@ export const isStarsAvailable = () => {
   // Дополнительные проверки для мобильного устройства
   const isMobileDevice = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  const hasNativeFeatures = webApp.isVersionAtLeast && webApp.isVersionAtLeast('6.0');
+  
+  // Безопасная проверка версии
+  let hasNativeFeatures = false;
+  try {
+    hasNativeFeatures = webApp.isVersionAtLeast && typeof webApp.isVersionAtLeast === 'function' && webApp.isVersionAtLeast('6.0');
+  } catch (error) {
+    console.log('Ошибка при проверке версии WebApp:', error);
+    hasNativeFeatures = false;
+  }
   
   console.log('Telegram WebApp platform:', webApp.platform);
   console.log('Has showInvoice:', hasInvoiceSupport);
@@ -85,16 +93,19 @@ export const createInvoice = async (planType) => {
       throw new Error('Неверный тип подписки');
     }
 
+    // Создаем безопасный payload
+    const payload = {
+      userId: user.id,
+      planType: planType,
+      planId: plan.id,
+      timestamp: Date.now(),
+    };
+
     // Создаем инвойс через Telegram WebApp API
     const invoice = {
       title: plan.title,
       description: plan.description,
-      payload: JSON.stringify({
-        userId: user.id,
-        planType: planType,
-        planId: plan.id,
-        timestamp: Date.now(),
-      }),
+      payload: JSON.stringify(payload),
       provider_token: '', // Пустой для Telegram Stars
       currency: 'XTR', // Telegram Stars currency
       prices: [{
@@ -115,6 +126,7 @@ export const createInvoice = async (planType) => {
       is_flexible: false,
     };
 
+    console.log('Создан инвойс:', invoice);
     return invoice;
   } catch (error) {
     console.error('Ошибка создания инвойса:', error);
@@ -126,89 +138,119 @@ export const createInvoice = async (planType) => {
 export const purchaseWithStars = async (planType) => {
   return new Promise(async (resolve, reject) => {
     try {
+      console.log('Начинаем покупку для плана:', planType);
+      
       const webApp = window.Telegram?.WebApp;
       if (!webApp) {
         throw new Error('Telegram WebApp недоступен');
       }
 
+      console.log('WebApp доступен, создаем инвойс...');
       const invoice = await createInvoice(planType);
+      console.log('Инвойс создан, пытаемся инициировать платеж...');
       
       // Пытаемся показать инвойс
       if (typeof webApp.showInvoice === 'function') {
         console.log('Показываем инвойс через showInvoice');
-        webApp.showInvoice(invoice, (status) => {
-          console.log('Статус платежа:', status);
-          if (status === 'paid') {
-            resolve({
-              success: true,
-              planType: planType,
-              amount: SUBSCRIPTION_PLANS[planType].amount,
-            });
-          } else if (status === 'cancelled') {
-            resolve({
-              success: false,
-              cancelled: true,
-              error: 'Платеж отменен пользователем',
-            });
-          } else if (status === 'failed') {
-            resolve({
-              success: false,
-              error: 'Платеж не удался',
-            });
-          } else {
-            resolve({
-              success: false,
-              error: `Неизвестный статус платежа: ${status}`,
-            });
-          }
-        });
+        try {
+          webApp.showInvoice(invoice, (status) => {
+            console.log('Статус платежа:', status);
+            if (status === 'paid') {
+              resolve({
+                success: true,
+                planType: planType,
+                amount: SUBSCRIPTION_PLANS[planType].amount,
+              });
+            } else if (status === 'cancelled') {
+              resolve({
+                success: false,
+                cancelled: true,
+                error: 'Платеж отменен пользователем',
+              });
+            } else if (status === 'failed') {
+              resolve({
+                success: false,
+                error: 'Платеж не удался',
+              });
+            } else {
+              resolve({
+                success: false,
+                error: `Неизвестный статус платежа: ${status}`,
+              });
+            }
+          });
+        } catch (invoiceError) {
+          console.error('Ошибка при вызове showInvoice:', invoiceError);
+          throw invoiceError;
+        }
       } else if (typeof webApp.openInvoice === 'function') {
         // Альтернативный метод для некоторых версий
         console.log('Пытаемся использовать openInvoice');
-        webApp.openInvoice(invoice, (status) => {
-          console.log('Статус платежа (openInvoice):', status);
-          if (status === 'paid') {
-            resolve({
-              success: true,
-              planType: planType,
-              amount: SUBSCRIPTION_PLANS[planType].amount,
-            });
-          } else {
-            resolve({
-              success: false,
-              cancelled: true,
-              error: 'Платеж не завершен',
-            });
-          }
-        });
-      } else if (webApp.sendData) {
+        try {
+          webApp.openInvoice(invoice, (status) => {
+            console.log('Статус платежа (openInvoice):', status);
+            if (status === 'paid') {
+              resolve({
+                success: true,
+                planType: planType,
+                amount: SUBSCRIPTION_PLANS[planType].amount,
+              });
+            } else {
+              resolve({
+                success: false,
+                cancelled: true,
+                error: 'Платеж не завершен',
+              });
+            }
+          });
+        } catch (invoiceError) {
+          console.error('Ошибка при вызове openInvoice:', invoiceError);
+          throw invoiceError;
+        }
+      } else if (webApp.sendData && typeof webApp.sendData === 'function') {
         // Попытка через sendData для старых версий
         console.log('Пытаемся использовать sendData');
-        const paymentData = {
-          action: 'purchase',
-          planType: planType,
-          amount: SUBSCRIPTION_PLANS[planType].amount,
-          invoice: invoice
-        };
-        webApp.sendData(JSON.stringify(paymentData));
-        resolve({
-          success: false,
-          cancelled: true,
-          error: 'Платеж инициирован через sendData - проверьте результат в боте',
-        });
+        try {
+          const paymentData = {
+            action: 'purchase',
+            planType: planType,
+            amount: SUBSCRIPTION_PLANS[planType].amount,
+            invoice: invoice
+          };
+          webApp.sendData(JSON.stringify(paymentData));
+          resolve({
+            success: false,
+            cancelled: true,
+            error: 'Платеж инициирован через sendData - проверьте результат в боте',
+          });
+        } catch (sendDataError) {
+          console.error('Ошибка при вызове sendData:', sendDataError);
+          throw sendDataError;
+        }
       } else {
         // Если ничего не работает, показываем информационное сообщение
         console.log('Никакие методы платежа недоступны, показываем alert');
         const message = `Для покупки ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} звезд обновите Telegram до последней версии или используйте официальное мобильное приложение.`;
         
         if (typeof webApp.showAlert === 'function') {
-          webApp.showAlert(message, () => {
+          try {
+            webApp.showAlert(message, () => {
+              resolve({
+                success: false,
+                cancelled: true,
+                error: 'Требуется обновление Telegram или использование мобильного приложения',
+              });
+            });
+          } catch (alertError) {
+            console.error('Ошибка при вызове showAlert:', alertError);
+            // Fallback к обычному alert
+            alert(message);
             resolve({
               success: false,
               cancelled: true,
               error: 'Требуется обновление Telegram или использование мобильного приложения',
             });
-          });
+          }
         } else {
           // Fallback для случаев когда и showAlert недоступен
           alert(message);
