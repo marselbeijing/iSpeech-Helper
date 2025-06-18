@@ -50,20 +50,16 @@ export const checkSubscriptionStatus = async () => {
 
     // Проверяем кэш
     if (isCacheValid()) {
-      console.log('Используем кэшированные данные подписки');
       return subscriptionCache;
     }
 
     // Если уже есть ожидающий запрос, возвращаем его
     if (pendingRequest) {
-      console.log('Ожидаем завершения текущего запроса');
       return await pendingRequest;
     }
 
     // Создаем новый запрос
-    console.log(`Проверяем подписку для пользователя: ${user.id}`);
     const url = `${API_URL}/subscriptions/status/${user.id}`;
-    console.log(`Запрос к: ${url}`);
 
     // Создаем AbortController для таймаута
     const controller = new AbortController();
@@ -75,13 +71,11 @@ export const checkSubscriptionStatus = async () => {
         'Content-Type': 'application/json',
       },
       signal: controller.signal,
-    }).then(async (response) => {
+          }).then(async (response) => {
       clearTimeout(timeoutId);
-      console.log(`Ответ сервера: ${response.status} ${response.statusText}`);
 
       if (!response.ok) {
         if (response.status === 404) {
-          console.log('Подписка не найдена (404)');
           return {
             isActive: false,
             type: null,
@@ -92,7 +86,6 @@ export const checkSubscriptionStatus = async () => {
       }
 
       const data = await response.json();
-      console.log('Данные подписки получены:', data);
       
       // Сохраняем в кэш
       subscriptionCache = data;
@@ -129,7 +122,6 @@ export const checkSubscriptionStatus = async () => {
     
     // Если это таймаут, возвращаем данные по умолчанию
     if (error.message.includes('Время ожидания запроса истекло')) {
-      console.warn('Таймаут запроса, возвращаем данные по умолчанию');
       return {
         isActive: false,
         type: null,

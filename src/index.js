@@ -13,10 +13,8 @@ if (analyticsToken && analyticsToken !== 'undefined') {
       appName: 'ispeechhelper',
     });
   } catch (error) {
-    console.warn('Telegram Analytics не инициализирован:', error.message);
+    // Тихо игнорируем ошибку инициализации
   }
-} else {
-  console.log('Telegram Analytics токен не найден, пропускаем инициализацию');
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -35,7 +33,10 @@ window.addEventListener('error', function(event) {
     message.includes('TIMEOUT') ||
     message.includes('MetaMask extension not found') ||
     message.includes('Token is not provided') ||
-    message.includes('ChromeTransport')
+    message.includes('ChromeTransport') ||
+    message.includes('chrome runtime disconnected') ||
+    message.includes('chrome.runtime') ||
+    message.includes('Extension context invalidated')
   ) {
     event.preventDefault();
     return;
@@ -49,7 +50,10 @@ window.addEventListener('unhandledrejection', function(event) {
   if (
     reason.includes('MetaMask') ||
     reason.includes('Token is not provided') ||
-    reason.includes('ChromeTransport')
+    reason.includes('ChromeTransport') ||
+    reason.includes('chrome runtime disconnected') ||
+    reason.includes('chrome.runtime') ||
+    reason.includes('Extension context invalidated')
   ) {
     event.preventDefault();
     return;
