@@ -25,7 +25,7 @@ import { useTranslation } from 'react-i18next';
 const EmotionsTrainer = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [currentEmotion, setCurrentEmotion] = useState(null);
   const [currentPhrase, setCurrentPhrase] = useState('');
 

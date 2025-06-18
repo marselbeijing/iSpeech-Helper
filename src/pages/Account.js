@@ -15,6 +15,8 @@ import {
   IconButton,
   Snackbar,
   Alert,
+  Paper,
+  Avatar,
 } from '@mui/material';
 import {
   Close as CloseIcon,

@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles';
 import HomeIcon from '@mui/icons-material/Home';
 import FunctionsIcon from '@mui/icons-material/Apps';
 import AccountIcon from '@mui/icons-material/Person';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { useTranslation } from 'react-i18next';
 
 const StyledBottomNavigation = styled(BottomNavigation)({
@@ -47,7 +48,7 @@ function NavigationBar() {
 <BottomNavigationAction
   label="Progress"
   value="/progress"
-  icon={<ProgressIcon />}
+  icon={<TrendingUpIcon />}
 />
 <BottomNavigationAction
   label="Account"
