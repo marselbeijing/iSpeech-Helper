@@ -15,7 +15,6 @@ import { vibrate } from '../services/vibration';
 import { useNavigate } from 'react-router-dom';
 import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
-import analyticsService from '../services/analytics';
 
 const BreathingExercises = () => {
   const theme = useTheme();
@@ -50,9 +49,6 @@ const BreathingExercises = () => {
   const startExercise = useCallback(() => {
     setIsPlaying(true);
     setCurrentPhase('inhale');
-    analyticsService.trackExerciseStart('breathing', {
-      total_cycles: totalCycles,
-    });
     playSound('click');
     vibrate('click');
   }, [totalCycles]);
@@ -60,10 +56,6 @@ const BreathingExercises = () => {
   const stopExercise = useCallback(() => {
     setIsPlaying(false);
     setCurrentPhase('inhale');
-    analyticsService.trackExerciseComplete('breathing', 0, {
-      total_cycles: totalCycles,
-      completed_cycles: Math.floor(Date.now() / 1000), // Примерное количество циклов
-    });
     playSound('click');
     vibrate('click');
     handleExerciseComplete();

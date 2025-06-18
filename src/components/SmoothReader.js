@@ -9,7 +9,6 @@ import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
 import stories from '../data/stories';
 import { ArrowBack } from '@mui/icons-material';
-import analyticsService from '../services/analytics';
 
 const MIN_SPEED = 1;
 const MAX_SPEED = 100;
@@ -86,13 +85,6 @@ const SmoothReader = () => {
   const handlePlayPause = () => {
     if (isPlaying) {
       setIsPlaying(false);
-      analyticsService.trackExerciseComplete('smooth_reader', Math.round((Date.now() - startTimeRef.current) / 1000), {
-        speed: speed,
-        story_index: storyIndex,
-        letters_read: currentIndex,
-        total_letters: totalLetters,
-        completion_percentage: Math.round((currentIndex / totalLetters) * 100),
-      });
       if (currentIndex >= totalLetters) {
         handleExerciseComplete();
       }
@@ -101,11 +93,6 @@ const SmoothReader = () => {
         setCurrentIndex(0);
       }
       startTimeRef.current = Date.now();
-      analyticsService.trackExerciseStart('smooth_reader', {
-        speed: speed,
-        story_index: storyIndex,
-        total_letters: totalLetters,
-      });
       setIsPlaying(true);
     }
   };
@@ -113,7 +100,6 @@ const SmoothReader = () => {
   const handleSliderChange = (_, value) => {
     const oldSpeed = speed;
     setSpeed(value);
-    analyticsService.trackSettingsChange('smooth_reader_speed', oldSpeed, value);
   };
 
   const handleRandomStory = () => {
@@ -122,10 +108,6 @@ const SmoothReader = () => {
     if (nextIndex === storyIndex) {
       nextIndex = (nextIndex + 1) % currentLanguageStories.length;
     }
-    analyticsService.trackFeatureUsage('smooth_reader', 'change_story', {
-      from_story: storyIndex,
-      to_story: nextIndex,
-    });
     setStoryIndex(nextIndex);
     setCurrentIndex(0);
     setIsPlaying(false);

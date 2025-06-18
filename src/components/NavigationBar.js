@@ -16,7 +16,6 @@ import { motion } from 'framer-motion';
 import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import AssistantIcon from './AssistantIcon';
-import analyticsService from '../services/analytics';
 
 const NavigationBar = () => {
   const navigate = useNavigate();
@@ -26,13 +25,6 @@ const NavigationBar = () => {
   const handleChange = (event, newValue) => {
     playSound('click');
     vibrate('click');
-    
-    // Отслеживаем клики по навигации
-    const pageName = newValue === '/' ? 'home' : newValue.slice(1);
-    analyticsService.trackUIInteraction('navigation', `nav_${pageName}`, 'click', {
-      from_page: location.pathname,
-      to_page: newValue,
-    });
     
     navigate(newValue);
   };
