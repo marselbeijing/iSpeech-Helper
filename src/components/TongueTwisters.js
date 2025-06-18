@@ -170,7 +170,7 @@ const TongueTwisters = () => {
   const getRandomTwister = React.useCallback((lvl = level) => {
     setIsVisible(false);
     setTimeout(() => {
-      const arr = i18n.language === 'ru' ? tongueTwistersRU[levels[lvl].value] || tongueTwistersRU.beginner : tongueTwistersEN[levels[lvl].value] || tongueTwistersEN.beginner;
+      const arr = i18n.language === 'ru' ? tongueTwistersRU[lvl] || tongueTwistersRU.beginner : tongueTwistersEN[lvl] || tongueTwistersEN.beginner;
       const randomIndex = Math.floor(Math.random() * arr.length);
       setCurrentTwister(arr[randomIndex]);
       setIsVisible(true);
