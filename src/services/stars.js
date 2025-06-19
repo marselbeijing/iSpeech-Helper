@@ -17,26 +17,26 @@ export const convertToStars = (amount) => {
 };
 
 // Конфигурация подписок
-const SUBSCRIPTION_PLANS = {
+export const SUBSCRIPTION_PLANS = {
   MONTHLY: {
     id: 'monthly_premium',
     title: 'Месячная подписка Premium',
     description: 'Полный доступ ко всем функциям на 1 месяц',
-    amount: 300, // stars
+    amount: 299, // новая цена
     duration: 30, // дней
   },
   QUARTERLY: {
     id: 'quarterly_premium', 
     title: 'Квартальная подписка Premium',
-    description: 'Полный доступ ко всем функциям на 3 месяца (скидка 20%)',
-    amount: 720, // stars
+    description: 'Полный доступ ко всем функциям на 3 месяца',
+    amount: 699, // новая цена
     duration: 90, // дней
   },
   YEARLY: {
     id: 'yearly_premium',
     title: 'Годовая подписка Premium', 
-    description: 'Полный доступ ко всем функциям на 1 год (скидка 40%)',
-    amount: 2160, // stars
+    description: 'Полный доступ ко всем функциям на 12 месяцев',
+    amount: 1999, // новая цена
     duration: 365, // дней
   },
 };
@@ -348,8 +348,6 @@ export const purchaseWithStars = async (planType) => {
     throw error;
   }
 };
-
-export { SUBSCRIPTION_PLANS };
 
 const starsService = {
   isStarsAvailable,
