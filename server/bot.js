@@ -33,20 +33,44 @@ class TelegramStarsBot {
       }
     });
 
+    // Обработка callback_query (inline кнопки)
+    this.bot.on('callback_query', async (query) => {
+      try {
+        await this.handleCallbackQuery(query);
+      } catch (error) {
+        console.error('Ошибка обработки callback_query:', error);
+        await this.bot.answerCallbackQuery(query.id, {
+          text: 'Произошла ошибка. Попробуйте еще раз.',
+          show_alert: true
+        });
+      }
+    });
+
     // Команда /start
     this.bot.onText(/\/start/, async (msg) => {
       const chatId = msg.chat.id;
+      
+      // Проверяем, есть ли параметр start
+      const startParam = msg.text.split(' ')[1];
+      
+      if (startParam && startParam.startsWith('buy_')) {
+        // Если пришли с параметром покупки, сразу показываем предложение
+        const planType = startParam.replace('buy_', '');
+        await this.sendSubscriptionOffer(chatId, planType, msg.from);
+        return;
+      }
+      
       const welcomeMessage = `
 🎉 Добро пожаловать в iSpeech Helper!
 
 Это приложение поможет вам улучшить речь и дикцию. 
 
 Для доступа ко всем функциям приобретите подписку:
-⭐ Месячная - 299 Stars
-⭐ Квартальная - 799 Stars (скидка 20%)
-⭐ Годовая - 1999 Stars (скидка 40%)
+⭐ Месячная - 300 Stars
+⭐ Квартальная - 720 Stars (скидка 20%)
+⭐ Годовая - 2160 Stars (скидка 40%)
 
-Откройте приложение, чтобы начать тренировки!
+Выберите действие:
       `;
 
       await this.bot.sendMessage(chatId, welcomeMessage, {
@@ -55,6 +79,10 @@ class TelegramStarsBot {
             [{
               text: '🚀 Открыть приложение',
               web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' }
+            }],
+            [{
+              text: '💫 Купить подписку',
+              callback_data: 'subscription_menu'
             }]
           ]
         }
@@ -77,6 +105,24 @@ class TelegramStarsBot {
       `;
 
       await this.bot.sendMessage(chatId, supportMessage);
+    });
+
+    // Команды покупки подписок
+    this.bot.onText(/\/buy_monthly/, async (msg) => {
+      await this.sendSubscriptionOffer(msg.chat.id, 'monthly', msg.from);
+    });
+
+    this.bot.onText(/\/buy_quarterly/, async (msg) => {
+      await this.sendSubscriptionOffer(msg.chat.id, 'quarterly', msg.from);
+    });
+
+    this.bot.onText(/\/buy_yearly/, async (msg) => {
+      await this.sendSubscriptionOffer(msg.chat.id, 'yearly', msg.from);
+    });
+
+    // Команда для выбора подписки
+    this.bot.onText(/\/subscribe/, async (msg) => {
+      await this.sendSubscriptionMenu(msg.chat.id);
     });
   }
 
@@ -250,6 +296,173 @@ class TelegramStarsBot {
   // Метод для обработки webhook запросов
   processUpdate(update) {
     this.bot.processUpdate(update);
+  }
+
+  async handleCallbackQuery(query) {
+    const { id, data, from, message } = query;
+    const chatId = message.chat.id;
+
+    console.log('Callback query received:', { data, userId: from.id });
+
+    // Отвечаем на callback query
+    await this.bot.answerCallbackQuery(id);
+
+    if (data === 'subscription_menu') {
+      await this.sendSubscriptionMenu(chatId);
+    } else if (data.startsWith('buy_')) {
+      const planType = data.replace('buy_', '');
+      await this.sendSubscriptionOffer(chatId, planType, from);
+    } else if (data.startsWith('pay_')) {
+      const planType = data.replace('pay_', '');
+      await this.createInvoice(chatId, planType, from);
+    }
+  }
+
+  async createInvoice(chatId, planType, user) {
+    try {
+      // Создаем инвойс через API
+      const response = await fetch(`${process.env.API_URL || 'https://i-speech-helper-server.vercel.app'}/api/payments/create-invoice`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id.toString(),
+          subscriptionType: planType,
+          userInfo: {
+            firstName: user.first_name,
+            lastName: user.last_name,
+            username: user.username
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success && data.invoice) {
+        // Отправляем инвойс
+        await this.bot.sendInvoice(chatId, {
+          title: data.invoice.title,
+          description: data.invoice.description,
+          payload: data.invoice.payload,
+          provider_token: '', // Пустой для Telegram Stars
+          currency: 'XTR',
+          prices: [{
+            label: data.invoice.title,
+            amount: data.invoice.stars
+          }]
+        });
+
+        await this.bot.sendMessage(chatId, 
+          '✨ Инвойс создан! Нажмите кнопку "Pay" выше для оплаты.'
+        );
+      } else {
+        throw new Error(data.error || 'Не удалось создать инвойс');
+      }
+    } catch (error) {
+      console.error('Ошибка создания инвойса:', error);
+      await this.bot.sendMessage(chatId, 
+        '❌ Не удалось создать инвойс. Попробуйте позже или обратитесь в поддержку.'
+      );
+    }
+  }
+
+  async sendSubscriptionMenu(chatId) {
+    const menuMessage = `
+💫 Выберите подписку iSpeech Helper:
+
+🔸 Месячная подписка - 300 ⭐ звезд
+   Полный доступ на 30 дней
+
+🔸 Квартальная подписка - 720 ⭐ звезд  
+   Полный доступ на 90 дней (скидка 20%)
+
+🔸 Годовая подписка - 2160 ⭐ звезд
+   Полный доступ на 365 дней (скидка 40%)
+
+Выберите подходящий вариант:
+    `;
+
+    await this.bot.sendMessage(chatId, menuMessage, {
+      reply_markup: {
+        inline_keyboard: [
+          [{
+            text: '📅 Месячная (300 ⭐)',
+            callback_data: 'buy_monthly'
+          }],
+          [{
+            text: '📅 Квартальная (720 ⭐)',
+            callback_data: 'buy_quarterly'
+          }],
+          [{
+            text: '📅 Годовая (2160 ⭐)',
+            callback_data: 'buy_yearly'
+          }],
+          [{
+            text: '🚀 Открыть приложение',
+            web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' }
+          }]
+        ]
+      }
+    });
+  }
+
+  async sendSubscriptionOffer(chatId, planType, user) {
+    const PLANS = {
+      monthly: {
+        title: 'Месячная подписка Premium',
+        amount: 300,
+        duration: '30 дней',
+        description: 'Полный доступ ко всем функциям на 1 месяц'
+      },
+      quarterly: {
+        title: 'Квартальная подписка Premium',
+        amount: 720,
+        duration: '90 дней',
+        description: 'Полный доступ ко всем функциям на 3 месяца (скидка 20%)'
+      },
+      yearly: {
+        title: 'Годовая подписка Premium',
+        amount: 2160,
+        duration: '365 дней',
+        description: 'Полный доступ ко всем функциям на 1 год (скидка 40%)'
+      }
+    };
+
+    const plan = PLANS[planType];
+    if (!plan) {
+      await this.bot.sendMessage(chatId, '❌ Неизвестный тип подписки');
+      return;
+    }
+
+    const offerMessage = `
+💫 ${plan.title}
+
+💰 Стоимость: ${plan.amount} ⭐ звезд
+⏰ Длительность: ${plan.duration}
+📝 ${plan.description}
+
+Нажмите кнопку ниже для оплаты:
+    `;
+
+    await this.bot.sendMessage(chatId, offerMessage, {
+      reply_markup: {
+        inline_keyboard: [
+          [{
+            text: `💳 Купить за ${plan.amount} ⭐`,
+            callback_data: `pay_${planType}`
+          }],
+          [{
+            text: '🔙 Назад к выбору',
+            callback_data: 'subscription_menu'
+          }]
+        ]
+      }
+    });
   }
 }
 

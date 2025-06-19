@@ -140,8 +140,38 @@ export const purchaseWithStars = async (planType) => {
             
             let opened = false;
             
-            // Способ 1: openTelegramLink
-            if (typeof webApp.openTelegramLink === 'function') {
+            // Определяем платформу
+            const platform = webApp.platform || 'unknown';
+            const isIOS = platform === 'ios';
+            const isAndroid = platform === 'android';
+            const isMobile = isIOS || isAndroid;
+            
+            console.log('Платформа:', platform, 'Мобильное устройство:', isMobile);
+            
+            // Для мобильных устройств - используем специальные схемы
+            if (isMobile) {
+              try {
+                console.log('Пробуем мобильную схему tg://...');
+                const tgUrl = `tg://resolve?domain=iSpeechHelper_bot&start=buy_${planType.toLowerCase()}`;
+                console.log('TG URL:', tgUrl);
+                
+                // Способ 1: Прямая tg:// схема
+                if (typeof webApp.openTelegramLink === 'function') {
+                  webApp.openTelegramLink(tgUrl);
+                  opened = true;
+                  console.log('✅ Мобильная tg:// схема выполнена');
+                } else {
+                  window.location.href = tgUrl;
+                  opened = true;
+                  console.log('✅ Мобильная схема через location.href выполнена');
+                }
+              } catch (error) {
+                console.error('❌ Ошибка мобильной схемы:', error);
+              }
+            }
+            
+            // Способ 1: openTelegramLink (если еще не открыто)
+            if (!opened && typeof webApp.openTelegramLink === 'function') {
               try {
                 console.log('Пробуем openTelegramLink...');
                 webApp.openTelegramLink(botUrlWithStart);
