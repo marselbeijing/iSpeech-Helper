@@ -65,7 +65,11 @@ export const isStarsAvailable = () => {
 // Инициация платежа через Telegram Stars
 export const purchaseWithStars = async (planType) => {
   try {
-    console.log('Начинаем покупку для плана:', planType);
+    console.log('🌟 Попытка покупки подписки:', planType);
+    
+    // Определяем URLs в начале функции для доступности во всех блоках
+    const botUrl = 'https://t.me/iSpeechHelper_bot';
+    const botUrlWithStart = 'https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase();
     
     const webApp = window.Telegram?.WebApp;
     if (!webApp) {
@@ -79,16 +83,19 @@ export const purchaseWithStars = async (planType) => {
 
     const plan = SUBSCRIPTION_PLANS[planType];
     if (!plan) {
-      throw new Error('Неверный тип подписки');
+      throw new Error('Неизвестный тип подписки');
     }
 
-    console.log('Проверяем доступные методы WebApp...');
-    console.log('openInvoice:', typeof webApp.openInvoice);
-    console.log('sendData:', typeof webApp.sendData);
-    console.log('openTelegramLink:', typeof webApp.openTelegramLink);
-    console.log('showPopup:', typeof webApp.showPopup);
+    console.log('План подписки:', plan);
 
-    // Поскольку openInvoice содержит баг, используем альтернативный подход
+    // Проверяем доступность openInvoice
+    if (typeof webApp.openInvoice === 'function') {
+      console.log('openInvoice доступен, но...');
+    } else {
+      console.log('openInvoice недоступен');
+    }
+
+    // Временно отключаем openInvoice из-за бага в Telegram WebApp
     console.log('openInvoice содержит баг в текущей версии Telegram WebApp');
     console.log('Используем альтернативный подход через бота...');
 
@@ -127,9 +134,7 @@ export const purchaseWithStars = async (planType) => {
           if (buttonId === 'open_bot') {
             console.log('Пытаемся открыть бота...');
             
-            // Пробуем несколько способов открытия бота
-            const botUrl = 'https://t.me/iSpeechHelper_bot';
-            const botUrlWithStart = 'https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase();
+            // Убираем повторное определение переменных
             console.log('URL бота (простой):', botUrl);
             console.log('URL бота (с параметром):', botUrlWithStart);
             
