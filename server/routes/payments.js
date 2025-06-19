@@ -80,56 +80,63 @@ router.post('/create-invoice', async (req, res) => {
       timestamp: Date.now(),
     });
 
-    // Создаем инвойс в базе данных
-    const invoice = new Invoice({
-      userId: userId.toString(),
-      subscriptionType: planType.toLowerCase(),
-      stars: plan.amount,
-      title: plan.title,
-      description: plan.description,
-      payload: payload,
-      status: 'created',
-      expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 часа
-    });
-
-    await invoice.save();
-
-    // Отправляем инвойс пользователю через бота
+    // Отправляем инвойс пользователю через бота (без сохранения в БД для тестирования)
     const bot = req.app.get('telegramBot');
     if (bot) {
       try {
-        await bot.sendInvoice(userId, {
-          title: plan.title,
-          description: plan.description,
-          payload: payload,
-          provider_token: '', // Пустой для Telegram Stars
-          currency: 'XTR',
-          prices: [{ label: plan.title, amount: plan.amount }],
-          start_parameter: `premium_${planType.toLowerCase()}`,
-          photo_url: 'https://i-speech-helper-uce4.vercel.app/assets/telegram-star.png',
-          photo_size: 512,
-          photo_width: 512,
-          photo_height: 512,
-          need_name: false,
-          need_phone_number: false,
-          need_email: false,
-          need_shipping_address: false,
-          send_phone_number_to_provider: false,
-          send_email_to_provider: false,
-          is_flexible: false,
-        });
+        await bot.sendInvoice(userId, 
+          plan.title,
+          plan.description,
+          payload,
+          '', // provider_token - пустой для Telegram Stars
+          'XTR', // currency
+          [{ label: plan.title, amount: plan.amount }], // prices
+          {
+            start_parameter: `premium_${planType.toLowerCase()}`,
+            photo_url: 'https://i-speech-helper-uce4.vercel.app/assets/telegram-star.png',
+            photo_size: 512,
+            photo_width: 512,
+            photo_height: 512,
+            need_name: false,
+            need_phone_number: false,
+            need_email: false,
+            need_shipping_address: false,
+            send_phone_number_to_provider: false,
+            send_email_to_provider: false,
+            is_flexible: false,
+          }
+        );
 
         res.json({
           success: true,
-          invoiceId: invoice._id,
-          message: 'Инвойс отправлен в чат с ботом'
+          message: 'Инвойс отправлен в чат с ботом',
+          plan: {
+            title: plan.title,
+            amount: plan.amount,
+            currency: 'XTR'
+          }
         });
       } catch (botError) {
         console.error('Ошибка отправки инвойса через бота:', botError);
-        res.status(500).json({
-          error: 'Ошибка отправки инвойса через бота',
-          details: botError.message
-        });
+        
+        // Если чат не найден - это нормально, пользователь еще не писал боту
+        if (botError.message.includes('chat not found')) {
+          res.json({
+            success: true,
+            message: 'Инвойс готов. Начните диалог с ботом @iSpeechHelper_bot для получения инвойса.',
+            plan: {
+              title: plan.title,
+              amount: plan.amount,
+              currency: 'XTR'
+            },
+            instruction: 'Напишите боту /start для активации инвойса'
+          });
+        } else {
+          res.status(500).json({
+            error: 'Ошибка отправки инвойса через бота',
+            details: botError.message
+          });
+        }
       }
     } else {
       res.status(500).json({
