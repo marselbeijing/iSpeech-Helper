@@ -29,7 +29,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getReferralStats, getReferralTransactions } from '../services/referral';
 import ReferralProgram from '../components/ReferralProgram';
-import TelegramStarIcon from '../assets/telegram-star.svg';
+import TelegramStar3D from '../assets/telegram-star-3d.png';
 
 const Account = () => {
   const theme = useTheme();
@@ -431,7 +431,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('month')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    299 <img src={TelegramStarIcon} alt="Telegram Stars" width={28} height={28} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
+                    299 <img src={TelegramStar3D} alt="Telegram Stars" width={28} height={28} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
                   </Typography>
                 </Box>
                 <Button
@@ -468,7 +468,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('quarter')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    699 <img src={TelegramStarIcon} alt="Telegram Stars" width={28} height={28} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
+                    699 <img src={TelegramStar3D} alt="Telegram Stars" width={28} height={28} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
                     {t('discount_20')}
@@ -508,7 +508,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('year')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    1999 <img src={TelegramStarIcon} alt="Telegram Stars" width={28} height={28} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
+                    1999 <img src={TelegramStar3D} alt="Telegram Stars" width={28} height={28} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
                     {t('discount_40')}
