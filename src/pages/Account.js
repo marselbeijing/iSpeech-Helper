@@ -173,11 +173,15 @@ const Account = () => {
       } else if (result.cancelled) {
         // Пользователь отменил платеж - не показываем ошибку
         console.log('Платеж отменен пользователем');
+      } else if (result.redirected) {
+        // Пользователь перенаправлен в бота - показываем информационное сообщение
+        console.log('Пользователь перенаправлен в бота для покупки');
+        playSound('success'); // Положительный звук, так как это не ошибка
       } else {
         console.error('Ошибка платежа:', result.error);
         playSound('error');
         vibrate('error');
-        setSubscriptionError(result.error || 'Ошибка при покупке подписки');
+        setSubscriptionError(result.error || result.message || 'Ошибка при покупке подписки');
       }
     } catch (error) {
       console.error('Ошибка при покупке:', error);

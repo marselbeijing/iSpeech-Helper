@@ -47,16 +47,19 @@ export const isStarsAvailable = () => {
   if (!webApp) return false;
   
   const hasUser = !!webApp.initDataUnsafe?.user;
-  const hasOpenInvoice = typeof webApp.openInvoice === 'function';
   const hasVersion = webApp.isVersionAtLeast ? webApp.isVersionAtLeast('6.1') : true;
+  // Убираем проверку openInvoice, так как используем альтернативный подход
+  const hasTelegramLink = typeof webApp.openTelegramLink === 'function' || typeof webApp.openLink === 'function';
   
   console.log('Telegram WebApp platform:', webApp.platform);
   console.log('Has user:', hasUser);
   console.log('Version check:', hasVersion);
-  console.log('Has openInvoice:', hasOpenInvoice);
+  console.log('Has openInvoice:', typeof webApp.openInvoice === 'function');
+  console.log('Has openTelegramLink:', typeof webApp.openTelegramLink === 'function');
   console.log('WebApp version:', webApp.version);
   
-  return hasUser && hasVersion && hasOpenInvoice;
+  // Telegram Stars доступны если есть WebApp с пользователем и возможность открыть ссылку
+  return hasUser && hasVersion && hasTelegramLink;
 };
 
 // Инициация платежа через Telegram Stars
@@ -81,90 +84,110 @@ export const purchaseWithStars = async (planType) => {
 
     console.log('Проверяем доступные методы WebApp...');
     console.log('openInvoice:', typeof webApp.openInvoice);
-    
-    // Проверяем, что openInvoice действительно функция
-    if (typeof webApp.openInvoice !== 'function') {
-      const message = `💳 ${plan.title} - ${plan.amount} ⭐ звезд
+    console.log('sendData:', typeof webApp.sendData);
+    console.log('openTelegramLink:', typeof webApp.openTelegramLink);
+    console.log('showPopup:', typeof webApp.showPopup);
 
-К сожалению, платежи Telegram Stars недоступны в этой версии приложения.`;
-      
-      if (typeof webApp.showAlert === 'function') {
-        return new Promise((resolve) => {
-          webApp.showAlert(message, () => {
+    // Поскольку openInvoice содержит баг, используем альтернативный подход
+    console.log('openInvoice содержит баг в текущей версии Telegram WebApp');
+    console.log('Используем альтернативный подход через бота...');
+
+    // Создаем сообщение с инструкциями
+    const message = `💫 ${plan.title}
+
+💰 Стоимость: ${plan.amount} ⭐ звезд
+📝 ${plan.description}
+
+🤖 Для покупки перейдите в @iSpeechHelper_bot и напишите:
+/buy_${planType.toLowerCase()}
+
+Или просто напишите /start для выбора подписки.`;
+
+    // Показываем popup с выбором действий
+    if (typeof webApp.showPopup === 'function') {
+      return new Promise((resolve) => {
+        webApp.showPopup({
+          title: '💳 Покупка подписки',
+          message: message,
+          buttons: [
+            {
+              id: 'open_bot',
+              type: 'default',
+              text: '🤖 Открыть бота'
+            },
+            {
+              id: 'cancel',
+              type: 'cancel',
+              text: 'Отмена'
+            }
+          ]
+        }, (buttonId) => {
+          console.log('Выбрана кнопка:', buttonId);
+          
+          if (buttonId === 'open_bot') {
+            // Открываем бота для покупки
+            if (typeof webApp.openTelegramLink === 'function') {
+              webApp.openTelegramLink('https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase());
+            } else if (typeof webApp.openLink === 'function') {
+              webApp.openLink('https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase());
+            }
+            
             resolve({
               success: false,
-              cancelled: true,
-              error: 'Платежи недоступны в этой версии Telegram'
+              cancelled: false,
+              redirected: true,
+              message: 'Перенаправлен в бота для покупки'
             });
-          });
-        });
-      } else {
-        return {
-          success: false,
-          cancelled: true,
-          error: 'Платежи недоступны в этой версии Telegram'
-        };
-      }
-    }
-
-    // Параметры инвойса для Telegram Stars
-    const invoiceParams = {
-      title: plan.title,
-      description: plan.description,
-      payload: JSON.stringify({
-        userId: user.id,
-        planType: planType,
-        planId: plan.id,
-        timestamp: Date.now(),
-      }),
-      provider_token: '',
-      currency: 'XTR',
-      prices: [{
-        label: plan.title,
-        amount: plan.amount
-      }],
-      need_name: false,
-      need_phone_number: false,
-      need_email: false,
-      need_shipping_address: false,
-      send_phone_number_to_provider: false,
-      send_email_to_provider: false,
-      is_flexible: false
-    };
-
-    console.log('Параметры инвойса:', invoiceParams);
-
-    // Возвращаем Promise для корректной обработки
-    return new Promise((resolve, reject) => {
-      try {
-        webApp.openInvoice(invoiceParams, (status) => {
-          console.log('Статус платежа:', status);
-          
-          if (status === 'paid') {
-            resolve({
-              success: true,
-              status: 'paid',
-              plan: plan
-            });
-          } else if (status === 'cancelled') {
+          } else {
             resolve({
               success: false,
               cancelled: true,
               status: 'cancelled'
             });
-          } else {
-            resolve({
-              success: false,
-              status: status,
-              error: 'Платеж не удался'
-            });
           }
         });
-      } catch (invoiceError) {
-        console.error('Ошибка при вызове openInvoice:', invoiceError);
-        reject(new Error(`Ошибка openInvoice: ${invoiceError.message}`));
+      });
+    } 
+    
+    // Fallback для старых версий без showPopup
+    else if (typeof webApp.showAlert === 'function') {
+      return new Promise((resolve) => {
+        webApp.showAlert(message, () => {
+          // Автоматически открываем бота
+          if (typeof webApp.openTelegramLink === 'function') {
+            webApp.openTelegramLink('https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase());
+          }
+          
+          resolve({
+            success: false,
+            cancelled: false,
+            redirected: true,
+            message: 'Перенаправлен в бота для покупки'
+          });
+        });
+      });
+    } 
+    
+    // Последний fallback
+    else {
+      alert(message);
+      
+      // Пытаемся открыть ссылку
+      if (typeof webApp.openTelegramLink === 'function') {
+        webApp.openTelegramLink('https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase());
+      } else if (typeof webApp.openLink === 'function') {
+        webApp.openLink('https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase());
+      } else {
+        window.open('https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase(), '_blank');
       }
-    });
+      
+      return {
+        success: false,
+        cancelled: false,
+        redirected: true,
+        message: 'Перенаправлен в бота для покупки'
+      };
+    }
 
   } catch (error) {
     console.error('Ошибка при покупке:', error);
