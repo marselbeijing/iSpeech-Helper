@@ -125,18 +125,127 @@ export const purchaseWithStars = async (planType) => {
           console.log('Выбрана кнопка:', buttonId);
           
           if (buttonId === 'open_bot') {
-            // Открываем бота для покупки
+            console.log('Пытаемся открыть бота...');
+            
+            // Пробуем несколько способов открытия бота
+            const botUrl = 'https://t.me/iSpeechHelper_bot';
+            const botUrlWithStart = 'https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase();
+            console.log('URL бота (простой):', botUrl);
+            console.log('URL бота (с параметром):', botUrlWithStart);
+            
+            let opened = false;
+            
+            // Способ 1: openTelegramLink
             if (typeof webApp.openTelegramLink === 'function') {
-              webApp.openTelegramLink('https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase());
-            } else if (typeof webApp.openLink === 'function') {
-              webApp.openLink('https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase());
+              try {
+                console.log('Пробуем openTelegramLink...');
+                webApp.openTelegramLink(botUrlWithStart);
+                opened = true;
+                console.log('✅ openTelegramLink выполнен');
+              } catch (error) {
+                console.error('❌ Ошибка openTelegramLink:', error);
+              }
+            }
+            
+            // Способ 2: openLink (если первый не сработал)
+            if (!opened && typeof webApp.openLink === 'function') {
+              try {
+                console.log('Пробуем openLink...');
+                webApp.openLink(botUrlWithStart);
+                opened = true;
+                console.log('✅ openLink выполнен');
+              } catch (error) {
+                console.error('❌ Ошибка openLink:', error);
+              }
+            }
+            
+            // Способ 3: sendData (отправляем данные родительскому окну)
+            if (!opened && typeof webApp.sendData === 'function') {
+              try {
+                console.log('Пробуем sendData...');
+                webApp.sendData(JSON.stringify({
+                  action: 'open_bot',
+                  url: botUrlWithStart,
+                  planType: planType
+                }));
+                opened = true;
+                console.log('✅ sendData выполнен');
+              } catch (error) {
+                console.error('❌ Ошибка sendData:', error);
+              }
+            }
+            
+            // Способ 4: window.open (последний резерв)
+            if (!opened) {
+              try {
+                console.log('Пробуем window.open...');
+                window.open(botUrlWithStart, '_blank');
+                opened = true;
+                console.log('✅ window.open выполнен');
+              } catch (error) {
+                console.error('❌ Ошибка window.open:', error);
+              }
+            }
+            
+            // Способ 4.5: Простая ссылка на бота без параметров
+            if (!opened) {
+              try {
+                console.log('Пробуем простую ссылку на бота...');
+                if (typeof webApp.openTelegramLink === 'function') {
+                  webApp.openTelegramLink(botUrl);
+                  opened = true;
+                  console.log('✅ Простая ссылка через openTelegramLink выполнена');
+                } else if (typeof webApp.openLink === 'function') {
+                  webApp.openLink(botUrl);
+                  opened = true;
+                  console.log('✅ Простая ссылка через openLink выполнена');
+                } else {
+                  window.open(botUrl, '_blank');
+                  opened = true;
+                  console.log('✅ Простая ссылка через window.open выполнена');
+                }
+              } catch (error) {
+                console.error('❌ Ошибка простой ссылки:', error);
+              }
+            }
+            
+            // Способ 5: Копирование ссылки в буфер обмена
+            if (!opened) {
+              try {
+                console.log('Пробуем скопировать ссылку...');
+                navigator.clipboard.writeText(botUrlWithStart).then(() => {
+                  console.log('✅ Ссылка скопирована в буфер обмена');
+                  // Показываем дополнительное уведомление
+                  if (typeof webApp.showAlert === 'function') {
+                    webApp.showAlert('Ссылка скопирована в буфер обмена! Вставьте её в Telegram для перехода к боту.');
+                  }
+                  opened = true;
+                }).catch((clipError) => {
+                  console.error('❌ Ошибка копирования:', clipError);
+                });
+              } catch (error) {
+                console.error('❌ Ошибка clipboard:', error);
+              }
+            }
+            
+            // Если ничего не сработало
+            if (!opened) {
+              console.error('❌ Все способы открытия бота не сработали');
+              if (typeof webApp.showAlert === 'function') {
+                webApp.showAlert(`Не удалось автоматически открыть бота. 
+                
+Перейдите вручную в @iSpeechHelper_bot и напишите:
+/buy_${planType.toLowerCase()}
+
+Или просто /start для выбора подписки.`);
+              }
             }
             
             resolve({
               success: false,
               cancelled: false,
-              redirected: true,
-              message: 'Перенаправлен в бота для покупки'
+              redirected: opened,
+              message: opened ? 'Перенаправлен в бота для покупки' : 'Не удалось открыть бота автоматически'
             });
           } else {
             resolve({
@@ -155,7 +264,7 @@ export const purchaseWithStars = async (planType) => {
         webApp.showAlert(message, () => {
           // Автоматически открываем бота
           if (typeof webApp.openTelegramLink === 'function') {
-            webApp.openTelegramLink('https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase());
+            webApp.openTelegramLink(botUrlWithStart);
           }
           
           resolve({
@@ -174,11 +283,11 @@ export const purchaseWithStars = async (planType) => {
       
       // Пытаемся открыть ссылку
       if (typeof webApp.openTelegramLink === 'function') {
-        webApp.openTelegramLink('https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase());
+        webApp.openTelegramLink(botUrlWithStart);
       } else if (typeof webApp.openLink === 'function') {
-        webApp.openLink('https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase());
+        webApp.openLink(botUrlWithStart);
       } else {
-        window.open('https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase(), '_blank');
+        window.open(botUrlWithStart, '_blank');
       }
       
       return {
