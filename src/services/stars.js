@@ -178,7 +178,7 @@ export const purchaseWithStars = async (planType) => {
 
         try {
           // Создаем инвойс на сервере через API
-          const apiUrl = 'http://localhost:5000/api/create-invoice';
+          const apiUrl = 'http://localhost:5001/api/create-invoice';
             
           const response = await fetch(apiUrl, {
             method: 'POST',
@@ -200,11 +200,15 @@ export const purchaseWithStars = async (planType) => {
             const result = await response.json();
             
             // Показываем сообщение пользователю с инструкциями
-            const message = `Инвойс создан! 
+            const message = `💳 Инвойс создан успешно!
 
-Перейдите в чат с ботом @iSpeechHelper_bot для оплаты ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} звезд.
+📱 Для оплаты ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} ⭐ звезд:
 
-После оплаты ваша подписка активируется автоматически.`;
+1️⃣ Перейдите в чат с ботом @iSpeechHelper_bot
+2️⃣ Нажмите кнопку "Оплатить" в полученном сообщении
+3️⃣ Подтвердите платеж через Telegram Stars
+
+✅ Подписка активируется автоматически после оплаты!`;
             
             if (typeof webApp.showAlert === 'function') {
               webApp.showAlert(message, () => {
@@ -233,7 +237,15 @@ export const purchaseWithStars = async (planType) => {
           console.error('Ошибка при создании инвойса через сервер:', serverError);
           
           // Fallback - показываем стандартное сообщение
-          const message = `Покупка ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} звезд доступна только в официальном мобильном приложении Telegram.\n\nОткройте это приложение в мобильном Telegram для совершения покупки.`;
+          const message = `💳 ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} ⭐ звезд
+
+📱 Для покупки через Telegram Stars:
+
+1️⃣ Убедитесь, что используете официальное мобильное приложение Telegram
+2️⃣ Обновите Telegram до последней версии
+3️⃣ Попробуйте снова
+
+💡 Альтернативно: свяжитесь с @iSpeechHelper_bot для помощи с оплатой`;
           
           if (typeof webApp.showAlert === 'function') {
             try {
