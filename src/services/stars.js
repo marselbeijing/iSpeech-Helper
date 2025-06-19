@@ -47,8 +47,9 @@ export const isStarsAvailable = () => {
   const webApp = window.Telegram?.WebApp;
   if (!webApp) return false;
   
-  // Для Telegram Stars достаточно наличия WebApp и пользователя
+  // Для Telegram Stars нужны: WebApp, пользователь и функция openInvoice
   const hasUser = !!webApp.initDataUnsafe?.user;
+  const hasOpenInvoice = typeof webApp.openInvoice === 'function';
   const hasVersion = webApp.isVersionAtLeast ? webApp.isVersionAtLeast('6.1') : true;
   
   // Дополнительная информация для отладки
@@ -58,14 +59,14 @@ export const isStarsAvailable = () => {
   console.log('Telegram WebApp platform:', webApp.platform);
   console.log('Has user:', hasUser);
   console.log('Version check:', hasVersion);
-  console.log('Has openInvoice:', typeof webApp.openInvoice === 'function');
+  console.log('Has openInvoice:', hasOpenInvoice);
   console.log('Has showInvoice:', typeof webApp.showInvoice === 'function');
   console.log('Is mobile device (UA):', isMobileDevice);
   console.log('Is touch device:', isTouchDevice);
   console.log('WebApp version:', webApp.version);
   
-  // Telegram Stars доступны если есть WebApp с пользователем
-  return hasUser && hasVersion;
+  // Telegram Stars доступны если есть WebApp с пользователем И функция openInvoice
+  return hasUser && hasVersion && hasOpenInvoice;
 };
 
 // Создание инвойса для покупки
@@ -138,86 +139,88 @@ export const purchaseWithStars = async (planType) => {
         throw new Error('Пользователь не авторизован');
       }
 
-      console.log('Создаем инвойс через бота...');
+      const plan = SUBSCRIPTION_PLANS[planType];
+      if (!plan) {
+        throw new Error('Неверный тип подписки');
+      }
+
+      // Проверяем доступность openInvoice
+      if (typeof webApp.openInvoice !== 'function') {
+        throw new Error('Функция openInvoice недоступна в этой версии Telegram');
+      }
+
+      console.log('Создаем инвойс через WebApp API...');
       
-      try {
-        // Создаем инвойс на сервере через Bot API
-        const apiUrl = 'http://localhost:5001/api/create-invoice';
-          
-        const response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            userId: user.id,
-            planType: planType,
-            userInfo: {
-              firstName: user.firstName,
-              lastName: user.lastName,
-              username: user.username
-            }
-          }),
-        });
+      // Создаем уникальный payload
+      const payload = JSON.stringify({
+        userId: user.id,
+        planType: planType,
+        planId: plan.id,
+        timestamp: Date.now(),
+        appName: 'iSpeechHelper'
+      });
 
-        if (response.ok) {
-          const result = await response.json();
-          console.log('Инвойс создан успешно:', result);
-          
-          // Показываем сообщение пользователю с инструкциями
-          const plan = SUBSCRIPTION_PLANS[planType];
-          const message = `✨ ${plan.title}
+      // Параметры инвойса для Telegram Stars
+      const invoiceParams = {
+        title: plan.title,
+        description: plan.description,
+        payload: payload,
+        provider_token: '', // Пустой для Telegram Stars
+        currency: 'XTR', // Telegram Stars
+        prices: [{
+          label: plan.title,
+          amount: plan.amount
+        }],
+        photo_url: 'https://i-speech-helper-uce4.vercel.app/assets/telegram-star.png',
+        photo_size: 512,
+        photo_width: 512,
+        photo_height: 512,
+        need_name: false,
+        need_phone_number: false,
+        need_email: false,
+        need_shipping_address: false,
+        send_phone_number_to_provider: false,
+        send_email_to_provider: false,
+        is_flexible: false
+      };
 
-💰 Стоимость: ${plan.amount} ⭐ звезд
+      console.log('Параметры инвойса:', invoiceParams);
 
-📱 Перейдите в @iSpeechHelper_bot для оплаты.
-Инвойс уже отправлен вам в бот!`;
-          
-          if (typeof webApp.showAlert === 'function') {
-            webApp.showAlert(message, () => {
-              // Открываем чат с ботом
-              if (typeof webApp.openTelegramLink === 'function') {
-                webApp.openTelegramLink('https://t.me/iSpeechHelper_bot');
-              }
-            });
-          } else {
-            alert(message);
-          }
-          
+      // Открываем инвойс через Telegram WebApp
+      webApp.openInvoice(invoiceParams, (status) => {
+        console.log('Статус платежа:', status);
+        
+        if (status === 'paid') {
+          console.log('Платеж успешно завершен!');
+          resolve({
+            success: true,
+            status: 'paid',
+            plan: plan
+          });
+        } else if (status === 'cancelled') {
+          console.log('Платеж отменен пользователем');
           resolve({
             success: false,
             cancelled: true,
-            error: 'Перейдите в @iSpeechHelper_bot для оплаты',
+            status: 'cancelled'
+          });
+        } else if (status === 'failed') {
+          console.log('Платеж не удался');
+          resolve({
+            success: false,
+            status: 'failed',
+            error: 'Платеж не удался'
           });
         } else {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || 'Ошибка создания инвойса на сервере');
+          console.log('Неизвестный статус платежа:', status);
+          resolve({
+            success: false,
+            status: status,
+            error: `Неизвестный статус: ${status}`
+          });
         }
-      } catch (serverError) {
-        console.error('Ошибка при создании инвойса через сервер:', serverError);
-        
-        // Fallback - показываем стандартное сообщение
-        const plan = SUBSCRIPTION_PLANS[planType];
-        const message = `💳 ${plan.title} - ${plan.amount} ⭐ звезд
+      });
 
-Напишите /start боту @iSpeechHelper_bot для покупки подписки.`;
-        
-        if (typeof webApp.showAlert === 'function') {
-          webApp.showAlert(message, () => {
-            if (typeof webApp.openTelegramLink === 'function') {
-              webApp.openTelegramLink('https://t.me/iSpeechHelper_bot');
-            }
-          });
-        } else {
-          alert(message);
-        }
-        
-        resolve({
-          success: false,
-          cancelled: true,
-          error: 'Свяжитесь с ботом для покупки',
-        });
-      }
     } catch (error) {
       console.error('Ошибка при покупке:', error);
       reject(error);
@@ -235,11 +238,13 @@ export const getAllPlans = () => {
   return SUBSCRIPTION_PLANS;
 };
 
-export default {
+const starsService = {
   isStarsAvailable,
   createInvoice,
   purchaseWithStars,
   getPlanInfo,
   getAllPlans,
   SUBSCRIPTION_PLANS,
-}; 
+};
+
+export default starsService; 

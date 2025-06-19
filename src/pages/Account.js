@@ -45,7 +45,6 @@ const Account = () => {
 
   const [showCopied, setShowCopied] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [starsAvailable, setStarsAvailable] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState('');
 
   // Инициализация пользователя (только один раз)
@@ -150,7 +149,6 @@ const Account = () => {
     console.log('showInvoice:', !!window.Telegram?.WebApp?.showInvoice);
     console.log('User:', !!user);
     console.log('isPurchasing:', isPurchasing);
-    setStarsAvailable(available);
   }, [user, isPurchasing]);
 
   const handlePurchase = async (type) => {

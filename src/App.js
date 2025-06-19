@@ -276,6 +276,43 @@ const App = () => {
 
     // Запускаем инициализацию
     initAnalytics();
+
+    // Настраиваем обработчики событий платежей
+    const setupPaymentHandlers = () => {
+      if (window.Telegram?.WebApp) {
+        const webApp = window.Telegram.WebApp;
+        
+        // Обработчик успешного платежа
+        webApp.onEvent('invoiceStatus', (eventData) => {
+          console.log('📊 Событие платежа получено:', eventData);
+          
+          if (eventData.status === 'paid') {
+            console.log('✅ Платеж успешно завершен!');
+            // Можно добавить дополнительную логику обработки успешного платежа
+            
+            // Отправляем событие аналитики
+            if (window.telegramAnalyticsSDK) {
+              try {
+                window.telegramAnalyticsSDK.track('subscription_purchased', {
+                  status: 'success',
+                  payload: eventData.payload
+                });
+              } catch (error) {
+                console.warn('Ошибка отправки аналитики платежа:', error);
+              }
+            }
+          } else if (eventData.status === 'cancelled') {
+            console.log('❌ Платеж отменен пользователем');
+          } else if (eventData.status === 'failed') {
+            console.log('💥 Платеж не удался');
+          }
+        });
+        
+        console.log('💳 Обработчики событий платежей настроены');
+      }
+    };
+
+    setupPaymentHandlers();
   }, []);
   
   // Создаем тему на основе настроек
