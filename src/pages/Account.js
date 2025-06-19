@@ -151,6 +151,49 @@ const Account = () => {
     console.log('isPurchasing:', isPurchasing);
   }, [user, isPurchasing]);
 
+  // Обработчик события сброса состояния покупки
+  useEffect(() => {
+    const handleResetPurchaseState = () => {
+      console.log('🔄 Получено событие сброса состояния покупки');
+      setIsPurchasing(false);
+    };
+
+    window.addEventListener('resetPurchaseState', handleResetPurchaseState);
+    
+    return () => {
+      window.removeEventListener('resetPurchaseState', handleResetPurchaseState);
+    };
+  }, []);
+
+  // Обработчик события фокуса окна (когда пользователь возвращается)
+  useEffect(() => {
+    const handleWindowFocus = () => {
+      console.log('👀 Окно получило фокус - пользователь вернулся');
+      if (isPurchasing) {
+        console.log('🔄 Сбрасываем состояние покупки при возврате');
+        setIsPurchasing(false);
+        
+        // Перепроверяем статус подписки
+        if (user) {
+          setTimeout(async () => {
+            try {
+              const status = await checkSubscriptionStatus();
+              setSubscription(status);
+            } catch (error) {
+              console.log('Ошибка проверки подписки при возврате:', error);
+            }
+          }, 1000); // Небольшая задержка для корректной проверки
+        }
+      }
+    };
+
+    window.addEventListener('focus', handleWindowFocus);
+    
+    return () => {
+      window.removeEventListener('focus', handleWindowFocus);
+    };
+  }, [isPurchasing, user]);
+
   const handlePurchase = async (type) => {
     try {
       setIsPurchasing(true);

@@ -276,6 +276,16 @@ export const purchaseWithStars = async (planType) => {
               }
             }
             
+            // Устанавливаем таймер для сброса состояния покупки
+            setTimeout(() => {
+              console.log('⏰ Таймер: сбрасываем состояние покупки через 10 секунд');
+              // Эмитируем событие для сброса состояния
+              if (typeof window !== 'undefined' && window.dispatchEvent) {
+                const resetEvent = new CustomEvent('resetPurchaseState');
+                window.dispatchEvent(resetEvent);
+              }
+            }, 10000); // 10 секунд
+            
             resolve({
               success: false,
               cancelled: false,
