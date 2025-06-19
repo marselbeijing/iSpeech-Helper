@@ -5,8 +5,9 @@ const Subscription = require('./models/Subscription');
 
 class TelegramStarsBot {
   constructor(token) {
-    this.bot = new TelegramBot(token);
+    this.bot = new TelegramBot(token, { polling: true });
     this.setupWebhooks();
+    console.log('TelegramStarsBot инициализирован с токеном:', token ? 'Да' : 'Нет');
   }
 
   setupWebhooks() {
@@ -320,49 +321,61 @@ class TelegramStarsBot {
 
   async createInvoice(chatId, planType, user) {
     try {
-      // Создаем инвойс через API
-      const response = await fetch(`${process.env.API_URL || 'https://i-speech-helper-server.vercel.app'}/api/payments/create-invoice`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: user.id.toString(),
-          subscriptionType: planType,
-          userInfo: {
-            firstName: user.first_name,
-            lastName: user.last_name,
-            username: user.username
-          }
-        })
+      // Импортируем модель Invoice напрямую вместо HTTP запроса
+      const Invoice = require('./models/Invoice');
+      
+      const PLANS = {
+        monthly: { title: 'Месячная подписка Premium', amount: 300 },
+        quarterly: { title: 'Квартальная подписка Premium', amount: 720 },
+        yearly: { title: 'Годовая подписка Premium', amount: 2160 }
+      };
+
+      const plan = PLANS[planType];
+      if (!plan) {
+        throw new Error('Неизвестный тип подписки');
+      }
+
+      // Создаем инвойс напрямую
+      const payload = `invoice_${Date.now()}_${user.id}_${planType}`;
+      const expiresAt = new Date();
+      expiresAt.setMinutes(expiresAt.getMinutes() + 30); // 30 минут на оплату
+
+      const invoice = new Invoice({
+        userId: user.id.toString(),
+        subscriptionType: planType,
+        stars: plan.amount,
+        title: plan.title,
+        description: `Подписка iSpeech Helper - ${plan.title}`,
+        payload: payload,
+        status: 'created',
+        expiresAt: expiresAt,
+        userInfo: {
+          firstName: user.first_name,
+          lastName: user.last_name,
+          username: user.username
+        }
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      await invoice.save();
+      console.log('Инвойс создан:', { payload, userId: user.id, planType });
 
-      const data = await response.json();
+      // Отправляем инвойс через Telegram Bot API
+      await this.bot.sendInvoice(chatId, {
+        title: plan.title,
+        description: `Подписка iSpeech Helper - ${plan.title}`,
+        payload: payload,
+        provider_token: '', // Пустой для Telegram Stars
+        currency: 'XTR',
+        prices: [{
+          label: plan.title,
+          amount: plan.amount
+        }]
+      });
+
+      await this.bot.sendMessage(chatId, 
+        '✨ Инвойс создан! Нажмите кнопку "Pay" выше для оплаты.'
+      );
       
-      if (data.success && data.invoice) {
-        // Отправляем инвойс
-        await this.bot.sendInvoice(chatId, {
-          title: data.invoice.title,
-          description: data.invoice.description,
-          payload: data.invoice.payload,
-          provider_token: '', // Пустой для Telegram Stars
-          currency: 'XTR',
-          prices: [{
-            label: data.invoice.title,
-            amount: data.invoice.stars
-          }]
-        });
-
-        await this.bot.sendMessage(chatId, 
-          '✨ Инвойс создан! Нажмите кнопку "Pay" выше для оплаты.'
-        );
-      } else {
-        throw new Error(data.error || 'Не удалось создать инвойс');
-      }
     } catch (error) {
       console.error('Ошибка создания инвойса:', error);
       await this.bot.sendMessage(chatId, 

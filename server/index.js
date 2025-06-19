@@ -39,13 +39,11 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ispeech-h
 let telegramBot = null;
 if (process.env.TELEGRAM_BOT_TOKEN) {
   try {
-    telegramBot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
-    app.set('telegramBot', telegramBot);
-    console.log('Telegram bot initialized successfully');
-    
     // Импорт и инициализация бота с обработчиками
     const TelegramStarsBot = require('./bot');
-    new TelegramStarsBot(process.env.TELEGRAM_BOT_TOKEN);
+    telegramBot = new TelegramStarsBot(process.env.TELEGRAM_BOT_TOKEN);
+    app.set('telegramBot', telegramBot);
+    console.log('Telegram Stars bot initialized successfully');
   } catch (error) {
     console.error('Error initializing Telegram bot:', error);
   }
@@ -56,6 +54,7 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
 // Routes
 app.use('/api/subscriptions', require('./routes/subscriptions'));
 app.use('/api', require('./routes/payments'));
+app.use('/api/telegram', require('./routes/telegram'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
