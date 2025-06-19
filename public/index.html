@@ -3,13 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta name="telegram-web-app" content="true" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https:;" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https: http://localhost:* http://127.0.0.1:*; worker-src 'self' blob:; connect-src 'self' https: http://localhost:* http://127.0.0.1:* ws://localhost:* wss://localhost:*;">
     <meta
       name="description"
-      content="iSpeech Helper - приложение для помощи людям с речевыми расстройствами"
+      content="iSpeech Helper - Помощник для улучшения речи"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
@@ -18,7 +18,7 @@
     <title>iSpeech Helper</title>
   </head>
   <body>
-    <noscript>Для работы приложения необходимо включить JavaScript.</noscript>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
   </body>
 </html> 

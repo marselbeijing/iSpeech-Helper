@@ -200,15 +200,11 @@ export const purchaseWithStars = async (planType) => {
             const result = await response.json();
             
             // Показываем сообщение пользователю с инструкциями
-            const message = `💳 Инвойс создан успешно!
+            const message = `💳 Инвойс создан!
 
-📱 Для оплаты ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} ⭐ звезд:
+Перейдите в @iSpeechHelper_bot для оплаты ${SUBSCRIPTION_PLANS[planType].amount} ⭐ звезд.
 
-1️⃣ Перейдите в чат с ботом @iSpeechHelper_bot
-2️⃣ Нажмите кнопку "Оплатить" в полученном сообщении
-3️⃣ Подтвердите платеж через Telegram Stars
-
-✅ Подписка активируется автоматически после оплаты!`;
+Подписка активируется автоматически.`;
             
             if (typeof webApp.showAlert === 'function') {
               webApp.showAlert(message, () => {
@@ -237,15 +233,9 @@ export const purchaseWithStars = async (planType) => {
           console.error('Ошибка при создании инвойса через сервер:', serverError);
           
           // Fallback - показываем стандартное сообщение
-          const message = `💳 ${SUBSCRIPTION_PLANS[planType].title} за ${SUBSCRIPTION_PLANS[planType].amount} ⭐ звезд
+          const message = `💳 ${SUBSCRIPTION_PLANS[planType].title} - ${SUBSCRIPTION_PLANS[planType].amount} ⭐ звезд
 
-📱 Для покупки через Telegram Stars:
-
-1️⃣ Убедитесь, что используете официальное мобильное приложение Telegram
-2️⃣ Обновите Telegram до последней версии
-3️⃣ Попробуйте снова
-
-💡 Альтернативно: свяжитесь с @iSpeechHelper_bot для помощи с оплатой`;
+Для покупки обновите Telegram до последней версии или свяжитесь с @iSpeechHelper_bot`;
           
           if (typeof webApp.showAlert === 'function') {
             try {
