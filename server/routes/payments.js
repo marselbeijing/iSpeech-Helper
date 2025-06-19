@@ -85,6 +85,8 @@ router.post('/create-invoice', async (req, res) => {
       userId: userId.toString(),
       subscriptionType: planType.toLowerCase(),
       stars: plan.amount,
+      title: plan.title,
+      description: plan.description,
       payload: payload,
       status: 'created',
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 часа
