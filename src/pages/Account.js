@@ -29,10 +29,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getReferralStats, getReferralTransactions } from '../services/referral';
 import ReferralProgram from '../components/ReferralProgram';
-
-const TelegramStarIcon = () => (
-  <img src="/assets/telegram-star.png" alt="Telegram Stars" width={28} height={28} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
-);
+import TelegramStarIcon from '../assets/telegram-star.svg';
 
 const Account = () => {
   const theme = useTheme();
@@ -105,7 +102,7 @@ const Account = () => {
           if (status && status.error) {
             // Не показываем ошибки таймаута пользователю
             if (!status.error.includes('Время ожидания') && !status.error.includes('timeout')) {
-              setSubscriptionError(status.error);
+            setSubscriptionError(status.error);
             }
           } else {
             setSubscription(status);
@@ -179,7 +176,7 @@ const Account = () => {
             try {
               const status = await checkSubscriptionStatus();
               setSubscription(status);
-            } catch (error) {
+    } catch (error) {
               console.log('Ошибка проверки подписки при возврате:', error);
             }
           }, 1000); // Небольшая задержка для корректной проверки
@@ -193,6 +190,12 @@ const Account = () => {
       window.removeEventListener('focus', handleWindowFocus);
     };
   }, [isPurchasing, user]);
+
+  useEffect(() => {
+    if (user) {
+      console.log('Текущий пользователь:', user);
+    }
+  }, [user]);
 
   const handlePurchase = async (type) => {
     try {
@@ -305,16 +308,21 @@ const Account = () => {
           {user ? (
             <>
               <Avatar
-                src={user.photoUrl}
-                alt={user.firstName}
+                src={user.photo_url || undefined}
+                alt={user.firstName || user.first_name || ''}
                 sx={{
                   width: 96,
                   height: 96,
                   mx: 'auto',
                   mb: 2,
                   boxShadow: '0 2px 8px rgba(60,60,120,0.10)',
+                  fontSize: 40,
+                  bgcolor: theme.palette.primary.light,
+                  color: theme.palette.primary.contrastText,
                 }}
-              />
+              >
+                {!user.photo_url && ((user.firstName || user.first_name || 'U')[0])}
+              </Avatar>
               <Typography variant="h6" fontWeight={600} mb={0.5} textAlign="center">
                 {user.firstName} {user.lastName}
               </Typography>
@@ -423,7 +431,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('month')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    299 <TelegramStarIcon />
+                    299 <img src={TelegramStarIcon} alt="Telegram Stars" width={28} height={28} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
                   </Typography>
                 </Box>
                 <Button
@@ -460,7 +468,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('quarter')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    699 <TelegramStarIcon />
+                    699 <img src={TelegramStarIcon} alt="Telegram Stars" width={28} height={28} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
                     {t('discount_20')}
@@ -500,7 +508,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('year')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    1999 <TelegramStarIcon />
+                    1999 <img src={TelegramStarIcon} alt="Telegram Stars" width={28} height={28} style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 4 }} />
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
                     {t('discount_40')}
