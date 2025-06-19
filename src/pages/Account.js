@@ -423,7 +423,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('month')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    300 <TelegramStarIcon />
+                    299 <TelegramStarIcon />
                   </Typography>
                 </Box>
                 <Button
@@ -460,7 +460,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('quarter')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    720 <TelegramStarIcon />
+                    699 <TelegramStarIcon />
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
                     {t('discount_20')}
@@ -500,7 +500,7 @@ const Account = () => {
                 <Box>
                   <Typography variant="h6" sx={{ mb: 1 }}>{t('year')}</Typography>
                   <Typography variant="h4" sx={{ mb: 1, color: theme.palette.primary.main, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    2160 <TelegramStarIcon />
+                    1999 <TelegramStarIcon />
                   </Typography>
                   <Typography variant="body2" sx={{ color: 'success.main', mb: 1 }}>
                     {t('discount_40')}
