@@ -364,10 +364,7 @@ class TelegramStarsBot {
         payload,
         '', // provider_token пустой для Stars
         'XTR', // Stars
-        [{ label: plan.title, amount: plan.amount }],
-        {
-          photo_url: 'https://i.postimg.cc/qMKGZ8Dy/user-avatar-orange.png'
-        }
+        [{ label: plan.title, amount: plan.amount }]
       );
 
       await this.bot.sendMessage(chatId, 
