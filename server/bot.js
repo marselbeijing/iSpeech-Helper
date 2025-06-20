@@ -360,17 +360,15 @@ class TelegramStarsBot {
       console.log('Инвойс создан:', { payload, userId: user.id, planType });
 
       // Отправляем инвойс через Telegram Bot API
-      await this.bot.sendInvoice(chatId, {
-        title: plan.title,
-        description: `Подписка iSpeech Helper - ${plan.title}`,
-        payload: payload,
-        provider_token: '', // Пустой для Telegram Stars
-        currency: 'XTR',
-        prices: [{
-          label: plan.title,
-          amount: plan.amount
-        }]
-      });
+      await this.bot.sendInvoice(chatId, plan.title, `Подписка iSpeech Helper - ${plan.title}`,
+        payload,
+        '', // provider_token пустой для Stars
+        'XTR', // Stars
+        [{ label: plan.title, amount: plan.amount }],
+        {
+          photo_url: 'https://i.pinimg.com/564x/12/8a/86/128a863d578033cc47e9d0d4a8d981b4.jpg'
+        }
+      );
 
       await this.bot.sendMessage(chatId, 
         '✨ Инвойс создан! Нажмите кнопку "Pay" выше для оплаты.'
