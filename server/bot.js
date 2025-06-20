@@ -9,7 +9,35 @@ const TrialPeriod = require('./models/TrialPeriod');
 
 class TelegramStarsBot {
   constructor(token) {
-    this.bot = new TelegramBot(token, { polling: true });
+    this.bot = new TelegramBot(token, { 
+      polling: {
+        interval: 1000,
+        autoStart: true,
+        params: {
+          timeout: 10
+        }
+      }
+    });
+    
+    // Обработка ошибок polling
+    this.bot.on('polling_error', (error) => {
+      console.log('Telegram polling error:', error.code, error.message);
+      
+      // Игнорируем сетевые ошибки и переподключаемся автоматически
+      if (error.code === 'EFATAL' || error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT') {
+        console.log('Сетевая ошибка Telegram API, переподключение...');
+        return;
+      }
+      
+      // Логируем другие ошибки
+      console.error('Критическая ошибка Telegram bot:', error);
+    });
+    
+    // Обработка ошибок webhook
+    this.bot.on('webhook_error', (error) => {
+      console.error('Telegram webhook error:', error);
+    });
+    
     this.setupWebhooks();
     console.log('TelegramStarsBot инициализирован с токеном:', token ? 'Да' : 'Нет');
   }
