@@ -24,9 +24,27 @@ export const convertToStars = (amount) => {
 
 // Конфигурация подписок
 export const SUBSCRIPTION_PLANS = {
-  monthly: { stars: 299, duration: 30 },
-  quarterly: { stars: 699, duration: 90 },
-  yearly: { stars: 1999, duration: 365 }
+  monthly: {
+    stars: 299,
+    duration: 30,
+    title: 'Месячная подписка',
+    amount: 299,
+    description: 'Доступ ко всем функциям на 30 дней.'
+  },
+  quarterly: {
+    stars: 699,
+    duration: 90,
+    title: 'Квартальная подписка',
+    amount: 699,
+    description: 'Доступ ко всем функциям на 90 дней.'
+  },
+  yearly: {
+    stars: 1999,
+    duration: 365,
+    title: 'Годовая подписка',
+    amount: 1999,
+    description: 'Доступ ко всем функциям на 365 дней.'
+  }
 };
 
 // Проверка доступности Telegram Stars
