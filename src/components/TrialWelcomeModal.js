@@ -16,11 +16,13 @@ import {
 import { useTranslation } from 'react-i18next';
 import { getTrialTexts } from '../services/trial';
 import { getCurrentUser } from '../services/telegram';
+import { useNavigate } from 'react-router-dom';
 
 const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
   const theme = useTheme();
   const { i18n } = useTranslation();
   const user = getCurrentUser();
+  const navigate = useNavigate();
   
   // Определяем язык: тестовый язык > язык пользователя > язык i18n
   const testLanguage = localStorage.getItem('testLanguage');
@@ -74,7 +76,7 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
               color: 'white'
             }}
           />
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography variant="body1" color="text.disabled" sx={{ mb: 2 }}>
             {texts.trialDescription}
           </Typography>
         </Box>
@@ -128,7 +130,7 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
           borderRadius: 2,
           textAlign: 'center'
         }}>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.disabled">
             {texts.subscriptionNote}
           </Typography>
         </Box>
@@ -152,10 +154,9 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
           {texts.startTrialButton}
         </Button>
         <Button
-          onClick={onBuyPremium}
           variant="outlined"
-          size="large"
-          fullWidth
+          color="primary"
+          onClick={() => navigate('/account')}
           sx={{ 
             fontSize: '0.9rem',
             py: 1.5
