@@ -142,7 +142,7 @@ const TrialTimer = ({ trialData, onBuyPremium }) => {
                   {timeLeft.days}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  дней
+                  {texts.timeUnits?.days || 'дней'}
                 </Typography>
               </Box>
               <Box sx={{ textAlign: 'center' }}>
@@ -150,7 +150,7 @@ const TrialTimer = ({ trialData, onBuyPremium }) => {
                   {timeLeft.hours}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  часов
+                  {texts.timeUnits?.hours || 'часов'}
                 </Typography>
               </Box>
               <Box sx={{ textAlign: 'center' }}>
@@ -158,7 +158,7 @@ const TrialTimer = ({ trialData, onBuyPremium }) => {
                   {timeLeft.minutes}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  минут
+                  {texts.timeUnits?.minutes || 'минут'}
                 </Typography>
               </Box>
               <Box sx={{ textAlign: 'center' }}>
@@ -166,7 +166,7 @@ const TrialTimer = ({ trialData, onBuyPremium }) => {
                   {timeLeft.seconds}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  секунд
+                  {texts.timeUnits?.seconds || 'секунд'}
                 </Typography>
               </Box>
             </Box>

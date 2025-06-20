@@ -1,8 +1,5 @@
 import { getCurrentUser } from './telegram';
 
-// Базовый URL API
-const API_BASE = process.env.REACT_APP_API_URL || 'https://ispeech-backend.onrender.com';
-
 // Получение баланса звезд пользователя
 export const getStarsBalance = async () => {
   const user = getCurrentUser();

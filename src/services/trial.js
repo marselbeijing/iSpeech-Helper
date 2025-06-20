@@ -250,6 +250,14 @@ export const getTrialTexts = (language = 'ru') => {
     freeTrialChip: isEnglish ? '3 days FREE' : '3 дня БЕСПЛАТНО',
     subscriptionNote: isEnglish ? 
       'After the trial period ends, you will need to purchase a subscription to continue using all features' :
-      'После окончания пробного периода нужно будет оформить подписку для продолжения использования всех функций'
+      'После окончания пробного периода нужно будет оформить подписку для продолжения использования всех функций',
+    
+    // Единицы времени для таймера
+    timeUnits: {
+      days: isEnglish ? 'days' : 'дней',
+      hours: isEnglish ? 'hours' : 'часов', 
+      minutes: isEnglish ? 'minutes' : 'минут',
+      seconds: isEnglish ? 'seconds' : 'секунд'
+    }
   };
 }; 
