@@ -204,7 +204,7 @@ const SmoothReader = () => {
             <Typography
               variant="body2"
               align="center"
-              sx={{ mb: 2, color: 'text.primary', fontSize: { xs: '0.80rem', sm: '0.88rem' } }}
+              sx={{ mb: 2, color: 'text.primary', fontSize: { xs: '0.75rem', sm: '0.82rem' } }}
             >
               {t('smooth_reading_instruction')}
             </Typography>
