@@ -20,7 +20,11 @@ const TrialTimer = ({ trialData, onBuyPremium }) => {
   const theme = useTheme();
   const { i18n } = useTranslation();
   const user = getCurrentUser();
-  const texts = getTrialTexts(user?.language_code || i18n.language);
+  
+  // Определяем язык: тестовый язык > язык пользователя > язык i18n
+  const testLanguage = localStorage.getItem('testLanguage');
+  const userLanguage = testLanguage || user?.language_code || i18n.language;
+  const texts = getTrialTexts(userLanguage);
   
   const [timeLeft, setTimeLeft] = useState(trialData?.timeLeft || { days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [progress, setProgress] = useState(0);
