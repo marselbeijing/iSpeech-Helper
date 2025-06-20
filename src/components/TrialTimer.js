@@ -26,6 +26,18 @@ const TrialTimer = ({ trialData, onBuyPremium }) => {
   const userLanguage = testLanguage || user?.language_code || i18n.language;
   const texts = getTrialTexts(userLanguage);
   
+  // Логирование для отладки
+  useEffect(() => {
+    console.log('🌐 TrialTimer язык:', {
+      testLanguage,
+      userLanguageCode: user?.language_code,
+      i18nLanguage: i18n.language,
+      finalLanguage: userLanguage,
+      isEnglish: userLanguage?.startsWith('en'),
+      texts: texts
+    });
+  }, [testLanguage, user?.language_code, i18n.language, userLanguage, texts]);
+  
   const [timeLeft, setTimeLeft] = useState(trialData?.timeLeft || { days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [progress, setProgress] = useState(0);
 
