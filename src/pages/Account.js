@@ -230,7 +230,7 @@ const Account = () => {
         return;
       }
       
-      const result = await purchaseWithStars(type);
+      const result = await purchaseWithStars(type.toLowerCase());
       
       if (result.success) {
         // Обновляем статус подписки после успешной покупки

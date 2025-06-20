@@ -53,6 +53,12 @@ export const isStarsAvailable = () => {
 // Инициация платежа через Telegram Stars
 export const purchaseWithStars = async (planType) => {
   try {
+    // Исправление: всегда приводим тип к строке и нижнему регистру
+    if (typeof planType !== 'string') {
+      throw new Error('Тип подписки должен быть строкой');
+    }
+    planType = planType.toLowerCase();
+    
     // Проверяем, не открыт ли уже попап
     if (isPopupOpen) {
       console.log('⚠️ Попап уже открыт, игнорируем запрос');
@@ -67,7 +73,7 @@ export const purchaseWithStars = async (planType) => {
     
     // Определяем URLs в начале функции для доступности во всех блоках
     const botUrl = 'https://t.me/iSpeechHelper_bot';
-    const botUrlWithStart = 'https://t.me/iSpeechHelper_bot?start=buy_' + planType.toLowerCase();
+    const botUrlWithStart = 'https://t.me/iSpeechHelper_bot?start=buy_' + planType;
     
     const webApp = window.Telegram?.WebApp;
     if (!webApp) {
@@ -104,7 +110,7 @@ export const purchaseWithStars = async (planType) => {
 📝 ${plan.description}
 
 🤖 Для покупки перейдите в @iSpeechHelper_bot и напишите:
-/buy_${planType.toLowerCase()}
+/buy_${planType}
 
 Или просто напишите /start для выбора подписки.`;
 
@@ -156,7 +162,7 @@ export const purchaseWithStars = async (planType) => {
             if (isMobile) {
               try {
                 console.log('Пробуем мобильную схему tg://...');
-                const tgUrl = `tg://resolve?domain=iSpeechHelper_bot&start=buy_${planType.toLowerCase()}`;
+                const tgUrl = `tg://resolve?domain=iSpeechHelper_bot&start=buy_${planType}`;
                 console.log('TG URL:', tgUrl);
                 
                 // Способ 1: Прямая tg:// схема
@@ -274,7 +280,7 @@ export const purchaseWithStars = async (planType) => {
                 webApp.showAlert(`Не удалось автоматически открыть бота. 
                 
 Перейдите вручную в @iSpeechHelper_bot и напишите:
-/buy_${planType.toLowerCase()}
+/buy_${planType}
 
 Или просто /start для выбора подписки.`);
               }
