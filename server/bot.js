@@ -366,7 +366,7 @@ class TelegramStarsBot {
         'XTR', // Stars
         [{ label: plan.title, amount: plan.amount }],
         {
-          photo_url: 'https://i.postimg.cc/QxRzLzGq/user-avatar.png'
+          photo_url: 'https://i-speech-helper-uce4.vercel.app/assets/user-avatar.png'
         }
       );
 
