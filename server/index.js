@@ -89,16 +89,18 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Запускаем сервер для Render.com
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log('Available routes:');
-  console.log('- GET /health');
-  console.log('- GET /api/trial/status/:userId');
-  console.log('- POST /api/trial/welcome-seen/:userId');
-  console.log('- GET /api/trial/check-access/:userId');
-});
+// Запускаем сервер только если не в Vercel окружении
+if (process.env.NODE_ENV !== 'production' || process.env.VERCEL !== '1') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log('Available routes:');
+    console.log('- GET /health');
+    console.log('- GET /api/trial/status/:userId');
+    console.log('- POST /api/trial/welcome-seen/:userId');
+    console.log('- GET /api/trial/check-access/:userId');
+  });
+}
 
-// Экспорт для совместимости (если нужно)
+// Экспорт для Vercel и других serverless платформ
 module.exports = app; 

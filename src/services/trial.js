@@ -1,6 +1,6 @@
 import { getCurrentUser } from './telegram';
 
-const API_BASE = process.env.REACT_APP_API_URL || 'https://ispeech-server.vercel.app';
+const API_BASE = process.env.REACT_APP_API_URL || 'https://ispeech-backend.onrender.com';
 
 // Получение статуса пробного периода
 export const getTrialStatus = async () => {
@@ -25,10 +25,21 @@ export const getTrialStatus = async () => {
       };
     }
 
-    const response = await fetch(`${API_BASE}/api/trial/status/${user.id}?lang=${user.language_code || 'ru'}`);
+    const url = `${API_BASE}/api/trial/status/${user.id}?lang=${user.language_code || 'ru'}`;
+    console.log('🌐 Запрос к серверу:', url);
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
+    
+    console.log('📡 Ответ сервера:', response.status, response.statusText);
     
     if (!response.ok) {
-      console.log('⚠️ Сервер недоступен, возвращаем демо-статус');
+      console.log('⚠️ Сервер вернул ошибку:', response.status, 'возвращаем демо-статус');
       // Fallback для демонстрации
       return {
         hasActiveSubscription: false,
