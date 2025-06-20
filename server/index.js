@@ -89,10 +89,16 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Удаляю app.listen и экспортирую app для Vercel
-// const PORT = process.env.PORT || 5000;
-// app.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT}`);
-// });
+// Запускаем сервер для Render.com
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log('Available routes:');
+  console.log('- GET /health');
+  console.log('- GET /api/trial/status/:userId');
+  console.log('- POST /api/trial/welcome-seen/:userId');
+  console.log('- GET /api/trial/check-access/:userId');
+});
 
+// Экспорт для совместимости (если нужно)
 module.exports = app; 
