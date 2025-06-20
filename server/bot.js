@@ -14,7 +14,7 @@ class TelegramStarsBot {
 
   // Функция для получения локализованных текстов
   getTexts(languageCode) {
-    const isEnglish = languageCode && languageCode.startsWith('en');
+    const isEnglish = languageCode === 'en' || (languageCode && languageCode.startsWith('en'));
     
     return {
       invoiceCreated: isEnglish ? 
@@ -85,7 +85,26 @@ Choose your plan:
       quarterly: isEnglish ? 'quarterly' : 'квартальная',
       yearly: isEnglish ? 'annual' : 'годовая',
       
-      invoiceNotFound: isEnglish ? '❌ Error: invoice not found. Please contact support.' : '❌ Ошибка: инвойс не найден. Обратитесь в поддержку.'
+      invoiceNotFound: isEnglish ? '❌ Error: invoice not found. Please contact support.' : '❌ Ошибка: инвойс не найден. Обратитесь в поддержку.',
+      
+      // Реферальные сообщения
+      newReferralTitle: isEnglish ? '🎉 You have a new referral!' : '🎉 У вас новый реферал!',
+      newReferralText: isEnglish ? 'A user joined using your link. When they purchase a subscription, you will receive a bonus in stars!' : 'Пользователь присоединился по вашей ссылке. Когда он купит подписку, вы получите бонус в звездах!',
+      bonusesForSubs: isEnglish ? '⭐ Bonuses for subscriptions:' : '⭐ Бонусы за подписки:',
+      monthlyBonus: isEnglish ? '• Monthly: 60 ⭐ (20% of 299)' : '• Месячная: 60 ⭐ (20% от 299)',
+      quarterlyBonus: isEnglish ? '• Quarterly: 140 ⭐ (20% of 699)' : '• Квартальная: 140 ⭐ (20% от 699)',
+      yearlyBonus: isEnglish ? '• Annual: 400 ⭐ (20% of 1999)' : '• Годовая: 400 ⭐ (20% от 1999)',
+      
+      congratsBonus: isEnglish ? '🎉 Congratulations! You received a bonus!' : '🎉 Поздравляем! Вы получили бонус!',
+      referralBought: isEnglish ? 'Your referral bought a' : 'Ваш реферал купил',
+      youReceived: isEnglish ? 'You received:' : 'Вы получили:',
+      currentBalanceCheck: isEnglish ? '💰 You can check your current balance in the app in the "Referral Program" section.' : '💰 Ваш текущий баланс можно посмотреть в приложении в разделе "Партнерская программа".',
+      
+      subscriptionNames: {
+        monthly: isEnglish ? 'monthly' : 'месячную',
+        quarterly: isEnglish ? 'quarterly' : 'квартальную', 
+        yearly: isEnglish ? 'annual' : 'годовую'
+      }
     };
   }
 
@@ -598,16 +617,23 @@ ${texts.clickToPay}
 
       // Отправляем уведомление рефереру
       try {
-        await this.bot.sendMessage(referrerId, `
-🎉 У вас новый реферал!
+        // Получаем информацию о рефере для определения языка
+        const referrer = await this.bot.getChat(referrerId);
+        const referrerLang = referrer.language_code || 'ru';
+        const texts = this.getTexts(referrerLang);
 
-Пользователь присоединился по вашей ссылке. Когда он купит подписку, вы получите бонус в звездах!
+        const message = `
+${texts.newReferralTitle}
 
-⭐ Бонусы за подписки:
-• Месячная: 60 ⭐ (20% от 299)
-• Квартальная: 140 ⭐ (20% от 699)  
-• Годовая: 400 ⭐ (20% от 1999)
-        `);
+${texts.newReferralText}
+
+${texts.bonusesForSubs}
+${texts.monthlyBonus}
+${texts.quarterlyBonus}
+${texts.yearlyBonus}
+        `;
+
+        await this.bot.sendMessage(referrerId, message);
       } catch (error) {
         console.log('Не удалось отправить уведомление рефереру:', error.message);
       }
@@ -654,20 +680,21 @@ ${texts.clickToPay}
 
       // Отправляем уведомление рефереру
       try {
-        const subscriptionNames = {
-          monthly: 'месячную',
-          quarterly: 'квартальную',
-          yearly: 'годовую'
-        };
+        // Получаем информацию о рефере для определения языка
+        const referrer = await this.bot.getChat(referral.referrerId);
+        const referrerLang = referrer.language_code || 'ru';
+        const texts = this.getTexts(referrerLang);
 
-        await this.bot.sendMessage(referral.referrerId, `
-🎉 Поздравляем! Вы получили бонус!
+        const message = `
+${texts.congratsBonus}
 
-Ваш реферал купил ${subscriptionNames[subscriptionType]} подписку.
-Вы получили: ${starsReward} ⭐ звезд
+${texts.referralBought} ${texts.subscriptionNames[subscriptionType]} subscription.
+${texts.youReceived} ${starsReward} ⭐ stars
 
-💰 Ваш текущий баланс можно посмотреть в приложении в разделе "Партнерская программа".
-        `);
+${texts.currentBalanceCheck}
+        `;
+
+        await this.bot.sendMessage(referral.referrerId, message);
       } catch (error) {
         console.log('Не удалось отправить уведомление о награде:', error.message);
       }
