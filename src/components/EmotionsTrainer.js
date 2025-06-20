@@ -203,6 +203,21 @@ const EmotionsTrainer = () => {
           )}
           
           <Box sx={{ mb: { xs: 0, sm: 1 } }}>
+            <Typography
+              variant="caption"
+              align="center"
+              sx={{
+                display: 'block',
+                color: theme.palette.text.primary,
+                fontWeight: 500,
+                mb: { xs: 1.5, sm: 2 },
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                px: { xs: 1, sm: 2 }
+              }}
+            >
+              {t('emotions_trainer_instruction')}
+            </Typography>
+            
             <Button
               variant="contained"
               onClick={handleNextClick}
@@ -227,21 +242,6 @@ const EmotionsTrainer = () => {
             >
               {t('next_phrase')}
             </Button>
-            
-            <Typography
-              variant="caption"
-              align="center"
-              sx={{
-                display: 'block',
-                color: theme.palette.text.primary,
-                fontWeight: 500,
-                mb: { xs: 1.5, sm: 2 },
-                fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                px: { xs: 1, sm: 2 }
-              }}
-            >
-              {t('emotions_trainer_instruction')}
-            </Typography>
             <Button
               variant="contained"
               onClick={handleBackClick}
