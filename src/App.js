@@ -148,6 +148,14 @@ const App = () => {
       try {
         console.log('🔍 Начинаем загрузку статуса пробного периода...');
         
+        // Детальная отладка получения пользователя
+        console.log('🔍 Отладка получения пользователя:');
+        console.log('- window.Telegram:', !!window.Telegram);
+        console.log('- window.Telegram.WebApp:', !!window.Telegram?.WebApp);
+        console.log('- initDataUnsafe:', window.Telegram?.WebApp?.initDataUnsafe);
+        console.log('- localStorage telegramUser:', localStorage.getItem('telegramUser'));
+        console.log('- testLanguage:', localStorage.getItem('testLanguage'));
+        
         // Проверяем доступность пользователя
         const { getCurrentUser } = await import('./services/telegram');
         const user = getCurrentUser();
@@ -415,6 +423,24 @@ const App = () => {
       divider: themeMode === 'dark' ? telegramColors.dark.divider : telegramColors.light.divider,
     },
   });
+
+  // Кнопки для тестирования в development режиме
+  const isDevelopment = process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost';
+  
+  const handleTestTrialModal = () => {
+    localStorage.removeItem('trialWelcomeSeen');
+    setShowWelcomeModal(true);
+  };
+  
+  const handleTestLogData = () => {
+    console.log('🔍 Текущие данные:');
+    console.log('- getCurrentUser():', getCurrentUser());
+    console.log('- trialData:', trialData);
+    console.log('- showWelcomeModal:', showWelcomeModal);
+    console.log('- localStorage trialWelcomeSeen:', localStorage.getItem('trialWelcomeSeen'));
+    console.log('- window.Telegram:', window.Telegram);
+    console.log('- WebApp user:', window.Telegram?.WebApp?.initDataUnsafe?.user);
+  };
 
   return (
     <ThemeProvider theme={theme}>

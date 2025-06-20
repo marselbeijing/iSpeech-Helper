@@ -19,18 +19,15 @@ class TelegramStarsBot {
       }
     });
     
-    // Обработка ошибок polling
+    // Обработка ошибок polling - минимальное логирование
     this.bot.on('polling_error', (error) => {
-      console.log('Telegram polling error:', error.code, error.message);
-      
-      // Игнорируем сетевые ошибки и переподключаемся автоматически
+      // Игнорируем частые сетевые ошибки
       if (error.code === 'EFATAL' || error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT') {
-        console.log('Сетевая ошибка Telegram API, переподключение...');
-        return;
+        return; // Не логируем сетевые ошибки
       }
       
-      // Логируем другие ошибки
-      console.error('Критическая ошибка Telegram bot:', error);
+      // Логируем только критические ошибки
+      console.error('Критическая ошибка Telegram bot:', error.code);
     });
     
     // Обработка ошибок webhook

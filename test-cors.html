@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CORS Test</title>
+</head>
+<body>
+    <h1>Тест CORS для iSpeech Server</h1>
+    <button onclick="testCors()">Тестировать CORS</button>
+    <div id="result"></div>
+
+    <script>
+        async function testCors() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Тестируем...';
+            
+            try {
+                const response = await fetch('https://ispeech-server.vercel.app/api/trial/status/691085183?lang=ru');
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <h2>✅ CORS работает!</h2>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <h2>❌ CORS ошибка:</h2>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html> 

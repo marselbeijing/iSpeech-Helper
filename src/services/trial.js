@@ -12,6 +12,7 @@ export const getTrialStatus = async () => {
       console.log('❌ Пользователь не найден, возвращаем демо-статус');
       // Проверяем localStorage для демо-режима
       const hasSeenWelcome = localStorage.getItem('trialWelcomeSeen') === 'true';
+      console.log('📱 Demo hasSeenWelcome:', hasSeenWelcome);
       // Возвращаем демо-статус для показа модального окна
       return {
         hasActiveSubscription: false,
