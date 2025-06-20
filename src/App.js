@@ -387,9 +387,32 @@ const App = () => {
   };
 
   const handleBuyPremium = () => {
+    console.log('🛒 handleBuyPremium вызван');
     setShowWelcomeModal(false);
-    // Перенаправляем на страницу аккаунта для покупки
-    window.location.hash = '/account';
+    
+    // Используем несколько способов навигации для надежности
+    const navigateToAccount = () => {
+      // Способ 1: Изменяем hash
+      window.location.hash = '/account';
+      
+      // Способ 2: Если hash не сработал, используем replace
+      setTimeout(() => {
+        if (!window.location.hash.includes('account')) {
+          window.location.replace(window.location.origin + window.location.pathname + '#/account');
+        }
+      }, 100);
+      
+      // Способ 3: Принудительное обновление если ничего не помогло
+      setTimeout(() => {
+        if (!window.location.hash.includes('account')) {
+          console.log('🔄 Принудительная навигация на /account');
+          window.location.href = '#/account';
+        }
+      }, 300);
+    };
+    
+    // Небольшая задержка для закрытия модального окна
+    setTimeout(navigateToAccount, 150);
   };
 
   const handleCloseWelcome = async () => {

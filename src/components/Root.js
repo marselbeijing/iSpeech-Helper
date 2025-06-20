@@ -1,12 +1,25 @@
-import React, { useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import React, { useEffect, createContext, useContext } from 'react';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import { Box } from '@mui/material';
 import NavigationBar from './NavigationBar';
 
+// Создаем контекст для навигации
+const NavigationContext = createContext();
+
+// Хук для использования навигации
+export const useNavigation = () => {
+  const context = useContext(NavigationContext);
+  if (!context) {
+    throw new Error('useNavigation must be used within NavigationProvider');
+  }
+  return context;
+};
+
 const Root = () => {
   const theme = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Отслеживаем навигацию между страницами
   useEffect(() => {
@@ -14,26 +27,28 @@ const Root = () => {
   }, [location]);
   
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        background: theme.palette.background.default,
-        transition: 'background 0.3s ease',
-        paddingBottom: '66px',
-      }}
-    >
+    <NavigationContext.Provider value={{ navigate }}>
       <Box
-        component="main"
         sx={{
-          flex: 1,
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          background: theme.palette.background.default,
+          transition: 'background 0.3s ease',
+          paddingBottom: '66px',
         }}
       >
-        <Outlet />
+        <Box
+          component="main"
+          sx={{
+            flex: 1,
+          }}
+        >
+          <Outlet />
+        </Box>
+        <NavigationBar />
       </Box>
-      <NavigationBar />
-    </Box>
+    </NavigationContext.Provider>
   );
 };
 

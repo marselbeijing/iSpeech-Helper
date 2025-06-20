@@ -1,5 +1,8 @@
 import { getCurrentUser } from './telegram';
 
+// Базовый URL API
+const API_BASE = process.env.REACT_APP_API_URL || 'https://ispeech-backend.onrender.com';
+
 // Получение баланса звезд пользователя
 export const getStarsBalance = async () => {
   const user = getCurrentUser();
@@ -7,18 +10,7 @@ export const getStarsBalance = async () => {
     return 0;
   }
 
-  try {
-    // В реальном приложении здесь будет API запрос к серверу
-    // Пока возвращаем 0, но структура готова для интеграции
-    const response = await fetch(`/api/referral/balance/${user.id}`);
-    if (response.ok) {
-      const data = await response.json();
-      return data.balance || 0;
-    }
-  } catch (error) {
-    console.log('Не удалось получить баланс звезд:', error);
-  }
-  
+  // API endpoint не реализован, возвращаем 0
   return 0;
 };
 
@@ -29,16 +21,7 @@ export const getReferralStats = async () => {
     return null;
   }
 
-  try {
-    const response = await fetch(`/api/referral/stats/${user.id}`);
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    }
-  } catch (error) {
-    console.log('Не удалось получить статистику рефералов:', error);
-  }
-  
+  // API endpoint не реализован, возвращаем null
   return null;
 };
 
