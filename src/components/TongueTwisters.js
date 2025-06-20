@@ -189,8 +189,6 @@ const TongueTwisters = () => {
     getRandomTwister(level);
   }, [level, i18n.language, getRandomTwister]);
 
-
-
   const handleBackClick = () => {
     playSound('click');
     vibrate('click');
@@ -295,6 +293,23 @@ const TongueTwisters = () => {
             >
               <span>{t('tongue_twisters_instruction')}</span>
             </Typography>
+            <Tabs
+              value={level}
+              onChange={(_, v) => {
+                setLevel(v);
+              }}
+              variant="fullWidth"
+              sx={{ mb: { xs: 1, sm: 2 }, width: '100%' }}
+            >
+              {levels.map(l => (
+                <Tab 
+                  key={l.value} 
+                  value={l.value} 
+                  label={i18n.language === 'ru' ? l.labelRu : l.label} 
+                  sx={{ fontWeight: 600, fontSize: { xs: '0.875rem', sm: '1rem' } }} 
+                />
+              ))}
+            </Tabs>
             <Box sx={{ flex: 1, width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: 0, p: { xs: 1, sm: 2 } }}>
               <Box
                 sx={{
@@ -366,23 +381,6 @@ const TongueTwisters = () => {
                 ? 'Повторите 3–5 раз, стараясь не сбиваться с ритма.'
                 : 'Repeat 3-5 times, trying to maintain the rhythm.'}</span>
             </Typography>
-            <Tabs
-              value={level}
-              onChange={(_, v) => {
-                setLevel(v);
-              }}
-              variant="fullWidth"
-              sx={{ mb: { xs: 1, sm: 2 }, width: '100%' }}
-            >
-              {levels.map(l => (
-                <Tab 
-                  key={l.value} 
-                  value={l.value} 
-                  label={i18n.language === 'ru' ? l.labelRu : l.label} 
-                  sx={{ fontWeight: 600, fontSize: { xs: '0.875rem', sm: '1rem' } }} 
-                />
-              ))}
-            </Tabs>
             
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 1, sm: 1.5 }, width: '100%', mb: { xs: 8, sm: 2 } }}>
               <Button
