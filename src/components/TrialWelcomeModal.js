@@ -21,13 +21,21 @@ import { useNavigate } from 'react-router-dom';
 const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
   const theme = useTheme();
   const { i18n } = useTranslation();
-  const user = getCurrentUser();
   const navigate = useNavigate();
   
   // Определяем язык: тестовый язык > язык пользователя > язык i18n
   const testLanguage = localStorage.getItem('testLanguage');
-  const userLanguage = testLanguage || user?.language_code || i18n.language || 'ru';
-  const texts = getTrialTexts(userLanguage);
+  const userLanguage = testLanguage || 'ru';
+  console.log('DEBUG: testLanguage', testLanguage);
+  
+  let user = null;
+  try {
+    user = getCurrentUser();
+  } catch (e) {
+    console.error('Ошибка получения пользователя:', e);
+    user = null;
+  }
+  console.log('DEBUG: user', user);
   
   // Логируем для отладки
   React.useEffect(() => {
@@ -41,6 +49,14 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
       });
     }
   }, [open, testLanguage, user?.language_code, i18n.language, userLanguage]);
+
+  let texts = {};
+  try {
+    texts = getTrialTexts(userLanguage);
+  } catch (e) {
+    console.error('Ошибка в getTrialTexts:', e, userLanguage);
+    texts = {};
+  }
 
   return (
     <Dialog
