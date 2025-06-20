@@ -20,8 +20,11 @@ import { useNavigate } from 'react-router-dom';
 
 const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
   const theme = useTheme();
-  const { i18n } = useTranslation();
   const navigate = useNavigate();
+  
+  console.log('DEBUG: до useTranslation');
+  const { i18n } = useTranslation();
+  console.log('DEBUG: после useTranslation');
   
   // Определяем язык: тестовый язык > язык пользователя > язык i18n
   const testLanguage = localStorage.getItem('testLanguage');
