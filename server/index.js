@@ -55,6 +55,7 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
 app.use('/api/subscriptions', require('./routes/subscriptions'));
 app.use('/api', require('./routes/payments'));
 app.use('/api/telegram', require('./routes/telegram'));
+app.use('/api/referral', require('./routes/referral'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {

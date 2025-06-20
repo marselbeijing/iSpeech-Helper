@@ -2,12 +2,91 @@ const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
 const Invoice = require('./models/Invoice');
 const Subscription = require('./models/Subscription');
+const Referral = require('./models/Referral');
+const StarsBalance = require('./models/StarsBalance');
 
 class TelegramStarsBot {
   constructor(token) {
     this.bot = new TelegramBot(token, { polling: true });
     this.setupWebhooks();
     console.log('TelegramStarsBot инициализирован с токеном:', token ? 'Да' : 'Нет');
+  }
+
+  // Функция для получения локализованных текстов
+  getTexts(languageCode) {
+    const isEnglish = languageCode && languageCode.startsWith('en');
+    
+    return {
+      invoiceCreated: isEnglish ? 
+        '✨ Invoice created! Click the "Pay" button above to pay.' :
+        '✨ Инвойс создан! Нажмите кнопку "Заплатить" выше для оплаты.',
+      
+      subscriptionMenu: isEnglish ? `
+💫 Choose your iSpeech Helper subscription:
+
+🔸 Monthly subscription - 299 ⭐ stars
+   Full access for 30 days
+
+🔸 Quarterly subscription - 699 ⭐ stars  
+   Full access for 90 days (20% discount)
+
+🔸 Annual subscription - 1999 ⭐ stars
+   Full access for 365 days (40% discount)
+
+Choose your plan:
+      ` : `
+💫 Выберите подписку iSpeech Helper:
+
+🔸 Месячная подписка - 299 ⭐ звезд
+   Полный доступ на 30 дней
+
+🔸 Квартальная подписка - 699 ⭐ звезд  
+   Полный доступ на 90 дней (скидка 20%)
+
+🔸 Годовая подписка - 1999 ⭐ звезд
+   Полный доступ на 365 дней (скидка 40%)
+
+Выберите подходящий вариант:
+      `,
+      
+      monthlyButton: isEnglish ? '📅 Monthly (299 ⭐)' : '📅 Месячная (299 ⭐)',
+      quarterlyButton: isEnglish ? '📅 Quarterly (699 ⭐)' : '📅 Квартальная (699 ⭐)',
+      yearlyButton: isEnglish ? '📅 Annual (1999 ⭐)' : '📅 Годовая (1999 ⭐)',
+      openAppButton: isEnglish ? '🚀 Open App' : '🚀 Открыть приложение',
+      
+      buyButton: isEnglish ? 'Buy for' : 'Купить за',
+      backButton: isEnglish ? '🔙 Back to selection' : '🔙 Назад к выбору',
+      
+      monthlyTitle: isEnglish ? 'Monthly Premium Subscription' : 'Месячная подписка Premium',
+      quarterlyTitle: isEnglish ? 'Quarterly Premium Subscription' : 'Квартальная подписка Premium',
+      yearlyTitle: isEnglish ? 'Annual Premium Subscription' : 'Годовая подписка Premium',
+      
+      duration30: isEnglish ? '30 days' : '30 дней',
+      duration90: isEnglish ? '90 days' : '90 дней', 
+      duration365: isEnglish ? '365 days' : '365 дней',
+      
+      description1: isEnglish ? 'Full access to all features for 1 month' : 'Полный доступ ко всем функциям на 1 месяц',
+      description3: isEnglish ? 'Full access to all features for 3 months (20% discount)' : 'Полный доступ ко всем функциям на 3 месяца (скидка 20%)',
+      description12: isEnglish ? 'Full access to all features for 1 year (40% discount)' : 'Полный доступ ко всем функциям на 1 год (скидка 40%)',
+      
+      cost: isEnglish ? 'Cost:' : 'Стоимость:',
+      duration: isEnglish ? 'Duration:' : 'Длительность:',
+      stars: isEnglish ? 'stars' : 'звезд',
+      clickToPay: isEnglish ? 'Click the button below to pay:' : 'Нажмите кнопку ниже для оплаты:',
+      
+      // Сообщения об успешной оплате
+      paymentSuccess: isEnglish ? '✅ Payment processed successfully!' : '✅ Платеж успешно обработан!',
+      subscriptionActivated: isEnglish ? '🎉 Your subscription has been activated!' : '🎉 Ваша подписка активирована!',
+      validUntil: isEnglish ? '⏰ Valid until:' : '⏰ Действует до:',
+      starsSpent: isEnglish ? '⭐ Stars spent:' : '⭐ Потрачено Stars:',
+      allFeaturesAvailable: isEnglish ? 'All app features are now available to you!' : 'Теперь вам доступны все функции приложения!',
+      
+      monthly: isEnglish ? 'monthly' : 'месячная',
+      quarterly: isEnglish ? 'quarterly' : 'квартальная',
+      yearly: isEnglish ? 'annual' : 'годовая',
+      
+      invoiceNotFound: isEnglish ? '❌ Error: invoice not found. Please contact support.' : '❌ Ошибка: инвойс не найден. Обратитесь в поддержку.'
+    };
   }
 
   setupWebhooks() {
@@ -61,7 +140,28 @@ class TelegramStarsBot {
         return;
       }
       
-      const welcomeMessage = `
+      // Обработка реферальных ссылок
+      if (startParam && startParam.startsWith('ref_')) {
+        const referrerId = startParam.replace('ref_', '');
+        await this.handleReferral(chatId, msg.from.id, referrerId);
+      }
+      
+      // Определяем язык пользователя
+      const userLang = msg.from.language_code || 'ru';
+      const isEnglish = userLang.startsWith('en');
+      
+      const welcomeMessage = isEnglish ? `
+👋 Hello! Welcome to iSpeech Helper!
+
+🗣 I'm your personal assistant for improving speech and diction. Here you'll find effective exercises for developing:
+
+✨ Clear articulation and pronunciation
+🫁 Proper breathing and voice
+🎯 Confidence in communication
+🎭 Speech expressiveness
+
+Ready to start training? Click the button below!
+      ` : `
 👋 Привет! Добро пожаловать в iSpeech Helper!
 
 🗣 Я ваш персональный помощник для улучшения речи и дикции. Здесь вы найдете эффективные упражнения для развития:
@@ -78,11 +178,11 @@ class TelegramStarsBot {
         reply_markup: {
           inline_keyboard: [
             [{
-              text: '🚀 Открыть приложение',
+              text: isEnglish ? '🚀 Open App' : '🚀 Открыть приложение',
               web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' }
             }],
             [{
-              text: '💫 Узнать о подписке',
+              text: isEnglish ? '💫 Learn about subscription' : '💫 Узнать о подписке',
               callback_data: 'subscription_menu'
             }]
           ]
@@ -206,9 +306,8 @@ class TelegramStarsBot {
 
     if (!invoice) {
       console.error('Invoice not found for successful payment:', invoice_payload);
-      await this.bot.sendMessage(chat.id, 
-        '❌ Ошибка: инвойс не найден. Обратитесь в поддержку.'
-      );
+      const texts = this.getTexts(from.language_code);
+      await this.bot.sendMessage(chat.id, texts.invoiceNotFound);
       return;
     }
 
@@ -250,27 +349,25 @@ class TelegramStarsBot {
     await subscription.save();
 
     // Отправляем подтверждение пользователю
-    const subscriptionNames = {
-      monthly: 'месячная',
-      quarterly: 'квартальная', 
-      yearly: 'годовая'
-    };
+    const texts = this.getTexts(from.language_code);
+    
+    const subscriptionName = texts[invoice.subscriptionType]; // monthly, quarterly, yearly
 
     const confirmationMessage = `
-✅ Платеж успешно обработан!
+${texts.paymentSuccess}
 
-🎉 Ваша ${subscriptionNames[invoice.subscriptionType]} подписка активирована!
-⏰ Действует до: ${expiresAt.toLocaleDateString('ru-RU')}
-⭐ Потрачено Stars: ${total_amount}
+🎉 ${texts.subscriptionActivated.replace('Your', `Your ${subscriptionName}`).replace('Ваша', `Ваша ${subscriptionName}`)}
+${texts.validUntil} ${expiresAt.toLocaleDateString('ru-RU')}
+${texts.starsSpent} ${total_amount}
 
-Теперь вам доступны все функции приложения!
+${texts.allFeaturesAvailable}
     `;
 
     await this.bot.sendMessage(chat.id, confirmationMessage, {
       reply_markup: {
         inline_keyboard: [
           [{
-            text: '🚀 Открыть приложение',
+            text: texts.openAppButton,
             web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' }
           }]
         ]
@@ -282,6 +379,9 @@ class TelegramStarsBot {
       type: invoice.subscriptionType,
       expiresAt
     });
+
+    // Обрабатываем реферальную награду
+    await this.processReferralReward(invoice.subscriptionType, invoice.userId);
   }
 
   // Метод для настройки webhook (вызывается при запуске сервера)
@@ -309,7 +409,7 @@ class TelegramStarsBot {
     await this.bot.answerCallbackQuery(id);
 
     if (data === 'subscription_menu') {
-      await this.sendSubscriptionMenu(chatId);
+      await this.sendSubscriptionMenu(chatId, from.language_code);
     } else if (data.startsWith('buy_')) {
       const planType = data.replace('buy_', '');
       await this.sendSubscriptionOffer(chatId, planType, from);
@@ -324,10 +424,12 @@ class TelegramStarsBot {
       // Импортируем модель Invoice напрямую вместо HTTP запроса
       const Invoice = require('./models/Invoice');
       
+      const texts = this.getTexts(user.language_code);
+      
       const PLANS = {
-        monthly: { title: 'Месячная подписка Premium', amount: 299 },
-        quarterly: { title: 'Квартальная подписка Premium', amount: 699 },
-        yearly: { title: 'Годовая подписка Premium', amount: 1999 }
+        monthly: { title: texts.monthlyTitle, amount: 299 },
+        quarterly: { title: texts.quarterlyTitle, amount: 699 },
+        yearly: { title: texts.yearlyTitle, amount: 1999 }
       };
 
       const plan = PLANS[planType];
@@ -367,51 +469,39 @@ class TelegramStarsBot {
         [{ label: plan.title, amount: plan.amount }]
       );
 
-      await this.bot.sendMessage(chatId, 
-        '✨ Инвойс создан! Нажмите кнопку "Заплатить" выше для оплаты.'
-      );
+      // Используем уже объявленную переменную texts
+      await this.bot.sendMessage(chatId, texts.invoiceCreated);
       
     } catch (error) {
       console.error('Ошибка создания инвойса:', error);
-      await this.bot.sendMessage(chatId, 
-        '❌ Не удалось создать инвойс. Попробуйте позже или обратитесь в поддержку.'
-      );
+      const isEnglish = user.language_code && user.language_code.startsWith('en');
+      const errorMessage = isEnglish ? 
+        '❌ Failed to create invoice. Please try again later or contact support.' :
+        '❌ Не удалось создать инвойс. Попробуйте позже или обратитесь в поддержку.';
+      await this.bot.sendMessage(chatId, errorMessage);
     }
   }
 
-  async sendSubscriptionMenu(chatId) {
-    const menuMessage = `
-💫 Выберите подписку iSpeech Helper:
+  async sendSubscriptionMenu(chatId, languageCode = 'ru') {
+    const texts = this.getTexts(languageCode);
 
-🔸 Месячная подписка - 299 ⭐ звезд
-   Полный доступ на 30 дней
-
-🔸 Квартальная подписка - 699 ⭐ звезд  
-   Полный доступ на 90 дней (скидка 20%)
-
-🔸 Годовая подписка - 1999 ⭐ звезд
-   Полный доступ на 365 дней (скидка 40%)
-
-Выберите подходящий вариант:
-    `;
-
-    await this.bot.sendMessage(chatId, menuMessage, {
+    await this.bot.sendMessage(chatId, texts.subscriptionMenu, {
       reply_markup: {
         inline_keyboard: [
           [{
-            text: '📅 Месячная (299 ⭐)',
+            text: texts.monthlyButton,
             callback_data: 'buy_monthly'
           }],
           [{
-            text: '📅 Квартальная (699 ⭐)',
+            text: texts.quarterlyButton,
             callback_data: 'buy_quarterly'
           }],
           [{
-            text: '📅 Годовая (1999 ⭐)',
+            text: texts.yearlyButton,
             callback_data: 'buy_yearly'
           }],
           [{
-            text: '🚀 Открыть приложение',
+            text: texts.openAppButton,
             web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' }
           }]
         ]
@@ -420,57 +510,213 @@ class TelegramStarsBot {
   }
 
   async sendSubscriptionOffer(chatId, planType, user) {
+    const texts = this.getTexts(user.language_code);
+    
     const PLANS = {
       monthly: {
-        title: 'Месячная подписка Premium',
+        title: texts.monthlyTitle,
         amount: 299,
-        duration: '30 дней',
-        description: 'Полный доступ ко всем функциям на 1 месяц'
+        duration: texts.duration30,
+        description: texts.description1
       },
       quarterly: {
-        title: 'Квартальная подписка Premium',
+        title: texts.quarterlyTitle,
         amount: 699,
-        duration: '90 дней',
-        description: 'Полный доступ ко всем функциям на 3 месяца (скидка 20%)'
+        duration: texts.duration90,
+        description: texts.description3
       },
       yearly: {
-        title: 'Годовая подписка Premium',
+        title: texts.yearlyTitle,
         amount: 1999,
-        duration: '365 дней',
-        description: 'Полный доступ ко всем функциям на 1 год (скидка 40%)'
+        duration: texts.duration365,
+        description: texts.description12
       }
     };
 
     const plan = PLANS[planType];
     if (!plan) {
-      await this.bot.sendMessage(chatId, '❌ Неизвестный тип подписки');
+      const isEnglish = user.language_code && user.language_code.startsWith('en');
+      const errorText = isEnglish ? 
+        '❌ Unknown subscription type' : '❌ Неизвестный тип подписки';
+      await this.bot.sendMessage(chatId, errorText);
       return;
     }
 
     const offerMessage = `
 💫 ${plan.title}
 
-💰 Стоимость: ${plan.amount} ⭐ звезд
-⏰ Длительность: ${plan.duration}
+💰 ${texts.cost} ${plan.amount} ⭐ ${texts.stars}
+⏰ ${texts.duration} ${plan.duration}
 📝 ${plan.description}
 
-Нажмите кнопку ниже для оплаты:
+${texts.clickToPay}
     `;
 
     await this.bot.sendMessage(chatId, offerMessage, {
       reply_markup: {
         inline_keyboard: [
           [{
-            text: `💳 Купить за ${plan.amount} ⭐`,
+            text: `💳 ${texts.buyButton} ${plan.amount} ⭐`,
             callback_data: `pay_${planType}`
           }],
           [{
-            text: '🔙 Назад к выбору',
+            text: texts.backButton,
             callback_data: 'subscription_menu'
           }]
         ]
       }
     });
+  }
+
+  // Методы реферальной системы
+  async handleReferral(chatId, refereeId, referrerId) {
+    try {
+      // Проверяем, что пользователь не пытается пригласить себя
+      if (refereeId.toString() === referrerId.toString()) {
+        return;
+      }
+
+      // Проверяем, не был ли уже создан реферал
+      const existingReferral = await Referral.findOne({
+        referrerId: referrerId.toString(),
+        refereeId: refereeId.toString()
+      });
+
+      if (existingReferral) {
+        return; // Реферал уже существует
+      }
+
+      // Создаем новый реферал
+      const referral = new Referral({
+        referrerId: referrerId.toString(),
+        refereeId: refereeId.toString(),
+        status: 'pending'
+      });
+
+      await referral.save();
+      console.log('Реферал создан:', { referrerId, refereeId });
+
+      // Отправляем уведомление рефереру
+      try {
+        await this.bot.sendMessage(referrerId, `
+🎉 У вас новый реферал!
+
+Пользователь присоединился по вашей ссылке. Когда он купит подписку, вы получите бонус в звездах!
+
+⭐ Бонусы за подписки:
+• Месячная: 60 ⭐ (20% от 299)
+• Квартальная: 140 ⭐ (20% от 699)  
+• Годовая: 400 ⭐ (20% от 1999)
+        `);
+      } catch (error) {
+        console.log('Не удалось отправить уведомление рефереру:', error.message);
+      }
+
+    } catch (error) {
+      console.error('Ошибка обработки реферала:', error);
+    }
+  }
+
+  async processReferralReward(subscriptionType, userId) {
+    try {
+      // Находим реферал, где текущий пользователь является рефери
+      const referral = await Referral.findOne({
+        refereeId: userId.toString(),
+        status: 'pending'
+      });
+
+      if (!referral) {
+        return; // Реферал не найден
+      }
+
+      // Рассчитываем награду (20% от стоимости подписки)
+      const rewards = {
+        monthly: 60,   // 20% от 299
+        quarterly: 140, // 20% от 699
+        yearly: 400    // 20% от 1999
+      };
+
+      const starsReward = rewards[subscriptionType];
+      if (!starsReward) {
+        return;
+      }
+
+      // Обновляем реферал
+      referral.status = 'rewarded';
+      referral.subscriptionType = subscriptionType;
+      referral.starsRewarded = starsReward;
+      referral.activatedAt = new Date();
+      referral.rewardedAt = new Date();
+      await referral.save();
+
+      // Обновляем баланс реферера
+      await this.updateStarsBalance(referral.referrerId, starsReward);
+
+      // Отправляем уведомление рефереру
+      try {
+        const subscriptionNames = {
+          monthly: 'месячную',
+          quarterly: 'квартальную',
+          yearly: 'годовую'
+        };
+
+        await this.bot.sendMessage(referral.referrerId, `
+🎉 Поздравляем! Вы получили бонус!
+
+Ваш реферал купил ${subscriptionNames[subscriptionType]} подписку.
+Вы получили: ${starsReward} ⭐ звезд
+
+💰 Ваш текущий баланс можно посмотреть в приложении в разделе "Партнерская программа".
+        `);
+      } catch (error) {
+        console.log('Не удалось отправить уведомление о награде:', error.message);
+      }
+
+      console.log('Реферальная награда начислена:', {
+        referrerId: referral.referrerId,
+        refereeId: referral.refereeId,
+        subscriptionType,
+        starsReward
+      });
+
+    } catch (error) {
+      console.error('Ошибка обработки реферальной награды:', error);
+    }
+  }
+
+  async updateStarsBalance(userId, starsToAdd) {
+    try {
+      let balance = await StarsBalance.findOne({ userId: userId.toString() });
+      
+      if (!balance) {
+        balance = new StarsBalance({
+          userId: userId.toString(),
+          balance: starsToAdd,
+          totalEarned: starsToAdd,
+          referralsCount: 1
+        });
+      } else {
+        balance.balance += starsToAdd;
+        balance.totalEarned += starsToAdd;
+        balance.referralsCount += 1;
+      }
+      
+      await balance.save();
+      console.log('Баланс звезд обновлен:', { userId, newBalance: balance.balance });
+      
+    } catch (error) {
+      console.error('Ошибка обновления баланса звезд:', error);
+    }
+  }
+
+  async getUserStarsBalance(userId) {
+    try {
+      const balance = await StarsBalance.findOne({ userId: userId.toString() });
+      return balance ? balance.balance : 0;
+    } catch (error) {
+      console.error('Ошибка получения баланса звезд:', error);
+      return 0;
+    }
   }
 }
 

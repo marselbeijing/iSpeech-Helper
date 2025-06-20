@@ -1,7 +1,13 @@
 import { getCurrentUser } from './telegram';
+import { getStarsBalance as getReferralStarsBalance } from './referral';
+
+// Глобальное состояние для предотвращения множественных попапов
+let isPopupOpen = false;
 
 // Заглушки для работы со звездами
-export const getStarsBalance = async () => 0;
+export const getStarsBalance = async () => {
+  return await getReferralStarsBalance();
+};
 export const addReferralStars = async () => false;
 export const useStars = async () => false;
 
@@ -18,27 +24,9 @@ export const convertToStars = (amount) => {
 
 // Конфигурация подписок
 export const SUBSCRIPTION_PLANS = {
-  MONTHLY: {
-    id: 'monthly_premium',
-    title: 'Месячная подписка Premium',
-    description: 'Полный доступ ко всем функциям на 1 месяц',
-    amount: 299, // новая цена
-    duration: 30, // дней
-  },
-  QUARTERLY: {
-    id: 'quarterly_premium', 
-    title: 'Квартальная подписка Premium',
-    description: 'Полный доступ ко всем функциям на 3 месяца',
-    amount: 699, // новая цена
-    duration: 90, // дней
-  },
-  YEARLY: {
-    id: 'yearly_premium',
-    title: 'Годовая подписка Premium', 
-    description: 'Полный доступ ко всем функциям на 12 месяцев',
-    amount: 1999, // новая цена
-    duration: 365, // дней
-  },
+  monthly: { stars: 299, duration: 30 },
+  quarterly: { stars: 699, duration: 90 },
+  yearly: { stars: 1999, duration: 365 }
 };
 
 // Проверка доступности Telegram Stars
@@ -65,6 +53,16 @@ export const isStarsAvailable = () => {
 // Инициация платежа через Telegram Stars
 export const purchaseWithStars = async (planType) => {
   try {
+    // Проверяем, не открыт ли уже попап
+    if (isPopupOpen) {
+      console.log('⚠️ Попап уже открыт, игнорируем запрос');
+      return {
+        success: false,
+        cancelled: true,
+        message: 'Попап уже открыт'
+      };
+    }
+    
     console.log('🌟 Попытка покупки подписки:', planType);
     
     // Определяем URLs в начале функции для доступности во всех блоках
@@ -112,6 +110,9 @@ export const purchaseWithStars = async (planType) => {
 
     // Показываем popup с выбором действий
     if (typeof webApp.showPopup === 'function') {
+      // Устанавливаем флаг что попап открыт
+      isPopupOpen = true;
+      
       return new Promise((resolve) => {
         webApp.showPopup({
           title: '💳 Покупка подписки',
@@ -129,6 +130,9 @@ export const purchaseWithStars = async (planType) => {
             }
           ]
         }, (buttonId) => {
+          // Сбрасываем флаг когда попап закрыт
+          isPopupOpen = false;
+          
           console.log('Выбрана кнопка:', buttonId);
           
           if (buttonId === 'open_bot') {
@@ -305,8 +309,14 @@ export const purchaseWithStars = async (planType) => {
     
     // Fallback для старых версий без showPopup
     else if (typeof webApp.showAlert === 'function') {
+      // Устанавливаем флаг что попап открыт
+      isPopupOpen = true;
+      
       return new Promise((resolve) => {
         webApp.showAlert(message, () => {
+          // Сбрасываем флаг когда попап закрыт
+          isPopupOpen = false;
+          
           // Автоматически открываем бота
           if (typeof webApp.openTelegramLink === 'function') {
             webApp.openTelegramLink(botUrlWithStart);
@@ -324,7 +334,13 @@ export const purchaseWithStars = async (planType) => {
     
     // Последний fallback
     else {
+      // Устанавливаем флаг что попап открыт
+      isPopupOpen = true;
+      
       alert(message);
+      
+      // Сбрасываем флаг после alert
+      isPopupOpen = false;
       
       // Пытаемся открыть ссылку
       if (typeof webApp.openTelegramLink === 'function') {
@@ -345,13 +361,22 @@ export const purchaseWithStars = async (planType) => {
 
   } catch (error) {
     console.error('Ошибка при покупке:', error);
+    // Сбрасываем флаг в случае ошибки
+    isPopupOpen = false;
     throw error;
   }
+};
+
+// Функция для принудительного сброса состояния попапа
+export const resetPopupState = () => {
+  isPopupOpen = false;
+  console.log('🔄 Состояние попапа сброшено принудительно');
 };
 
 const starsService = {
   isStarsAvailable,
   purchaseWithStars,
+  resetPopupState,
   SUBSCRIPTION_PLANS,
 };
 

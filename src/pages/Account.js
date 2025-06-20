@@ -24,7 +24,7 @@ import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import TelegramLogin from '../components/TelegramLogin';
 import { checkSubscriptionStatus } from '../services/subscription';
-import { purchaseWithStars, isStarsAvailable } from '../services/stars';
+import { purchaseWithStars, isStarsAvailable, resetPopupState } from '../services/stars';
 import { useTranslation } from 'react-i18next';
 
 import { getReferralStats, getReferralTransactions } from '../services/referral';
@@ -231,6 +231,16 @@ const Account = () => {
       }
     } catch (error) {
       console.error('Ошибка при покупке:', error);
+      
+      // Специальная обработка ошибки множественных попапов
+      if (error.message === 'WebAppPopupOpened') {
+        console.log('⚠️ Попап уже открыт, игнорируем');
+        // Сбрасываем состояние попапа принудительно
+        resetPopupState();
+        // Не показываем ошибку пользователю, просто сбрасываем состояние
+        return;
+      }
+      
       playSound('error');
       vibrate('error');
       setSubscriptionError(error.message || 'Ошибка при покупке подписки');

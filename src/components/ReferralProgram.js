@@ -137,11 +137,11 @@ const ReferralProgram = () => {
           {safeT(t, 'referral.rewards')}
         </Typography>
         <Typography variant="body2" component="div">
-          • 60 ⭐ {safeT(t, 'referral.forMonth')}
+          • 299 ⭐ {safeT(t, 'referral.forMonth')}
           <br />
-          • 144 ⭐ {safeT(t, 'referral.forQuarter')}
+          • 699 ⭐ {safeT(t, 'referral.forQuarter')}
           <br />
-          • 432 ⭐ {safeT(t, 'referral.forYear')}
+          • 1999 ⭐ {safeT(t, 'referral.forYear')}
         </Typography>
       </Box>
 
