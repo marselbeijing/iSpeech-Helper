@@ -29,7 +29,6 @@ import { useTranslation } from 'react-i18next';
 
 import { getReferralStats, getReferralTransactions } from '../services/referral';
 import ReferralProgram from '../components/ReferralProgram';
-import TelegramStar3D from '../assets/telegram-star-3d.png';
 
 // Trial period components
 import TrialTimer from '../components/TrialTimer';

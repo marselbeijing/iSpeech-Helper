@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { initTelegramWebApp } from './services/telegram';
 import telegramAnalytics from '@telegram-apps/analytics';
 import { initAudio } from './services/sound';
+import { getCurrentUser } from './services/telegram';
 
 // Trial period components
 import TrialWelcomeModal from './components/TrialWelcomeModal';
@@ -157,7 +158,6 @@ const App = () => {
         console.log('- testLanguage:', localStorage.getItem('testLanguage'));
         
         // Проверяем доступность пользователя
-        const { getCurrentUser } = await import('./services/telegram');
         const user = getCurrentUser();
         console.log('👤 Текущий пользователь:', user);
         
@@ -423,24 +423,6 @@ const App = () => {
       divider: themeMode === 'dark' ? telegramColors.dark.divider : telegramColors.light.divider,
     },
   });
-
-  // Кнопки для тестирования в development режиме
-  const isDevelopment = process.env.NODE_ENV === 'development' || window.location.hostname === 'localhost';
-  
-  const handleTestTrialModal = () => {
-    localStorage.removeItem('trialWelcomeSeen');
-    setShowWelcomeModal(true);
-  };
-  
-  const handleTestLogData = () => {
-    console.log('🔍 Текущие данные:');
-    console.log('- getCurrentUser():', getCurrentUser());
-    console.log('- trialData:', trialData);
-    console.log('- showWelcomeModal:', showWelcomeModal);
-    console.log('- localStorage trialWelcomeSeen:', localStorage.getItem('trialWelcomeSeen'));
-    console.log('- window.Telegram:', window.Telegram);
-    console.log('- WebApp user:', window.Telegram?.WebApp?.initDataUnsafe?.user);
-  };
 
   return (
     <ThemeProvider theme={theme}>
