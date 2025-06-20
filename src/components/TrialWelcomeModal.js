@@ -62,7 +62,7 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
           </Typography>
         </Box>
 
-        <Typography variant="h6" gutterBottom color="primary" fontWeight="bold">
+        <Typography variant="h6" gutterBottom color="primary" fontWeight="bold" sx={{ textAlign: 'center', mb: 2 }}>
           {texts.premiumFeatures}
         </Typography>
 
@@ -117,27 +117,34 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ p: 3, pt: 1, gap: 1 }}>
-        <Button
-          onClick={onBuyPremium}
-          variant="outlined"
-          size="large"
-          sx={{ flex: 1 }}
-        >
-          {texts.buyNowButton}
-        </Button>
+      <DialogActions sx={{ p: 3, pt: 1, gap: 1, flexDirection: 'column' }}>
         <Button
           onClick={onStartTrial}
           variant="contained"
           size="large"
+          fullWidth
           sx={{ 
-            flex: 1,
             background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
             color: 'white',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+            fontSize: '0.9rem',
+            py: 1.5,
+            mb: 1
           }}
         >
           {texts.startTrialButton}
+        </Button>
+        <Button
+          onClick={onBuyPremium}
+          variant="outlined"
+          size="large"
+          fullWidth
+          sx={{ 
+            fontSize: '0.9rem',
+            py: 1.5
+          }}
+        >
+          {texts.buyNowButton}
         </Button>
       </DialogActions>
     </Dialog>
