@@ -430,6 +430,7 @@ const App = () => {
             right: 10, 
             zIndex: 9999,
             display: 'flex',
+            flexDirection: 'column',
             gap: 1
           }}
         >
@@ -438,11 +439,26 @@ const App = () => {
             size="small" 
             onClick={() => {
               localStorage.removeItem('trialWelcomeSeen');
+              // Симулируем русского пользователя
+              localStorage.setItem('testLanguage', 'ru');
               setShowWelcomeModal(true);
             }}
             sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
           >
-            🎭 Тест
+            🇷🇺 RU
+          </Button>
+          <Button 
+            variant="contained" 
+            size="small" 
+            onClick={() => {
+              localStorage.removeItem('trialWelcomeSeen');
+              // Симулируем английского пользователя
+              localStorage.setItem('testLanguage', 'en');
+              setShowWelcomeModal(true);
+            }}
+            sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
+          >
+            🇺🇸 EN
           </Button>
           <Button 
             variant="outlined" 

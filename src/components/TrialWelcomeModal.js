@@ -21,7 +21,24 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
   const theme = useTheme();
   const { i18n } = useTranslation();
   const user = getCurrentUser();
-  const texts = getTrialTexts(user?.language_code || i18n.language);
+  
+  // Определяем язык: тестовый язык > язык пользователя > язык i18n
+  const testLanguage = localStorage.getItem('testLanguage');
+  const userLanguage = testLanguage || user?.language_code || i18n.language;
+  const texts = getTrialTexts(userLanguage);
+  
+  // Логируем для отладки
+  React.useEffect(() => {
+    if (open) {
+      console.log('🌐 Язык модального окна:', {
+        testLanguage,
+        userLanguage: user?.language_code,
+        i18nLanguage: i18n.language,
+        finalLanguage: userLanguage,
+        isEnglish: userLanguage?.startsWith('en')
+      });
+    }
+  }, [open, testLanguage, user?.language_code, i18n.language, userLanguage]);
 
   return (
     <Dialog
@@ -46,7 +63,7 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
       <DialogContent sx={{ pt: 1 }}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Chip
-            label="3 дня БЕСПЛАТНО"
+            label={texts.freeTrialChip}
             color="primary"
             size="large"
             sx={{
@@ -112,7 +129,7 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
           textAlign: 'center'
         }}>
           <Typography variant="body2" color="text.secondary">
-            После окончания пробного периода нужно будет оформить подписку для продолжения использования всех функций
+            {texts.subscriptionNote}
           </Typography>
         </Box>
       </DialogContent>

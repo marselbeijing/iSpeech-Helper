@@ -152,6 +152,12 @@ export const getTrialTexts = (language = 'ru') => {
     trialTimeLeft: isEnglish ? 'Trial time left:' : 'Осталось пробного времени:',
     trialExpired: isEnglish ? 'Trial period expired' : 'Пробный период истек',
     subscribeNow: isEnglish ? 'Subscribe now to continue using all features' : 'Оформите подписку, чтобы продолжить пользоваться всеми функциями',
-    trialActive: isEnglish ? 'Free trial active' : 'Бесплатный период активен'
+    trialActive: isEnglish ? 'Free trial active' : 'Бесплатный период активен',
+    
+    // Новые тексты для модального окна
+    freeTrialChip: isEnglish ? '3 days FREE' : '3 дня БЕСПЛАТНО',
+    subscriptionNote: isEnglish ? 
+      'After the trial period ends, you will need to purchase a subscription to continue using all features' :
+      'После окончания пробного периода нужно будет оформить подписку для продолжения использования всех функций'
   };
 }; 

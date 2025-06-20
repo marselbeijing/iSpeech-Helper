@@ -51,7 +51,30 @@ export const getCurrentUser = () => {
   
   // Если не получилось, ищем в localStorage
   const userData = localStorage.getItem('telegramUser');
-  return userData ? JSON.parse(userData) : null;
+  if (userData) {
+    const user = JSON.parse(userData);
+    // Проверяем тестовый язык для демонстрации
+    const testLanguage = localStorage.getItem('testLanguage');
+    if (testLanguage) {
+      user.language_code = testLanguage;
+    }
+    return user;
+  }
+  
+  // Возвращаем демо-пользователя с тестовым языком
+  const testLanguage = localStorage.getItem('testLanguage');
+  if (testLanguage) {
+    return {
+      id: 'demo_user',
+      firstName: 'Demo',
+      lastName: 'User',
+      username: 'demo',
+      language_code: testLanguage,
+      photo_url: null
+    };
+  }
+  
+  return null;
 };
 
 // Function to logout
