@@ -22,7 +22,7 @@ export const verifyTelegramAuth = async (authData) => {
       firstName: authData.first_name,
       lastName: authData.last_name,
       username: authData.username,
-      photoUrl: authData.photo_url,
+      photo_url: authData.photo_url,
       authDate: authData.auth_date,
     };
 

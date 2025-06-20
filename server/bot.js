@@ -366,12 +366,12 @@ class TelegramStarsBot {
         'XTR', // Stars
         [{ label: plan.title, amount: plan.amount }],
         {
-          photo_url: 'https://i.pinimg.com/564x/12/8a/86/128a863d578033cc47e9d0d4a8d981b4.jpg'
+          photo_url: 'https://i-speech-helper-uce4.vercel.app/assets/user-avatar.png'
         }
       );
 
       await this.bot.sendMessage(chatId, 
-        '✨ Инвойс создан! Нажмите кнопку "Pay" выше для оплаты.'
+        '✨ Инвойс создан! Нажмите кнопку "Заплатить" выше для оплаты.'
       );
       
     } catch (error) {

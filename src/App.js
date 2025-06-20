@@ -190,9 +190,9 @@ const App = () => {
 
     // Обработка изменения темы
     if (isTelegramWebAppAvailable()) {
-              try {
-          const colorScheme = window.Telegram.WebApp.colorScheme;
-          setThemeMode(colorScheme === 'dark' ? 'dark' : 'light');
+      try {
+        const colorScheme = window.Telegram.WebApp.colorScheme;
+        setThemeMode(colorScheme === 'dark' ? 'dark' : 'light');
         setColors();
 
         window.Telegram.WebApp.onEvent('themeChanged', () => {

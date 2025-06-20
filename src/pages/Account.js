@@ -178,7 +178,7 @@ const Account = () => {
               setSubscription(status);
     } catch (error) {
               console.log('Ошибка проверки подписки при возврате:', error);
-            }
+    }
           }, 1000); // Небольшая задержка для корректной проверки
         }
       }
