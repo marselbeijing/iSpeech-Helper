@@ -93,7 +93,7 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
               color: 'white'
             }}
           />
-          <Typography variant="body1" color="text.disabled" sx={{ mb: 2 }}>
+          <Typography variant="body1" sx={{ mb: 2, color: 'white' }}>
             {texts.trialDescription}
           </Typography>
         </Box>
@@ -147,7 +147,7 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
           borderRadius: 2,
           textAlign: 'center'
         }}>
-          <Typography variant="body2" color="text.disabled">
+          <Typography variant="body2" sx={{ color: 'white' }}>
             {texts.subscriptionNote}
           </Typography>
         </Box>
