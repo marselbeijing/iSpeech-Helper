@@ -2,6 +2,55 @@ import { getCurrentUser } from './telegram';
 
 const API_BASE = process.env.REACT_APP_API_URL || 'https://ispeech-backend.onrender.com';
 
+// Ключи для localStorage
+const TRIAL_START_DATE_KEY = 'trialStartDate';
+const TRIAL_WELCOME_SEEN_KEY = 'trialWelcomeSeen';
+
+// Функция для получения или создания даты начала пробного периода
+const getTrialStartDate = () => {
+  let startDate = localStorage.getItem(TRIAL_START_DATE_KEY);
+  
+  if (!startDate) {
+    // Если даты нет, создаем новую
+    startDate = new Date().toISOString();
+    localStorage.setItem(TRIAL_START_DATE_KEY, startDate);
+    console.log('🆕 Создана новая дата начала пробного периода:', startDate);
+  } else {
+    console.log('📅 Найдена существующая дата начала пробного периода:', startDate);
+  }
+  
+  return startDate;
+};
+
+// Функция для расчета оставшегося времени пробного периода
+const calculateTrialTimeLeft = (startDate) => {
+  const start = new Date(startDate);
+  const end = new Date(start.getTime() + 3 * 24 * 60 * 60 * 1000); // 3 дня
+  const now = new Date();
+  
+  const timeLeftMs = end.getTime() - now.getTime();
+  
+  if (timeLeftMs <= 0) {
+    return {
+      isActive: false,
+      timeLeft: { days: 0, hours: 0, minutes: 0 },
+      timeLeftMs: 0,
+      endDate: end.toISOString()
+    };
+  }
+  
+  const days = Math.floor(timeLeftMs / (24 * 60 * 60 * 1000));
+  const hours = Math.floor((timeLeftMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+  const minutes = Math.floor((timeLeftMs % (60 * 60 * 1000)) / (60 * 1000));
+  
+  return {
+    isActive: true,
+    timeLeft: { days, hours, minutes },
+    timeLeftMs,
+    endDate: end.toISOString()
+  };
+};
+
 // Получение статуса пробного периода
 export const getTrialStatus = async () => {
   try {
@@ -9,18 +58,31 @@ export const getTrialStatus = async () => {
     console.log('🔍 Получение статуса пробного периода для пользователя:', user);
     
     if (!user?.id) {
-      console.log('❌ Пользователь не найден, возвращаем демо-статус');
-      // Проверяем localStorage для демо-режима
-      const hasSeenWelcome = localStorage.getItem('trialWelcomeSeen') === 'true';
-      console.log('📱 Demo hasSeenWelcome:', hasSeenWelcome);
-      // Возвращаем демо-статус для показа модального окна
+      console.log('❌ Пользователь не найден, используем локальный пробный период');
+      
+      // Получаем или создаем дату начала пробного периода
+      const startDate = getTrialStartDate();
+      const trialInfo = calculateTrialTimeLeft(startDate);
+      
+      // Проверяем, видел ли пользователь приветствие
+      const hasSeenWelcome = localStorage.getItem(TRIAL_WELCOME_SEEN_KEY) === 'true';
+      
+      console.log('📱 Локальный пробный период:', {
+        startDate,
+        hasSeenWelcome,
+        isActive: trialInfo.isActive,
+        timeLeft: trialInfo.timeLeft
+      });
+      
       return {
         hasActiveSubscription: false,
         trial: {
-          isActive: true,
+          isActive: trialInfo.isActive,
           hasSeenWelcome: hasSeenWelcome,
-          timeLeft: { days: 3, hours: 0, minutes: 0 },
-          endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+          startDate: startDate,
+          endDate: trialInfo.endDate,
+          timeLeft: trialInfo.timeLeft,
+          timeLeftMs: trialInfo.timeLeftMs
         }
       };
     }
@@ -39,15 +101,22 @@ export const getTrialStatus = async () => {
     console.log('📡 Ответ сервера:', response.status, response.statusText);
     
     if (!response.ok) {
-      console.log('⚠️ Сервер вернул ошибку:', response.status, 'возвращаем демо-статус');
-      // Fallback для демонстрации
+      console.log('⚠️ Сервер вернул ошибку:', response.status, 'используем локальный пробный период');
+      
+      // Fallback - используем локальный пробный период
+      const startDate = getTrialStartDate();
+      const trialInfo = calculateTrialTimeLeft(startDate);
+      const hasSeenWelcome = localStorage.getItem(TRIAL_WELCOME_SEEN_KEY) === 'true';
+      
       return {
         hasActiveSubscription: false,
         trial: {
-          isActive: true,
-          hasSeenWelcome: false,
-          timeLeft: { days: 3, hours: 0, minutes: 0 },
-          endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+          isActive: trialInfo.isActive,
+          hasSeenWelcome: hasSeenWelcome,
+          startDate: startDate,
+          endDate: trialInfo.endDate,
+          timeLeft: trialInfo.timeLeft,
+          timeLeftMs: trialInfo.timeLeftMs
         }
       };
     }
@@ -57,14 +126,21 @@ export const getTrialStatus = async () => {
     return result;
   } catch (error) {
     console.error('❌ Ошибка получения статуса пробного периода:', error);
-    // Возвращаем демо-статус в случае ошибки
+    
+    // Fallback - используем локальный пробный период
+    const startDate = getTrialStartDate();
+    const trialInfo = calculateTrialTimeLeft(startDate);
+    const hasSeenWelcome = localStorage.getItem(TRIAL_WELCOME_SEEN_KEY) === 'true';
+    
     return {
       hasActiveSubscription: false,
       trial: {
-        isActive: true,
-        hasSeenWelcome: false,
-        timeLeft: { days: 3, hours: 0, minutes: 0 },
-        endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+        isActive: trialInfo.isActive,
+        hasSeenWelcome: hasSeenWelcome,
+        startDate: startDate,
+        endDate: trialInfo.endDate,
+        timeLeft: trialInfo.timeLeft,
+        timeLeftMs: trialInfo.timeLeftMs
       }
     };
   }
@@ -76,10 +152,11 @@ export const markWelcomeSeen = async () => {
     const user = getCurrentUser();
     console.log('✅ Отмечаем просмотр приветствия для пользователя:', user?.id);
     
+    // Всегда сохраняем в localStorage для надежности
+    localStorage.setItem(TRIAL_WELCOME_SEEN_KEY, 'true');
+    
     if (!user?.id) {
-      console.log('❌ Пользователь не найден, сохраняем в localStorage');
-      // Fallback - сохраняем в localStorage
-      localStorage.setItem('trialWelcomeSeen', 'true');
+      console.log('❌ Пользователь не найден, используем только localStorage');
       return { success: true, method: 'localStorage' };
     }
 
@@ -91,9 +168,7 @@ export const markWelcomeSeen = async () => {
     });
 
     if (!response.ok) {
-      console.log('⚠️ Сервер недоступен, сохраняем в localStorage');
-      // Fallback - сохраняем в localStorage
-      localStorage.setItem('trialWelcomeSeen', 'true');
+      console.log('⚠️ Сервер недоступен, используем localStorage');
       return { success: true, method: 'localStorage' };
     }
 
@@ -102,10 +177,15 @@ export const markWelcomeSeen = async () => {
     return result;
   } catch (error) {
     console.error('❌ Ошибка отметки приветствия:', error);
-    // Fallback - сохраняем в localStorage
-    localStorage.setItem('trialWelcomeSeen', 'true');
     return { success: true, method: 'localStorage' };
   }
+};
+
+// Функция для сброса пробного периода (для тестирования)
+export const resetTrialPeriod = () => {
+  localStorage.removeItem(TRIAL_START_DATE_KEY);
+  localStorage.removeItem(TRIAL_WELCOME_SEEN_KEY);
+  console.log('🔄 Пробный период сброшен');
 };
 
 // Проверка доступа к функции

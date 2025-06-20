@@ -14,7 +14,7 @@ import { getCurrentUser } from './services/telegram';
 
 // Trial period components
 import TrialWelcomeModal from './components/TrialWelcomeModal';
-import { getTrialStatus, markWelcomeSeen } from './services/trial';
+import { getTrialStatus, markWelcomeSeen, resetTrialPeriod } from './services/trial';
 
 // Components
 import Root from './components/Root';
@@ -475,6 +475,20 @@ const App = () => {
             sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
           >
             📊 Лог
+          </Button>
+          <Button 
+            variant="contained" 
+            color="error"
+            size="small" 
+            onClick={() => {
+              resetTrialPeriod();
+              setShowWelcomeModal(true);
+              // Обновляем данные
+              getTrialStatus().then(status => setTrialData(status));
+            }}
+            sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
+          >
+            🔄 Сброс
           </Button>
         </Box>
       )}
