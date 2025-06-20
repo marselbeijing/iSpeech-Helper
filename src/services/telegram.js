@@ -36,6 +36,20 @@ export const verifyTelegramAuth = async (authData) => {
 
 // Function to get current user
 export const getCurrentUser = () => {
+  // Сначала пытаемся получить пользователя из Telegram WebApp
+  const telegramUser = getTelegramWebAppUser();
+  if (telegramUser) {
+    return {
+      id: telegramUser.id,
+      firstName: telegramUser.first_name,
+      lastName: telegramUser.last_name,
+      username: telegramUser.username,
+      language_code: telegramUser.language_code,
+      photo_url: telegramUser.photo_url
+    };
+  }
+  
+  // Если не получилось, ищем в localStorage
   const userData = localStorage.getItem('telegramUser');
   return userData ? JSON.parse(userData) : null;
 };

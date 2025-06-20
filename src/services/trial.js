@@ -6,19 +6,55 @@ const API_BASE = process.env.REACT_APP_API_URL || 'https://ispeech-server.vercel
 export const getTrialStatus = async () => {
   try {
     const user = getCurrentUser();
+    console.log('🔍 Получение статуса пробного периода для пользователя:', user);
+    
     if (!user?.id) {
-      throw new Error('User not found');
+      console.log('❌ Пользователь не найден, возвращаем демо-статус');
+      // Проверяем localStorage для демо-режима
+      const hasSeenWelcome = localStorage.getItem('trialWelcomeSeen') === 'true';
+      // Возвращаем демо-статус для показа модального окна
+      return {
+        hasActiveSubscription: false,
+        trial: {
+          isActive: true,
+          hasSeenWelcome: hasSeenWelcome,
+          timeLeft: { days: 3, hours: 0, minutes: 0 },
+          endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      };
     }
 
     const response = await fetch(`${API_BASE}/api/trial/status/${user.id}?lang=${user.language_code || 'ru'}`);
+    
     if (!response.ok) {
-      throw new Error('Failed to fetch trial status');
+      console.log('⚠️ Сервер недоступен, возвращаем демо-статус');
+      // Fallback для демонстрации
+      return {
+        hasActiveSubscription: false,
+        trial: {
+          isActive: true,
+          hasSeenWelcome: false,
+          timeLeft: { days: 3, hours: 0, minutes: 0 },
+          endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      };
     }
 
-    return await response.json();
+    const result = await response.json();
+    console.log('✅ Статус получен с сервера:', result);
+    return result;
   } catch (error) {
-    console.error('Error fetching trial status:', error);
-    throw error;
+    console.error('❌ Ошибка получения статуса пробного периода:', error);
+    // Возвращаем демо-статус в случае ошибки
+    return {
+      hasActiveSubscription: false,
+      trial: {
+        isActive: true,
+        hasSeenWelcome: false,
+        timeLeft: { days: 3, hours: 0, minutes: 0 },
+        endDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    };
   }
 };
 
@@ -26,8 +62,13 @@ export const getTrialStatus = async () => {
 export const markWelcomeSeen = async () => {
   try {
     const user = getCurrentUser();
+    console.log('✅ Отмечаем просмотр приветствия для пользователя:', user?.id);
+    
     if (!user?.id) {
-      throw new Error('User not found');
+      console.log('❌ Пользователь не найден, сохраняем в localStorage');
+      // Fallback - сохраняем в localStorage
+      localStorage.setItem('trialWelcomeSeen', 'true');
+      return { success: true, method: 'localStorage' };
     }
 
     const response = await fetch(`${API_BASE}/api/trial/welcome-seen/${user.id}`, {
@@ -38,13 +79,20 @@ export const markWelcomeSeen = async () => {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to mark welcome as seen');
+      console.log('⚠️ Сервер недоступен, сохраняем в localStorage');
+      // Fallback - сохраняем в localStorage
+      localStorage.setItem('trialWelcomeSeen', 'true');
+      return { success: true, method: 'localStorage' };
     }
 
-    return await response.json();
+    const result = await response.json();
+    console.log('✅ Приветствие отмечено на сервере:', result);
+    return result;
   } catch (error) {
-    console.error('Error marking welcome as seen:', error);
-    throw error;
+    console.error('❌ Ошибка отметки приветствия:', error);
+    // Fallback - сохраняем в localStorage
+    localStorage.setItem('trialWelcomeSeen', 'true');
+    return { success: true, method: 'localStorage' };
   }
 };
 

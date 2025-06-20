@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, Box, Button } from '@mui/material';
 import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
@@ -146,15 +146,39 @@ const App = () => {
     // Загружаем статус пробного периода
     const loadTrialStatus = async () => {
       try {
+        console.log('🔍 Начинаем загрузку статуса пробного периода...');
+        
+        // Проверяем доступность пользователя
+        const { getCurrentUser } = await import('./services/telegram');
+        const user = getCurrentUser();
+        console.log('👤 Текущий пользователь:', user);
+        
+        if (!user?.id) {
+          console.log('❌ Пользователь не найден, показываем модальное окно для демонстрации');
+          // Для демонстрации показываем окно даже без пользователя
+          setShowWelcomeModal(true);
+          return;
+        }
+        
         const status = await getTrialStatus();
+        console.log('📊 Статус пробного периода получен:', status);
         setTrialData(status);
         
         // Показываем приветственное окно если пользователь его еще не видел
         if (!status.hasActiveSubscription && status.trial && !status.trial.hasSeenWelcome) {
+          console.log('🎉 Показываем приветственное окно пробного периода');
           setShowWelcomeModal(true);
+        } else {
+          console.log('ℹ️ Приветственное окно не показываем:', {
+            hasActiveSubscription: status.hasActiveSubscription,
+            hasSeenWelcome: status.trial?.hasSeenWelcome
+          });
         }
       } catch (error) {
-        console.error('Ошибка загрузки статуса пробного периода:', error);
+        console.error('❌ Ошибка загрузки статуса пробного периода:', error);
+        // В случае ошибки показываем окно для демонстрации
+        console.log('🎭 Показываем демо-окно из-за ошибки');
+        setShowWelcomeModal(true);
       }
     };
 
@@ -396,6 +420,40 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <RouterProvider router={router} />
+      
+      {/* Временная кнопка для тестирования */}
+      {process.env.NODE_ENV === 'development' && (
+        <Box 
+          sx={{ 
+            position: 'fixed', 
+            top: 10, 
+            right: 10, 
+            zIndex: 9999,
+            display: 'flex',
+            gap: 1
+          }}
+        >
+          <Button 
+            variant="contained" 
+            size="small" 
+            onClick={() => {
+              localStorage.removeItem('trialWelcomeSeen');
+              setShowWelcomeModal(true);
+            }}
+            sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
+          >
+            🎭 Тест
+          </Button>
+          <Button 
+            variant="outlined" 
+            size="small" 
+            onClick={() => console.log('Trial data:', trialData)}
+            sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
+          >
+            📊 Лог
+          </Button>
+        </Box>
+      )}
       
       {/* Модальное окно приветствия пробного периода */}
       <TrialWelcomeModal
