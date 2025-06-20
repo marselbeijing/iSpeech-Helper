@@ -20,15 +20,19 @@ router.use((req, res, next) => {
 router.get('/status/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
+    console.log('🔍 Trial status request for userId:', userId);
     
     // Проверяем есть ли активная подписка
+    console.log('📊 Checking for active subscription...');
     const activeSubscription = await Subscription.findOne({
       userId: userId,
       status: 'active',
       expiresAt: { $gt: new Date() }
     });
+    console.log('📊 Active subscription found:', !!activeSubscription);
 
     if (activeSubscription) {
+      console.log('✅ User has active subscription, returning subscription info');
       return res.json({
         hasActiveSubscription: true,
         subscriptionType: activeSubscription.type,
@@ -37,10 +41,13 @@ router.get('/status/:userId', async (req, res) => {
     }
 
     // Ищем пробный период
+    console.log('🔍 Looking for trial period...');
     let trial = await TrialPeriod.findOne({ userId });
+    console.log('🔍 Trial found:', !!trial);
     
     if (!trial) {
       // Создаем новый пробный период
+      console.log('➕ Creating new trial period...');
       trial = new TrialPeriod({
         userId,
         userInfo: {
@@ -48,10 +55,12 @@ router.get('/status/:userId', async (req, res) => {
         }
       });
       await trial.save();
+      console.log('✅ New trial period created');
     }
 
     const timeLeft = trial.getFormattedTimeLeft();
     const isActive = trial.isTrialActive();
+    console.log('📊 Trial status:', { isActive, timeLeft });
 
     res.json({
       hasActiveSubscription: false,
@@ -66,8 +75,12 @@ router.get('/status/:userId', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Ошибка получения статуса пробного периода:', error);
-    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    console.error('❌ Ошибка получения статуса пробного периода:', error);
+    console.error('❌ Stack trace:', error.stack);
+    res.status(500).json({ 
+      error: 'Внутренняя ошибка сервера',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 

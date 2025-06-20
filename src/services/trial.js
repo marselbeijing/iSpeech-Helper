@@ -101,7 +101,7 @@ export const getTrialStatus = async () => {
     console.log('📡 Ответ сервера:', response.status, response.statusText);
     
     if (!response.ok) {
-      console.log('⚠️ Сервер вернул ошибку:', response.status, 'используем локальный пробный период');
+      console.log('⚠️ API недоступен (статус:', response.status + '), используем локальный пробный период');
       
       // Fallback - используем локальный пробный период
       const startDate = getTrialStartDate();
