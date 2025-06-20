@@ -16,11 +16,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import { getTrialTexts } from '../services/trial';
 import { getCurrentUser } from '../services/telegram';
-import { useNavigate } from 'react-router-dom';
 
 const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
   const theme = useTheme();
-  const navigate = useNavigate();
   
   console.log('DEBUG: до useTranslation');
   const { i18n } = useTranslation();
@@ -175,7 +173,7 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
         <Button
           variant="outlined"
           color="primary"
-          onClick={() => navigate('/account')}
+          onClick={onBuyPremium}
           sx={{ 
             fontSize: '0.9rem',
             py: 1.5
