@@ -21,9 +21,9 @@ const TrialTimer = ({ trialData, onBuyPremium }) => {
   const { i18n } = useTranslation();
   const user = getCurrentUser();
   
-  // Определяем язык: тестовый язык > язык пользователя > язык i18n
+  // Определяем язык: тестовый язык > язык i18n > язык пользователя
   const testLanguage = localStorage.getItem('testLanguage');
-  const userLanguage = testLanguage || user?.language_code || i18n.language;
+  const userLanguage = testLanguage || i18n.language || user?.language_code;
   const texts = getTrialTexts(userLanguage);
   
   // Логирование для отладки
