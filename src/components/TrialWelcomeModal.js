@@ -26,7 +26,7 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
   
   // Определяем язык: тестовый язык > язык пользователя > язык i18n
   const testLanguage = localStorage.getItem('testLanguage');
-  const userLanguage = testLanguage || user?.language_code || i18n.language;
+  const userLanguage = testLanguage || user?.language_code || i18n.language || 'ru';
   const texts = getTrialTexts(userLanguage);
   
   // Логируем для отладки
