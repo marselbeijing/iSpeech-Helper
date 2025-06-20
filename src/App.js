@@ -11,6 +11,10 @@ import { initTelegramWebApp } from './services/telegram';
 import telegramAnalytics from '@telegram-apps/analytics';
 import { initAudio } from './services/sound';
 
+// Trial period components
+import TrialWelcomeModal from './components/TrialWelcomeModal';
+import { getTrialStatus, markWelcomeSeen } from './services/trial';
+
 // Components
 import Root from './components/Root';
 import Home from './pages/Home';
@@ -96,6 +100,10 @@ const App = () => {
   const { i18n } = useTranslation();
   const [themeMode, setThemeMode] = useState('light');
   
+  // Trial period state
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [trialData, setTrialData] = useState(null);
+  
   // Функция для проверки доступности функций Telegram WebApp
   const isTelegramWebAppAvailable = () => {
     return window.Telegram && window.Telegram.WebApp;
@@ -134,6 +142,24 @@ const App = () => {
     if (savedSettings) {
       updateTheme(savedSettings.darkMode || false);
     }
+
+    // Загружаем статус пробного периода
+    const loadTrialStatus = async () => {
+      try {
+        const status = await getTrialStatus();
+        setTrialData(status);
+        
+        // Показываем приветственное окно если пользователь его еще не видел
+        if (!status.hasActiveSubscription && status.trial && !status.trial.hasSeenWelcome) {
+          setShowWelcomeModal(true);
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки статуса пробного периода:', error);
+      }
+    };
+
+    // Загружаем статус с небольшой задержкой чтобы Telegram WebApp успел инициализироваться
+    setTimeout(loadTrialStatus, 1000);
 
     // Добавляем обработчик для инициализации аудио после первого клика
     const handleFirstUserInteraction = async () => {
@@ -315,6 +341,34 @@ const App = () => {
     setupPaymentHandlers();
   }, []);
   
+  // Обработчики модального окна пробного периода
+  const handleStartTrial = async () => {
+    try {
+      await markWelcomeSeen();
+      setShowWelcomeModal(false);
+      // Обновляем данные пробного периода
+      const status = await getTrialStatus();
+      setTrialData(status);
+    } catch (error) {
+      console.error('Ошибка при начале пробного периода:', error);
+    }
+  };
+
+  const handleBuyPremium = () => {
+    setShowWelcomeModal(false);
+    // Перенаправляем на страницу аккаунта для покупки
+    window.location.hash = '/account';
+  };
+
+  const handleCloseWelcome = async () => {
+    try {
+      await markWelcomeSeen();
+      setShowWelcomeModal(false);
+    } catch (error) {
+      console.error('Ошибка при закрытии приветствия:', error);
+    }
+  };
+  
   // Создаем тему на основе настроек
   const theme = createTheme({
     ...baseTheme,
@@ -342,6 +396,14 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <RouterProvider router={router} />
+      
+      {/* Модальное окно приветствия пробного периода */}
+      <TrialWelcomeModal
+        open={showWelcomeModal}
+        onClose={handleCloseWelcome}
+        onStartTrial={handleStartTrial}
+        onBuyPremium={handleBuyPremium}
+      />
     </ThemeProvider>
   );
 };

@@ -1,9 +1,11 @@
 const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
+const mongoose = require('mongoose');
 const Invoice = require('./models/Invoice');
 const Subscription = require('./models/Subscription');
 const Referral = require('./models/Referral');
 const StarsBalance = require('./models/StarsBalance');
+const TrialPeriod = require('./models/TrialPeriod');
 
 class TelegramStarsBot {
   constructor(token) {
@@ -164,6 +166,28 @@ Choose your plan:
         const referrerId = startParam.replace('ref_', '');
         await this.handleReferral(chatId, msg.from.id, referrerId);
       }
+
+      // Создаем или проверяем пробный период для пользователя
+      try {
+        let trialPeriod = await TrialPeriod.findOne({ userId: msg.from.id.toString() });
+        
+        if (!trialPeriod) {
+          // Создаем новый пробный период
+          trialPeriod = new TrialPeriod({
+            userId: msg.from.id.toString(),
+            userInfo: {
+              firstName: msg.from.first_name,
+              lastName: msg.from.last_name,
+              username: msg.from.username,
+              languageCode: msg.from.language_code
+            }
+          });
+          await trialPeriod.save();
+          console.log('Создан пробный период для пользователя:', msg.from.id);
+        }
+      } catch (error) {
+        console.error('Ошибка создания пробного периода:', error);
+      }
       
       // Определяем язык пользователя
       const userLang = msg.from.language_code || 'ru';
@@ -179,6 +203,8 @@ Choose your plan:
 🎯 Confidence in communication
 🎭 Speech expressiveness
 
+🎁 You have a FREE 3-day trial with full access to all features!
+
 Ready to start training? Click the button below!
       ` : `
 👋 Привет! Добро пожаловать в iSpeech Helper!
@@ -189,6 +215,8 @@ Ready to start training? Click the button below!
 🫁 Правильного дыхания и голоса  
 🎯 Уверенности в общении
 🎭 Выразительности речи
+
+🎁 У вас есть БЕСПЛАТНЫЙ пробный период 3 дня с полным доступом ко всем функциям!
 
 Готовы начать тренировки? Нажмите кнопку ниже!
       `;

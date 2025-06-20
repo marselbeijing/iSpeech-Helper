@@ -31,6 +31,10 @@ import { getReferralStats, getReferralTransactions } from '../services/referral'
 import ReferralProgram from '../components/ReferralProgram';
 import TelegramStar3D from '../assets/telegram-star-3d.png';
 
+// Trial period components
+import TrialTimer from '../components/TrialTimer';
+import { getTrialStatus } from '../services/trial';
+
 const Account = () => {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -43,6 +47,9 @@ const Account = () => {
   const [showCopied, setShowCopied] = useState(false);
   const [showError, setShowError] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState('');
+
+  // Trial period state
+  const [trialData, setTrialData] = useState(null);
 
   // Инициализация пользователя (только один раз)
   useEffect(() => {
@@ -135,6 +142,21 @@ const Account = () => {
         }
       };
       loadReferralData();
+    }
+  }, [user]);
+
+  // Загрузка данных пробного периода
+  useEffect(() => {
+    if (user) {
+      const loadTrialData = async () => {
+        try {
+          const status = await getTrialStatus();
+          setTrialData(status);
+        } catch (error) {
+          console.error('Ошибка загрузки данных пробного периода:', error);
+        }
+      };
+      loadTrialData();
     }
   }, [user]);
 
@@ -355,6 +377,21 @@ const Account = () => {
                 </Box>
               )}
 
+              {/* Таймер пробного периода */}
+              {trialData && !trialData.hasActiveSubscription && trialData.trial && (
+                <Box sx={{ mb: 3 }}>
+                  <TrialTimer 
+                    trialData={trialData.trial} 
+                    onBuyPremium={() => {
+                      // Прокручиваем к блоку подписок
+                      const subscriptionBlock = document.querySelector('[data-subscription-block]');
+                      if (subscriptionBlock) {
+                        subscriptionBlock.scrollIntoView({ behavior: 'smooth' });
+                      }
+                    }}
+                  />
+                </Box>
+              )}
 
             </>
           ) : (
@@ -384,6 +421,7 @@ const Account = () => {
 
           {/* Блок подписок */}
           <Box
+            data-subscription-block
             sx={{
               p: { xs: 2, sm: 3 },
               borderRadius: { xs: 2, sm: 3 },
