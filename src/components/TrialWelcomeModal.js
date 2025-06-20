@@ -16,11 +16,9 @@ import {
 import { useTranslation } from 'react-i18next';
 import { getTrialTexts } from '../services/trial';
 import { getCurrentUser } from '../services/telegram';
-import { useNavigation } from './Root';
 
 const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
   const theme = useTheme();
-  const { navigate } = useNavigation();
   
   console.log('DEBUG: до useTranslation');
   const { i18n } = useTranslation();
@@ -63,7 +61,9 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
 
   const handleBuyPremiumClick = () => {
     onClose(); // Закрываем модальное окно
-    navigate('/account'); // Переходим на страницу аккаунт
+    if (onBuyPremium) {
+      onBuyPremium(); // Вызываем переданную функцию
+    }
   };
 
   return (
