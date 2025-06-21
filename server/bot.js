@@ -9,6 +9,14 @@ const TrialPeriod = require('./models/TrialPeriod');
 
 class TelegramStarsBot {
   constructor(token) {
+    console.log('🤖 Инициализация TelegramStarsBot...');
+    console.log('🔑 Токен предоставлен:', token ? 'Да' : 'Нет');
+    
+    if (!token) {
+      console.error('❌ TELEGRAM_BOT_TOKEN не предоставлен');
+      throw new Error('TELEGRAM_BOT_TOKEN is required');
+    }
+    
     this.bot = new TelegramBot(token, { 
       polling: {
         interval: 1000,
@@ -19,6 +27,8 @@ class TelegramStarsBot {
       }
     });
     
+    console.log('✅ TelegramBot создан с polling');
+    
     // Обработка ошибок polling - минимальное логирование
     this.bot.on('polling_error', (error) => {
       // Игнорируем частые сетевые ошибки
@@ -27,16 +37,24 @@ class TelegramStarsBot {
       }
       
       // Логируем только критические ошибки
-      console.error('Критическая ошибка Telegram bot:', error.code);
+      console.error('❌ Критическая ошибка Telegram bot:', error.code, error.message);
     });
     
     // Обработка ошибок webhook
     this.bot.on('webhook_error', (error) => {
-      console.error('Telegram webhook error:', error);
+      console.error('❌ Telegram webhook error:', error);
+    });
+    
+    // Тест подключения
+    this.bot.getMe().then((botInfo) => {
+      console.log('✅ Бот успешно подключен:', botInfo.username);
+    }).catch((error) => {
+      console.error('❌ Ошибка подключения бота:', error.message);
     });
     
     this.setupWebhooks();
-    console.log('TelegramStarsBot инициализирован с токеном:', token ? 'Да' : 'Нет');
+    console.log('🔧 Webhook обработчики настроены');
+    console.log('🚀 TelegramStarsBot полностью инициализирован');
   }
 
   // Функция для получения локализованных текстов
@@ -175,13 +193,16 @@ Choose your plan:
     // Команда /start
     this.bot.onText(/\/start/, async (msg) => {
       const chatId = msg.chat.id;
+      console.log('📨 Получена команда /start от пользователя:', msg.from.id, 'в чате:', chatId);
       
       // Проверяем, есть ли параметр start
       const startParam = msg.text.split(' ')[1];
+      console.log('🔍 Параметр start:', startParam);
       
       if (startParam && startParam.startsWith('buy_')) {
         // Если пришли с параметром покупки, сразу показываем предложение
         const planType = startParam.replace('buy_', '');
+        console.log('💳 Прямая покупка:', planType);
         await this.sendSubscriptionOffer(chatId, planType, msg.from);
         return;
       }
@@ -189,6 +210,7 @@ Choose your plan:
       // Обработка реферальных ссылок
       if (startParam && startParam.startsWith('ref_')) {
         const referrerId = startParam.replace('ref_', '');
+        console.log('👥 Реферальная ссылка от:', referrerId);
         await this.handleReferral(chatId, msg.from.id, referrerId);
       }
 
@@ -208,15 +230,18 @@ Choose your plan:
             }
           });
           await trialPeriod.save();
-          console.log('Создан пробный период для пользователя:', msg.from.id);
+          console.log('✅ Создан пробный период для пользователя:', msg.from.id);
+        } else {
+          console.log('ℹ️ Пробный период уже существует для пользователя:', msg.from.id);
         }
       } catch (error) {
-        console.error('Ошибка создания пробного периода:', error);
+        console.error('❌ Ошибка создания пробного периода:', error);
       }
       
       // Определяем язык пользователя
       const userLang = msg.from.language_code || 'ru';
       const isEnglish = userLang.startsWith('en');
+      console.log('🌐 Язык пользователя:', userLang, 'английский:', isEnglish);
       
       const welcomeMessage = isEnglish ? `
 👋 Hello! Welcome to iSpeech Helper!
@@ -246,20 +271,26 @@ Ready to start training? Click the button below!
 Готовы начать тренировки? Нажмите кнопку ниже!
       `;
 
-      await this.bot.sendMessage(chatId, welcomeMessage, {
-        reply_markup: {
-          inline_keyboard: [
-            [{
-              text: isEnglish ? '🚀 Open App' : '🚀 Открыть приложение',
-              web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' }
-            }],
-            [{
-              text: isEnglish ? '💫 Learn about subscription' : '💫 Узнать о подписке',
-              callback_data: 'subscription_menu'
-            }]
-          ]
-        }
-      });
+      console.log('📤 Отправляем приветственное сообщение...');
+      try {
+        await this.bot.sendMessage(chatId, welcomeMessage, {
+          reply_markup: {
+            inline_keyboard: [
+              [{
+                text: isEnglish ? '🚀 Open App' : '🚀 Открыть приложение',
+                web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' }
+              }],
+              [{
+                text: isEnglish ? '💫 Learn about subscription' : '💫 Узнать о подписке',
+                callback_data: 'subscription_menu'
+              }]
+            ]
+          }
+        });
+        console.log('✅ Приветственное сообщение отправлено успешно');
+      } catch (error) {
+        console.error('❌ Ошибка отправки приветственного сообщения:', error);
+      }
     });
 
     // Команда /paysupport - обязательная для платежных ботов
@@ -475,19 +506,38 @@ ${texts.allFeaturesAvailable}
     const { id, data, from, message } = query;
     const chatId = message.chat.id;
 
-    console.log('Callback query received:', { data, userId: from.id });
+    console.log('🔘 Callback query получен:', { 
+      data, 
+      userId: from.id, 
+      chatId,
+      messageId: message.message_id 
+    });
 
-    // Отвечаем на callback query
-    await this.bot.answerCallbackQuery(id);
+    try {
+      // Отвечаем на callback query
+      await this.bot.answerCallbackQuery(id);
+      console.log('✅ Callback query отвечен');
 
-    if (data === 'subscription_menu') {
-      await this.sendSubscriptionMenu(chatId, from.language_code);
-    } else if (data.startsWith('buy_')) {
-      const planType = data.replace('buy_', '');
-      await this.sendSubscriptionOffer(chatId, planType, from);
-    } else if (data.startsWith('pay_')) {
-      const planType = data.replace('pay_', '');
-      await this.createInvoice(chatId, planType, from);
+      if (data === 'subscription_menu') {
+        console.log('📋 Показываем меню подписок');
+        await this.sendSubscriptionMenu(chatId, from.language_code);
+      } else if (data.startsWith('buy_')) {
+        const planType = data.replace('buy_', '');
+        console.log('💰 Показываем предложение подписки:', planType);
+        await this.sendSubscriptionOffer(chatId, planType, from);
+      } else if (data.startsWith('pay_')) {
+        const planType = data.replace('pay_', '');
+        console.log('💳 Создаем инвойс для:', planType);
+        await this.createInvoice(chatId, planType, from);
+      } else {
+        console.log('❓ Неизвестный callback data:', data);
+      }
+    } catch (error) {
+      console.error('❌ Ошибка в handleCallbackQuery:', error);
+      await this.bot.answerCallbackQuery(id, {
+        text: 'Произошла ошибка. Попробуйте еще раз.',
+        show_alert: true
+      });
     }
   }
 
