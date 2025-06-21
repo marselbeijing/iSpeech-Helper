@@ -47,12 +47,20 @@ app.use((req, res, next) => {
 });
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ispeech-helper', {
+if (!process.env.MONGODB_URI) {
+  console.error('❌ MONGODB_URI не установлена!');
+  process.exit(1);
+}
+
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB connected successfully'))
-.catch(err => console.error('MongoDB connection error:', err));
+.then(() => console.log('✅ MongoDB подключена успешно'))
+.catch(err => {
+  console.error('❌ Ошибка подключения к MongoDB:', err);
+  process.exit(1);
+});
 
 // Telegram Bot initialization
 let telegramBot = null;
