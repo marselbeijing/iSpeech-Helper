@@ -97,7 +97,7 @@ Choose your plan:
       monthlyButton: isEnglish ? '📅 Monthly (299 ⭐)' : '📅 Месячная (299 ⭐)',
       quarterlyButton: isEnglish ? '📅 Quarterly (699 ⭐)' : '📅 Квартальная (699 ⭐)',
       yearlyButton: isEnglish ? '📅 Annual (1999 ⭐)' : '📅 Годовая (1999 ⭐)',
-      openAppButton: isEnglish ? '🚀 Open App' : '🚀 Открыть приложение',
+      openAppButton: '🚀 Open App',
       
       buyButton: isEnglish ? 'Buy for' : 'Купить за',
       backButton: isEnglish ? '🔙 Back to selection' : '🔙 Назад к выбору',
@@ -165,7 +165,7 @@ Choose your plan:
 🎯 Confident communication
 🎭 Expressive speech
 🎁 Enjoy a 3-day FREE trial with full access to all features!`,
-      learnAboutSubscriptionButton: isEnglish ? '💫 Learn about subscription' : '💫 Узнать о подписке',
+      learnAboutSubscriptionButton: '💫 Learn about subscription',
     };
   }
 
