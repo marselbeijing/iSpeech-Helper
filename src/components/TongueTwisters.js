@@ -386,8 +386,7 @@ const TongueTwisters = () => {
               <Button
                 variant="contained"
                 color="primary"
-                startIcon={<ArrowBack />}
-                onClick={handleBackClick}
+                onClick={() => getRandomTwister()}
                 sx={{
                   py: 1,
                   px: 2.5,
@@ -404,12 +403,13 @@ const TongueTwisters = () => {
                   mb: 1,
                 }}
               >
-                {i18n.language === 'ru' ? 'Назад' : 'Back'}
+                {i18n.language === 'ru' ? 'Случайная скороговорка' : 'Random Tongue Twister'}
               </Button>
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => getRandomTwister()}
+                startIcon={<ArrowBack />}
+                onClick={handleBackClick}
                 sx={{
                   py: 1,
                   px: 2.5,
@@ -425,7 +425,7 @@ const TongueTwisters = () => {
                   },
                 }}
               >
-                {i18n.language === 'ru' ? 'Случайная скороговорка' : 'Random Tongue Twister'}
+                {i18n.language === 'ru' ? 'Назад' : 'Back'}
               </Button>
             </Box>
           </Box>
