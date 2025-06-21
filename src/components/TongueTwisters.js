@@ -435,3 +435,4 @@ const TongueTwisters = () => {
   );
 };
 
+export default TongueTwisters;
