@@ -82,8 +82,8 @@ class TelegramStarsBot {
       yearlyButton: '📅 12 months (1999 ⭐)',
       openAppButton: '🚀 Open App',
       
-      buyButton: isEnglish ? 'Buy for' : 'Купить за',
-      backButton: isEnglish ? '🔙 Back to selection' : '🔙 Назад к выбору',
+      buyButton: '💳 Buy for',
+      backButton: '🔙 Back to selection',
       
       monthlyTitle: `💫 Месячная подписка Premium 
 💰 Стоимость: 299 ⭐ звезд 
