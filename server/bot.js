@@ -220,8 +220,11 @@ Choose your plan:
         
         if (!trialPeriod) {
           // Создаем новый пробный период
+          const startDate = new Date();
           trialPeriod = new TrialPeriod({
             userId: msg.from.id.toString(),
+            startDate: startDate,
+            endDate: new Date(startDate.getTime() + (3 * 24 * 60 * 60 * 1000)), // 3 дня
             userInfo: {
               firstName: msg.from.first_name,
               lastName: msg.from.last_name,
@@ -230,7 +233,7 @@ Choose your plan:
             }
           });
           await trialPeriod.save();
-          console.log('✅ Создан пробный период для пользователя:', msg.from.id);
+          console.log('✅ Создан пробный период для пользователя:', msg.from.id, 'до:', trialPeriod.endDate);
         } else {
           console.log('ℹ️ Пробный период уже существует для пользователя:', msg.from.id);
         }
