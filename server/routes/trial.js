@@ -20,18 +20,33 @@ router.use((req, res, next) => {
 // Получение статуса пробного периода
 router.get('/status/:userId', async (req, res) => {
   console.log('🎯 Trial status endpoint hit! userId:', req.params.userId, 'query:', req.query);
+  
+  // Базовая проверка
+  console.log('🔍 Базовые проверки:');
+  console.log('- TrialPeriod model:', !!TrialPeriod);
+  console.log('- Subscription model:', !!Subscription);
+  console.log('- req.params:', req.params);
+  console.log('- req.query:', req.query);
+  
   try {
     const { userId } = req.params;
     console.log('🔍 Trial status request for userId:', userId);
     
     // Проверяем есть ли активная подписка
     console.log('📊 Checking for active subscription...');
-    const activeSubscription = await Subscription.findOne({
-      userId: userId,
-      status: 'active',
-      expiresAt: { $gt: new Date() }
-    });
-    console.log('📊 Active subscription found:', !!activeSubscription);
+    
+    let activeSubscription;
+    try {
+      activeSubscription = await Subscription.findOne({
+        userId: userId,
+        status: 'active',
+        expiresAt: { $gt: new Date() }
+      });
+      console.log('📊 Active subscription query completed, found:', !!activeSubscription);
+    } catch (subError) {
+      console.error('❌ Ошибка при поиске подписки:', subError);
+      throw subError;
+    }
 
     if (activeSubscription) {
       console.log('✅ User has active subscription, returning subscription info');
