@@ -150,23 +150,20 @@ Choose your plan:
         quarterly: isEnglish ? 'quarterly' : 'квартальную', 
         yearly: isEnglish ? 'annual' : 'годовую'
       },
-      welcomeMessage: isEnglish ? `
-🗣 I'm your personal assistant for improving speech and diction. Here you'll find exercises for:
+      welcomeMessage: isEnglish ? `🗣 I'm your personal assistant for improving speech and diction. Here you'll find exercises for:
+
 ✨ Clear articulation
 🫁 Proper breathing and voice control
 🎯 Confident communication
 🎭 Expressive speech
-🎁 Enjoy a 3-day FREE trial with full access to all features!
-Ready to start? Tap the button below!
-` : `
-🗣 Я ваш персональный помощник для улучшения речи и дикции. Здесь вас ждут упражнения для:
+🎁 Enjoy a 3-day FREE trial with full access to all features!`
+      : `🗣 Я ваш персональный помощник для улучшения речи и дикции. Здесь вас ждут упражнения для:
+
 ✨ Четкой артикуляции
 🫁 Правильного дыхания и голоса
 🎯 Уверенной коммуникации
 🎭 Выразительности речи
-🎁 Получите 3 дня БЕСПЛАТНОГО доступа ко всем функциям!
-Готовы начать? Жмите кнопку ниже!
-`,
+🎁 Получите 3 дня БЕСПЛАТНОГО доступа ко всем функциям!`,
       learnAboutSubscriptionButton: isEnglish ? '💫 Learn about subscription' : '💫 Узнать о подписке',
     };
   }
