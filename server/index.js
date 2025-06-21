@@ -40,6 +40,9 @@ app.use(express.json());
 // Логирование запросов
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url} - Origin: ${req.headers.origin}`);
+  if (req.url.includes('/api/trial')) {
+    console.log('🎯 Trial API request detected:', req.method, req.url, 'params:', req.params);
+  }
   next();
 });
 

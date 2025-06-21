@@ -386,6 +386,29 @@ const TongueTwisters = () => {
               <Button
                 variant="contained"
                 color="primary"
+                startIcon={<ArrowBack />}
+                onClick={handleBackClick}
+                sx={{
+                  py: 1,
+                  px: 2.5,
+                  borderRadius: 30,
+                  fontWeight: 500,
+                  fontSize: '0.95rem',
+                  minWidth: 0,
+                  width: 'auto',
+                  alignSelf: 'center',
+                  backgroundColor: '#ff3366',
+                  '&:hover': {
+                    backgroundColor: '#e0294d',
+                  },
+                  mb: 1,
+                }}
+              >
+                {i18n.language === 'ru' ? 'Назад' : 'Back'}
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
                 onClick={() => getRandomTwister()}
                 sx={{
                   py: 1,
@@ -403,30 +426,6 @@ const TongueTwisters = () => {
                 }}
               >
                 {i18n.language === 'ru' ? 'Случайная скороговорка' : 'Random Tongue Twister'}
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<ArrowBack />}
-                onClick={handleBackClick}
-                sx={{
-                  py: 1,
-                  px: 2.5,
-                  borderRadius: 30,
-                  fontWeight: 500,
-                  fontSize: '0.95rem',
-                  minWidth: 0,
-                  width: 'auto',
-                  alignSelf: 'center',
-                  backgroundColor: '#ff3366',
-                  '&:hover': {
-                    backgroundColor: '#e0294d',
-                  },
-                  mt: 3,
-                  mb: 1,
-                }}
-              >
-                {i18n.language === 'ru' ? 'Назад' : 'Back'}
               </Button>
             </Box>
           </Box>

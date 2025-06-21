@@ -5,6 +5,7 @@ const Subscription = require('../models/Subscription');
 
 // CORS middleware для всех роутов trial
 router.use((req, res, next) => {
+  console.log(`🛣️ Trial route accessed: ${req.method} ${req.originalUrl} - params:`, req.params, 'query:', req.query);
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
@@ -18,6 +19,7 @@ router.use((req, res, next) => {
 
 // Получение статуса пробного периода
 router.get('/status/:userId', async (req, res) => {
+  console.log('🎯 Trial status endpoint hit! userId:', req.params.userId, 'query:', req.query);
   try {
     const { userId } = req.params;
     console.log('🔍 Trial status request for userId:', userId);
