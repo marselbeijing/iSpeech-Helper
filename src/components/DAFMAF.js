@@ -51,7 +51,7 @@ const DAFMAF = () => {
   const noiseSourceRef = useRef(null);
   const noiseGainRef = useRef(null);
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   // Генерация буфера белого шума
   const createWhiteNoiseBuffer = (audioCtx) => {

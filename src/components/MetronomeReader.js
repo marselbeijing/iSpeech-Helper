@@ -36,7 +36,7 @@ const CustomThumb = styled('span')(({ theme, ownerState }) => ({
 
 const MetronomeReader = () => {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isPlaying, setIsPlaying] = useState(false);
   const [bpm, setBpm] = useState(60);
   const [currentWordIndex, setCurrentWordIndex] = useState(-1);

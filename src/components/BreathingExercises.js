@@ -21,7 +21,7 @@ const BreathingExercises = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentPhase, setCurrentPhase] = useState('inhale'); // inhale, hold, exhale, rest
   const [totalCycles] = useState(5);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const phases = useMemo(() => ({
     inhale: { duration: 4, label: t('breathing_inhale') },
