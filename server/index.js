@@ -79,11 +79,47 @@ app.use('/api/trial', require('./routes/trial'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
+  const botConnected = telegramBot && telegramBot.bot;
+  
   res.json({ 
     status: 'OK', 
     timestamp: new Date().toISOString(),
-    botStatus: telegramBot ? 'connected' : 'disconnected'
+    botStatus: botConnected ? 'connected' : 'disconnected',
+    environment: process.env.NODE_ENV,
+    mongoConnected: mongoose.connection.readyState === 1,
+    hasToken: !!process.env.TELEGRAM_BOT_TOKEN,
+    webappUrl: process.env.WEBAPP_URL
   });
+});
+
+// Bot status endpoint
+app.get('/bot-status', async (req, res) => {
+  if (!telegramBot || !telegramBot.bot) {
+    return res.status(503).json({ 
+      error: 'Bot not initialized',
+      hasToken: !!process.env.TELEGRAM_BOT_TOKEN
+    });
+  }
+  
+  try {
+    const botInfo = await telegramBot.bot.getMe();
+    res.json({
+      status: 'connected',
+      botInfo: {
+        username: botInfo.username,
+        firstName: botInfo.first_name,
+        canJoinGroups: botInfo.can_join_groups,
+        canReadAllGroupMessages: botInfo.can_read_all_group_messages,
+        supportsInlineQueries: botInfo.supports_inline_queries
+      },
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: 'Failed to get bot info',
+      message: error.message
+    });
+  }
 });
 
 // Error handling middleware
