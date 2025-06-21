@@ -60,9 +60,40 @@ router.get('/status/:userId', async (req, res) => {
       console.log('✅ New trial period created');
     }
 
-    const timeLeft = trial.getFormattedTimeLeft();
-    const isActive = trial.isTrialActive();
+    console.log('🔍 Trial object:', {
+      userId: trial.userId,
+      startDate: trial.startDate,
+      endDate: trial.endDate,
+      isActive: trial.isActive
+    });
+    
+    let timeLeft, isActive;
+    try {
+      timeLeft = trial.getFormattedTimeLeft();
+      console.log('✅ getFormattedTimeLeft успешно:', timeLeft);
+    } catch (error) {
+      console.error('❌ Ошибка в getFormattedTimeLeft:', error);
+      timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
+    
+    try {
+      isActive = trial.isTrialActive();
+      console.log('✅ isTrialActive успешно:', isActive);
+    } catch (error) {
+      console.error('❌ Ошибка в isTrialActive:', error);
+      isActive = false;
+    }
+    
     console.log('📊 Trial status:', { isActive, timeLeft });
+
+    let timeLeftMs = 0;
+    try {
+      timeLeftMs = trial.getTimeLeft();
+      console.log('✅ getTimeLeft успешно:', timeLeftMs);
+    } catch (error) {
+      console.error('❌ Ошибка в getTimeLeft:', error);
+      timeLeftMs = 0;
+    }
 
     res.json({
       hasActiveSubscription: false,
@@ -72,7 +103,7 @@ router.get('/status/:userId', async (req, res) => {
         startDate: trial.startDate,
         endDate: trial.endDate,
         timeLeft,
-        timeLeftMs: trial.getTimeLeft()
+        timeLeftMs
       }
     });
 
