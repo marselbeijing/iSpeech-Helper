@@ -656,15 +656,9 @@ ${texts.allFeaturesAvailable}
       return;
     }
 
-    const offerMessage = `
-💫 ${plan.title}
+    const offerMessage = `${plan.title}
 
-💰 ${texts.cost} ${plan.amount} ⭐ ${texts.stars}
-⏰ ${texts.duration} ${plan.duration}
-📝 ${plan.description}
-
-${texts.clickToPay}
-    `;
+${texts.clickToPay}`;
 
     await this.bot.sendMessage(chatId, offerMessage, {
       reply_markup: {
