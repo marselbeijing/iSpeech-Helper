@@ -94,7 +94,15 @@ class TelegramStarsBot {
 💰 Price: 299 ⭐ stars
 ⏰ Duration: 30 days
 📝 Full access to all features for 1 month`,
-      quarterlyTitle: isEnglish ? 'Quarterly Premium Subscription' : 'Квартальная подписка Premium',
+      quarterlyTitle: `💫 Квартальная подписка Premium 
+💰 Стоимость: 699 ⭐ звезд 
+⏰ Длительность: 90 дней 
+📝 Полный доступ ко всем функциям на 3 месяца (скидка 20%)
+
+💫 Premium Quarterly Subscription
+💰 Price: 699 ⭐ stars
+⏰ Duration: 90 days
+📝 Full access to all features for 3 months (20% off)`,
       yearlyTitle: isEnglish ? 'Annual Premium Subscription' : 'Годовая подписка Premium',
       
       duration30: isEnglish ? '30 days' : '30 дней',
