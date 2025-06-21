@@ -66,33 +66,16 @@ class TelegramStarsBot {
         '✨ Invoice created! Click the "Pay" button above to pay.' :
         '✨ Инвойс создан! Нажмите кнопку "Заплатить" выше для оплаты.',
       
-      subscriptionMenu: isEnglish ? `
-💫 Choose your iSpeech Helper subscription:
+      subscriptionMenu: `💫 Выберите подписку iSpeech Helper (Полный доступ ко всем функциям):
 
-🔸 Monthly subscription - 299 ⭐ stars
-   Full access for 30 days
+🔸 1 месяц — 299 ⭐ (30 дней доступа)
+🔸 3 месяца — 699 ⭐ (−20%)
+🔸 12 месяцев — 1999 ⭐ (−40%)
 
-🔸 Quarterly subscription - 699 ⭐ stars  
-   Full access for 90 days (20% discount)
-
-🔸 Annual subscription - 1999 ⭐ stars
-   Full access for 365 days (40% discount)
-
-Choose your plan:
-      ` : `
-💫 Выберите подписку iSpeech Helper:
-
-🔸 Месячная подписка - 299 ⭐ звезд
-   Полный доступ на 30 дней
-
-🔸 Квартальная подписка - 699 ⭐ звезд  
-   Полный доступ на 90 дней (скидка 20%)
-
-🔸 Годовая подписка - 1999 ⭐ звезд
-   Полный доступ на 365 дней (скидка 40%)
-
-Выберите подходящий вариант:
-      `,
+💫 Choose your iSpeech Helper subscription (Full access to all features):
+🔸 1 month — 299 ⭐ (30 days access)
+🔸 3 months — 699 ⭐ (−20%)
+🔸 12 months — 1999 ⭐ (−40%)`,
       
       monthlyButton: isEnglish ? '📅 Monthly (299 ⭐)' : '📅 Месячная (299 ⭐)',
       quarterlyButton: isEnglish ? '📅 Quarterly (699 ⭐)' : '📅 Квартальная (699 ⭐)',
