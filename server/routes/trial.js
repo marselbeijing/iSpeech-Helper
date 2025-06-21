@@ -17,6 +17,16 @@ router.use((req, res, next) => {
   }
 });
 
+// Простейший тест endpoint
+router.get('/test', (req, res) => {
+  console.log('🧪 Тестовый endpoint вызван');
+  res.json({ 
+    status: 'OK', 
+    message: 'Тестовый endpoint работает',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Получение статуса пробного периода
 router.get('/status/:userId', async (req, res) => {
   console.log('🎯 Trial status endpoint hit! userId:', req.params.userId, 'query:', req.query);
