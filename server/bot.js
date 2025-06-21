@@ -656,9 +656,7 @@ ${texts.allFeaturesAvailable}
       return;
     }
 
-    const offerMessage = `${plan.title}
-
-${texts.clickToPay}`;
+    const offerMessage = `${plan.title}`;
 
     await this.bot.sendMessage(chatId, offerMessage, {
       reply_markup: {
