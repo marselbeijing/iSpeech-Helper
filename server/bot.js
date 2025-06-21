@@ -841,3 +841,4 @@ ${texts.currentBalanceCheck}
 }
 
 module.exports = TelegramStarsBot; 
+
