@@ -149,7 +149,25 @@ Choose your plan:
         monthly: isEnglish ? 'monthly' : 'месячную',
         quarterly: isEnglish ? 'quarterly' : 'квартальную', 
         yearly: isEnglish ? 'annual' : 'годовую'
-      }
+      },
+      welcomeMessage: isEnglish ? `
+🗣 I'm your personal assistant for improving speech and diction. Here you'll find exercises for:
+✨ Clear articulation
+🫁 Proper breathing and voice control
+🎯 Confident communication
+🎭 Expressive speech
+🎁 Enjoy a 3-day FREE trial with full access to all features!
+Ready to start? Tap the button below!
+` : `
+🗣 Я ваш персональный помощник для улучшения речи и дикции. Здесь вас ждут упражнения для:
+✨ Четкой артикуляции
+🫁 Правильного дыхания и голоса
+🎯 Уверенной коммуникации
+🎭 Выразительности речи
+🎁 Получите 3 дня БЕСПЛАТНОГО доступа ко всем функциям!
+Готовы начать? Жмите кнопку ниже!
+`,
+      learnAboutSubscriptionButton: isEnglish ? '💫 Learn about subscription' : '💫 Узнать о подписке',
     };
   }
 
@@ -242,58 +260,22 @@ Choose your plan:
       }
       
       // Определяем язык пользователя
-      const userLang = msg.from.language_code || 'ru';
-      const isEnglish = userLang.startsWith('en');
-      console.log('🌐 Язык пользователя:', userLang, 'английский:', isEnglish);
-      
-      const welcomeMessage = isEnglish ? `
-👋 Hello! Welcome to iSpeech Helper!
-
-🗣 I'm your personal assistant for improving speech and diction. Here you'll find effective exercises for developing:
-
-✨ Clear articulation and pronunciation
-🫁 Proper breathing and voice
-🎯 Confidence in communication
-🎭 Speech expressiveness
-
-🎁 You have a FREE 3-day trial with full access to all features!
-
-Ready to start training? Click the button below!
-      ` : `
-👋 Привет! Добро пожаловать в iSpeech Helper!
-
-🗣 Я ваш персональный помощник для улучшения речи и дикции. Здесь вы найдете эффективные упражнения для развития:
-
-✨ Четкой артикуляции и произношения
-🫁 Правильного дыхания и голоса  
-🎯 Уверенности в общении
-🎭 Выразительности речи
-
-🎁 У вас есть БЕСПЛАТНЫЙ пробный период 3 дня с полным доступом ко всем функциям!
-
-Готовы начать тренировки? Нажмите кнопку ниже!
-      `;
-
-      console.log('📤 Отправляем приветственное сообщение...');
-      try {
-        await this.bot.sendMessage(chatId, welcomeMessage, {
-          reply_markup: {
-            inline_keyboard: [
-              [{
-                text: isEnglish ? '🚀 Open App' : '🚀 Открыть приложение',
-                web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' }
-              }],
-              [{
-                text: isEnglish ? '💫 Learn about subscription' : '💫 Узнать о подписке',
-                callback_data: 'subscription_menu'
-              }]
-            ]
-          }
-        });
-        console.log('✅ Приветственное сообщение отправлено успешно');
-      } catch (error) {
-        console.error('❌ Ошибка отправки приветственного сообщения:', error);
-      }
+      const texts = this.getTexts(msg.from.language_code);
+      console.log('🌐 Язык пользователя:', msg.from.language_code, 'isEnglish:', texts.openAppButton === '🚀 Open App');
+      await this.bot.sendMessage(chatId, texts.welcomeMessage, {
+        reply_markup: {
+          inline_keyboard: [
+            [{
+              text: texts.openAppButton,
+              web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' }
+            }],
+            [{
+              text: texts.learnAboutSubscriptionButton,
+              callback_data: 'subscription_menu'
+            }]
+          ]
+        }
+      });
     });
 
     // Команда /paysupport - обязательная для платежных ботов
@@ -329,7 +311,8 @@ Ready to start training? Click the button below!
 
     // Команда для выбора подписки
     this.bot.onText(/\/subscribe/, async (msg) => {
-      await this.sendSubscriptionMenu(msg.chat.id);
+      const lang = msg.from.language_code || 'ru';
+      await this.sendSubscriptionMenu(msg.chat.id, lang);
     });
   }
 
