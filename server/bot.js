@@ -62,9 +62,9 @@ class TelegramStarsBot {
     const isEnglish = languageCode === 'en' || (languageCode && languageCode.startsWith('en'));
     
     return {
-      invoiceCreated: isEnglish ? 
-        '✨ Invoice created! Click the "Pay" button above to pay.' :
-        '✨ Инвойс создан! Нажмите кнопку "Заплатить" выше для оплаты.',
+      invoiceCreated: `✨ Инвойс создан! Нажмите кнопку «Buy» выше для оплаты.
+
+✨ Invoice created! Click the «Buy» button above to complete the payment.`,
       
       subscriptionMenu: 
       `💫 Выберите подписку iSpeech Helper (Полный доступ ко всем функциям):
@@ -664,10 +664,6 @@ ${texts.allFeaturesAvailable}
           [{
             text: `💳 ${texts.buyButton} ${plan.amount} ⭐`,
             callback_data: `pay_${planType}`
-          }],
-          [{
-            text: texts.backButton,
-            callback_data: 'subscription_menu'
           }]
         ]
       }
