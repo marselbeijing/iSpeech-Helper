@@ -37,7 +37,12 @@ const trialPeriodSchema = new mongoose.Schema({
 // Автоматически устанавливаем дату окончания (3 дня от старта)
 trialPeriodSchema.pre('save', function(next) {
   if (this.isNew && !this.endDate) {
+    // Убеждаемся что startDate установлена
+    if (!this.startDate) {
+      this.startDate = new Date();
+    }
     this.endDate = new Date(this.startDate.getTime() + (3 * 24 * 60 * 60 * 1000)); // 3 дня
+    console.log('🕒 Auto-setting endDate:', this.endDate, 'for startDate:', this.startDate);
   }
   next();
 });
