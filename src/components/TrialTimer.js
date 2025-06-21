@@ -136,9 +136,11 @@ const TrialTimer = ({ trialData, onBuyPremium }) => {
           </Box>
         ) : (
           <>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              {texts.trialTimeLeft}
-            </Typography>
+            <Box sx={{ width: '100%', textAlign: 'center' }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                {texts.trialTimeLeft}
+              </Typography>
+            </Box>
 
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 2 }}>
               <Box sx={{ textAlign: 'center' }}>
