@@ -664,6 +664,10 @@ ${texts.allFeaturesAvailable}
           [{
             text: `💳 ${texts.buyButton} ${plan.amount} ⭐`,
             callback_data: `pay_${planType}`
+          }],
+          [{
+            text: texts.backButton,
+            callback_data: 'subscription_menu'
           }]
         ]
       }
