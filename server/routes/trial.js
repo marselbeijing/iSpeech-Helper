@@ -75,14 +75,17 @@ router.get('/status/:userId', async (req, res) => {
     if (!trial) {
       // Создаем новый пробный период
       console.log('➕ Creating new trial period...');
+      const startDate = new Date();
       trial = new TrialPeriod({
         userId,
+        startDate,
+        endDate: new Date(startDate.getTime() + (3 * 24 * 60 * 60 * 1000)), // 3 дня
         userInfo: {
           languageCode: req.query.lang || 'ru'
         }
       });
       await trial.save();
-      console.log('✅ New trial period created');
+      console.log('✅ New trial period created:', trial);
     }
 
     console.log('🔍 Trial object:', {
