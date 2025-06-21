@@ -235,7 +235,7 @@ const EmotionsTrainer = () => {
                 color: theme.palette.text.primary,
                 fontWeight: 500,
                 mb: { xs: 1.5, sm: 2 },
-                fontSize: { xs: "0.75rem", sm: "0.875rem" }},
+                fontSize: { xs: "0.75rem", sm: "0.875rem" },
                 px: { xs: 1, sm: 2 }
               }}
             >
