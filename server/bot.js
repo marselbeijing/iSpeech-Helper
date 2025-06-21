@@ -103,7 +103,15 @@ class TelegramStarsBot {
 💰 Price: 699 ⭐ stars
 ⏰ Duration: 90 days
 📝 Full access to all features for 3 months (20% off)`,
-      yearlyTitle: isEnglish ? 'Annual Premium Subscription' : 'Годовая подписка Premium',
+      yearlyTitle: `💫 Годовая подписка Premium 
+💰 Стоимость: 1999 ⭐ звезд 
+⏰ Длительность: 365 дней 
+📝 Полный доступ ко всем функциям на 1 год (скидка 40%)
+
+💫 Premium Annual Subscription
+💰 Price: 1999 ⭐ stars
+⏰ Duration: 365 days
+📝 Full access to all features for 1 year (40% off)`,
       
       duration30: isEnglish ? '30 days' : '30 дней',
       duration90: isEnglish ? '90 days' : '90 дней', 
