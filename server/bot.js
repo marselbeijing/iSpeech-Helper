@@ -77,9 +77,9 @@ class TelegramStarsBot {
 🔸 3 months — 699 ⭐ (−20%)
 🔸 12 months — 1999 ⭐ (−40%)`,
       
-      monthlyButton: isEnglish ? '📅 Monthly (299 ⭐)' : '📅 Месячная (299 ⭐)',
-      quarterlyButton: isEnglish ? '📅 Quarterly (699 ⭐)' : '📅 Квартальная (699 ⭐)',
-      yearlyButton: isEnglish ? '📅 Annual (1999 ⭐)' : '📅 Годовая (1999 ⭐)',
+      monthlyButton: '📅 1 month (299 ⭐)',
+      quarterlyButton: '📅 3 months (699 ⭐)',
+      yearlyButton: '📅 12 months (1999 ⭐)',
       openAppButton: '🚀 Open App',
       
       buyButton: isEnglish ? 'Buy for' : 'Купить за',
