@@ -259,7 +259,7 @@ const EmotionsTrainer = () => {
                 '&:hover': {
                   backgroundColor: '#e0294d',
                 },
-                mt: 3,
+                mt: 1,
                 mb: 1,
               }}
             >
