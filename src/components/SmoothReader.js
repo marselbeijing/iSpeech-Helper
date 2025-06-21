@@ -387,7 +387,7 @@ const SmoothReader = () => {
                   mb: 1,
                 }}
               >
-                Назад
+                {i18n.language === 'ru' ? 'Назад' : 'Back'}
               </Button>
             </Box>
           </Box>
