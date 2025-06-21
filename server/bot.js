@@ -259,7 +259,8 @@ Choose your plan:
       
       // Определяем язык пользователя
       const texts = this.getTexts(msg.from.language_code);
-      console.log('🌐 Язык пользователя:', msg.from.language_code, 'isEnglish:', texts.openAppButton === '🚀 Open App');
+      console.log('DEBUG BUTTONS:', texts.openAppButton, texts.learnAboutSubscriptionButton);
+      console.log('DEBUG LANGUAGE:', msg.from.language_code);
       await this.bot.sendMessage(chatId, texts.welcomeMessage, {
         reply_markup: {
           inline_keyboard: [
