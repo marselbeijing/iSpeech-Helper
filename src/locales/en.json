@@ -153,7 +153,8 @@
     "currentBalance": "Your current balance:",
     "starsUsage": "Stars can be used to pay for subscription or other features in the app.",
     "rewardConditions": "Stars are credited after your invited friend pays for a subscription.",
-    "shareMessage": "Try iSpeech Helper - an app to improve your speech!"
+    "shareMessage": "Try iSpeech Helper - an app to improve your speech!",
+    "invitedCount": "Invited users count"
   },
   "copied": "Copied!",
   "coming_soon": "Coming soon",
