@@ -12,7 +12,7 @@ import {
   Share as ShareIcon
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { generateReferralLink } from '../services/referral';
+import { generateReferralLink, getReferralStats } from '../services/referral';
 import { getStarsBalance } from '../services/stars';
 
 const safeT = (t, key) => {
@@ -26,6 +26,7 @@ const ReferralProgram = () => {
   const [referralLink, setReferralLink] = useState('');
   const [starsBalance, setStarsBalance] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [referralCount, setReferralCount] = useState(0);
 
   useEffect(() => {
     loadReferralData();
@@ -36,6 +37,8 @@ const ReferralProgram = () => {
     const balance = await getStarsBalance();
     setReferralLink(link || 'https://ispeech.app/ref/demo');
     setStarsBalance(balance);
+    const stats = await getReferralStats();
+    setReferralCount(stats && typeof stats.total === 'number' ? stats.total : 0);
   };
 
   const handleCopy = () => {
@@ -142,6 +145,15 @@ const ReferralProgram = () => {
           • 140 ⭐ {safeT(t, 'referral.forQuarter')}
           <br />
           • 400 ⭐ {safeT(t, 'referral.forYear')}
+        </Typography>
+      </Box>
+
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+          Количество приглашённых
+        </Typography>
+        <Typography variant="h6" color="primary">
+          {referralCount}
         </Typography>
       </Box>
 
