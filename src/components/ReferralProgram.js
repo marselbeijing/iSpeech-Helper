@@ -150,7 +150,7 @@ const ReferralProgram = () => {
 
       <Box sx={{ mb: 3 }}>
         <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
-          Количество приглашённых
+          {safeT(t, 'referral.invitedCount')}
         </Typography>
         <Typography variant="h6" color="primary">
           {referralCount}
