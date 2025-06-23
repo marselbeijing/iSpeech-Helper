@@ -134,7 +134,7 @@ const Functions = () => {
     },
     {
       title: t('support'),
-      description: '',
+      description: t('support_note'),
       icon: <SupportIcon sx={{ fontSize: 25 }} />,
       onClick: () => {
         const username = 'iSpeechHelper';

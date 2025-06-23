@@ -26,17 +26,15 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
   
   // Определяем язык: тестовый язык > язык пользователя > язык i18n
   const testLanguage = localStorage.getItem('testLanguage');
-  const userLanguage = testLanguage || 'ru';
-  console.log('DEBUG: testLanguage', testLanguage);
-  
   let user = null;
   try {
     user = getCurrentUser();
   } catch (e) {
-    console.error('Ошибка получения пользователя:', e);
+    console.error('Error getting user:', e);
     user = null;
   }
-  console.log('DEBUG: user', user);
+  const userLanguage = testLanguage || user?.language_code || i18n.language || 'ru';
+  console.log('DEBUG: testLanguage', testLanguage);
   
   // Логируем для отладки
   React.useEffect(() => {
@@ -55,7 +53,7 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
   try {
     texts = getTrialTexts(userLanguage);
   } catch (e) {
-    console.error('Ошибка в getTrialTexts:', e, userLanguage);
+    console.error('Error in getTrialTexts:', e, userLanguage);
     texts = {};
   }
 
