@@ -129,6 +129,7 @@ const Functions = () => {
         localStorage.setItem('lang', newLanguage);
         const newSettings = { ...settings, language: newLanguage };
         setSettings(newSettings);
+        window.location.reload();
       },
       color: '#f44336',
     },
