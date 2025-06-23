@@ -33,10 +33,14 @@ export const createPayment = async (amount, title, description) => {
       },
     };
 
+    // Всегда английский текст
+    const popupTitle = 'Payment confirmation';
+    const popupMessage = `Do you want to buy "${title}" for ${amount} STARS?`;
+
     // Отправляем запрос на создание платежа
     const result = await window.Telegram.WebApp.showPopup({
-      title: 'Подтверждение платежа',
-      message: `Вы хотите купить "${title}" за ${amount} STARS?`,
+      title: popupTitle,
+      message: popupMessage,
       buttons: [
         { id: 'confirm', type: 'ok' },
         { id: 'cancel', type: 'cancel' },
