@@ -78,9 +78,9 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
         }
       }}
     >
-      <DialogTitle sx={{ textAlign: 'center', pb: 1 }}>
-        <Typography variant="h5" component="h2" fontWeight="bold" color="primary">
-          {texts.welcomeTitle}
+      <DialogTitle sx={{ textAlign: 'center', pb: 1, width: '100%' }}>
+        <Typography variant="h5" component="h2" fontWeight="bold" color="primary" sx={{ width: '100%', textAlign: 'center' }}>
+          {texts.welcomeTitle || texts.trialExpired}
         </Typography>
       </DialogTitle>
 

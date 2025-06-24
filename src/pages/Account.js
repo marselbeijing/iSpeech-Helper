@@ -320,31 +320,6 @@ const Account = () => {
     );
   }
 
-  if (showBuyModal) {
-    return (
-      <Box sx={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: theme.palette.background.default }}>
-        <Paper sx={{ p: 4, maxWidth: 400, textAlign: 'center' }}>
-          <Typography variant="h6" align="center" sx={{ mb: 2 }}>
-            {t('trial_expired') || 'Пробный период завершён'}
-          </Typography>
-          <Typography variant="body1" sx={{ mb: 3 }}>
-            {t('subscribe_to_continue') || 'Оформите подписку, чтобы продолжить пользоваться всеми функциями приложения.'}
-          </Typography>
-          <Button variant="contained" color="primary" size="large" onClick={() => {
-            setShowBuyModal(false);
-            // Прокрутка к блоку подписок
-            const subscriptionBlock = document.querySelector('[data-subscription-block]');
-            if (subscriptionBlock) {
-              subscriptionBlock.scrollIntoView({ behavior: 'smooth' });
-            }
-          }}>
-            {t('buy') || 'Купить подписку'}
-          </Button>
-        </Paper>
-      </Box>
-    );
-  }
-
   if (showModal) {
     return (
       <TrialWelcomeModal
@@ -361,11 +336,8 @@ const Account = () => {
 
   return (
     <Box sx={{
-      minHeight: '100vh',
       width: '100%',
       backgroundColor: theme.palette.background.default,
-      overflowY: 'auto',
-      paddingBottom: { xs: 0, sm: '72px' },
       display: 'flex',
       flexDirection: 'column',
     }}>
@@ -377,6 +349,8 @@ const Account = () => {
         px: { xs: 0, sm: 2 },
         flex: 1,
         width: '100%',
+        overflowY: 'auto',
+        minHeight: '100vh',
       }}>
         <Paper
           elevation={0}
