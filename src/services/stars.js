@@ -121,8 +121,34 @@ export const purchaseWithStars = async (planType) => {
     console.log('openInvoice содержит баг в текущей версии Telegram WebApp');
     console.log('Используем альтернативный подход через бота...');
 
-    // Создаем сообщение с инструкциями
-    const message = `💫 ${plan.title}
+    // Определяем язык пользователя
+    const lang = user.language_code || 'ru';
+    const isEnglish = lang.startsWith('en');
+
+    // Локализованные тексты
+    const planTitles = {
+      monthly: isEnglish ? 'Monthly Subscription' : 'Месячная подписка',
+      quarterly: isEnglish ? 'Quarterly Subscription' : 'Квартальная подписка',
+      yearly: isEnglish ? 'Yearly Subscription' : 'Годовая подписка',
+    };
+    const planDescriptions = {
+      monthly: isEnglish ? 'Full access to all features for 30 days.' : 'Доступ ко всем функциям на 30 дней.',
+      quarterly: isEnglish ? 'Full access to all features for 90 days.' : 'Доступ ко всем функциям на 90 дней.',
+      yearly: isEnglish ? 'Full access to all features for 365 days.' : 'Доступ ко всем функциям на 365 дней.',
+    };
+
+    // Формируем сообщение
+    const message = isEnglish
+      ? `💫 ${planTitles[planType]}
+
+💰 Price: ${plan.amount} ⭐ stars
+📝 ${planDescriptions[planType]}
+
+🤖 To purchase, go to @iSpeechHelper_bot and type:
+/buy_${planType}
+
+Or just type /start to choose a subscription.`
+      : `💫 ${plan.title}
 
 💰 Стоимость: ${plan.amount} ⭐ звезд
 📝 ${plan.description}
@@ -139,18 +165,18 @@ export const purchaseWithStars = async (planType) => {
       
       return new Promise((resolve) => {
         webApp.showPopup({
-          title: '💳 Покупка подписки',
+          title: isEnglish ? '💳 Purchase Subscription' : '💳 Покупка подписки',
           message: message,
           buttons: [
             {
               id: 'open_bot',
               type: 'default',
-              text: '🤖 Open bot'
+              text: isEnglish ? '🤖 Open bot' : '🤖 Открыть бота'
             },
             {
               id: 'cancel',
               type: 'cancel',
-              text: 'Cancel'
+              text: isEnglish ? 'Cancel' : 'Отмена'
             }
           ]
         }, (buttonId) => {
