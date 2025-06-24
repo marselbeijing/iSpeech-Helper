@@ -198,10 +198,6 @@ const TongueTwisters = () => {
     }, 300);
   }, [level, i18n.language, tryUseFeature]);
 
-  useEffect(() => {
-    getRandomTwister(level);
-  }, [level, i18n.language, getRandomTwister]);
-
   const handleBackClick = () => {
     playSound('click');
     vibrate('click');
@@ -399,7 +395,7 @@ const TongueTwisters = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => getRandomTwister()}
+                onClick={() => getRandomTwister(level)}
                 sx={{
                   py: 1,
                   px: 2.5,
