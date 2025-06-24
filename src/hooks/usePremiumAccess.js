@@ -33,6 +33,18 @@ const isModalSnoozed = () => {
   return Date.now() < parseInt(snoozedUntil);
 };
 
+// Функция для получения информации о временном доступе
+const getTemporaryAccessInfo = () => {
+  const snoozedUntil = localStorage.getItem('trialModalSnoozedUntil');
+  if (!snoozedUntil) return null;
+  
+  const timeLeft = parseInt(snoozedUntil) - Date.now();
+  if (timeLeft <= 0) return null;
+  
+  const hoursLeft = Math.ceil(timeLeft / (1000 * 60 * 60));
+  return { hoursLeft, expiresAt: new Date(parseInt(snoozedUntil)) };
+};
+
 export default function usePremiumAccess() {
   const [loading, setLoading] = useState(true);
   const [blocked, setBlocked] = useState(false);
@@ -58,10 +70,14 @@ export default function usePremiumAccess() {
       const isBlocked = !status.hasActiveSubscription && 
                        (!status.trialActive || status.trialExpired);
       
-      setBlocked(isBlocked);
+      // Если модальное окно отложено, даём временный доступ
+      const hasTemporaryAccess = isModalSnoozed();
+      const finalBlocked = isBlocked && !hasTemporaryAccess;
+      
+      setBlocked(finalBlocked);
 
       // Логика показа модального окна с ограничением частоты
-      if (isBlocked && !isModalSnoozed() && canShowModal()) {
+      if (isBlocked && !hasTemporaryAccess && canShowModal()) {
         setShouldShowModal(true);
         setLastModalShown();
       }
@@ -95,6 +111,8 @@ export default function usePremiumAccess() {
     hideModal,
     snoozeModalReminder,
     trialData,
-    checkAccess
+    checkAccess,
+    getTemporaryAccessInfo,
+    hasTemporaryAccess: isModalSnoozed()
   };
 } 

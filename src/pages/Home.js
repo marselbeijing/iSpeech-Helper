@@ -24,12 +24,13 @@ import BackgroundAnimation from '../components/BackgroundAnimation';
 import { useTranslation } from 'react-i18next';
 import usePremiumAccess from '../hooks/usePremiumAccess';
 import TrialWelcomeModal from '../components/TrialWelcomeModal';
+import TemporaryAccessBanner from '../components/TemporaryAccessBanner';
 
 const Home = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const { t } = useTranslation();
-  const { loading, blocked, shouldShowModal, hideModal, snoozeModalReminder, trialData } = usePremiumAccess();
+  const { loading, blocked, shouldShowModal, hideModal, snoozeModalReminder, trialData, hasTemporaryAccess, getTemporaryAccessInfo } = usePremiumAccess();
   const [showModal, setShowModal] = useState(false);
 
   // Блокировка прокрутки на странице
@@ -47,6 +48,8 @@ const Home = () => {
   useEffect(() => {
     setShowModal(shouldShowModal);
   }, [shouldShowModal]);
+
+  const temporaryAccessInfo = hasTemporaryAccess ? getTemporaryAccessInfo() : null;
 
   const menuItems = [
     {
@@ -133,151 +136,158 @@ const Home = () => {
   }
 
   return (
-    <Box sx={{
-      height: '100vh',
-      maxHeight: '100vh',
-      background: theme.palette.background.default,
-      overflow: 'hidden',
-      display: 'flex',
-      flexDirection: 'column',
-      pb: 7,
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-    }}>
-      {/* Фоновая анимация (zIndex 1) */}
-      <Box sx={{
-        position: 'absolute',
-        top: 0,
+    <>
+      {/* Баннер временного доступа */}
+      {temporaryAccessInfo && (
+        <TemporaryAccessBanner
+          temporaryAccessInfo={temporaryAccessInfo}
+          onUpgrade={() => navigate('/account')}
+        />
+      )}
+      
+      <Box sx={{ 
+        height: '100vh', 
+        width: '100%', 
+        overflow: 'hidden',
+        position: 'fixed',
+        top: temporaryAccessInfo ? '64px' : 0, // Сдвигаем вниз если есть баннер
         left: 0,
-        width: '100vw',
-        height: '100vh',
-        zIndex: 1,
-        pointerEvents: 'none',
+        right: 0,
+        bottom: 0,
+        backgroundColor: theme.palette.background.default
       }}>
-        <BackgroundAnimation />
-      </Box>
+        {/* Фоновая анимация (zIndex 1) */}
+        <Box sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          zIndex: 1,
+          pointerEvents: 'none',
+        }}>
+          <BackgroundAnimation />
+        </Box>
 
-      {/* Основной контент (zIndex 2) */}
-      <Box sx={{
-        position: 'relative',
-        zIndex: 2,
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-      }}>
-        <Container maxWidth="sm" sx={{
-          ...commonStyles.pageContainer,
-          py: 2,
-          flex: 1,
-          overflow: 'hidden',
+        {/* Основной контент (zIndex 2) */}
+        <Box sx={{
+          position: 'relative',
+          zIndex: 2,
+          width: '100%',
+          height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          position: 'relative',
-          height: 'calc(100vh - 56px)',
-          background: 'transparent',
         }}>
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Paper
-              elevation={0}
-              sx={{
-                background: `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-                borderRadius: 3,
-                py: 1.8,
-                px: { xs: 2, sm: 3 },
-                mb: 2,
-                textAlign: 'center',
-                maxWidth: '100%',
-                mx: 0,
-                border: '1px solid',
-                borderColor: theme.palette.mode === 'dark' 
-                  ? `rgba(255, 255, 255, 0.1)` 
-                  : `rgba(0, 0, 0, 0.05)`,
-              }}
+          <Container maxWidth="sm" sx={{
+            ...commonStyles.pageContainer,
+            py: 2,
+            flex: 1,
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'relative',
+            height: 'calc(100vh - 56px)',
+            background: 'transparent',
+          }}>
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
             >
-              <Typography
-                variant="h4"
-                component="h1"
-                gutterBottom
+              <Paper
+                elevation={0}
                 sx={{
-                  color: '#fff',
-                  fontWeight: 'bold',
-                  mb: 1,
-                  fontFamily: 'Roboto, sans-serif',
+                  background: `linear-gradient(90deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+                  borderRadius: 3,
+                  py: 1.8,
+                  px: { xs: 2, sm: 3 },
+                  mb: 2,
+                  textAlign: 'center',
+                  maxWidth: '100%',
+                  mx: 0,
+                  border: '1px solid',
+                  borderColor: theme.palette.mode === 'dark' 
+                    ? `rgba(255, 255, 255, 0.1)` 
+                    : `rgba(0, 0, 0, 0.05)`,
                 }}
               >
-                iSpeech Helper
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: 'rgba(255, 255, 255, 0.9)',
-                  fontWeight: 400,
-                  fontSize: '0.81rem',
-                  lineHeight: 1.4,
-                }}
-              >
-                {t('main_subtitle')}
-              </Typography>
-            </Paper>
-          </motion.div>
-          <Grid container spacing={2} justifyContent="center" alignItems="center" sx={{ overflow: 'hidden', flex: 1, textAlign: 'center' }}>
-            {menuItems.map((item, index) => (
-              <Grid item xs={6} key={item.path} sx={{ display: 'flex', justifyContent: 'center' }}>
-                <motion.div
-                  custom={index}
-                  initial="hidden"
-                  animate="visible"
-                  variants={cardVariants}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+                <Typography
+                  variant="h4"
+                  component="h1"
+                  gutterBottom
+                  sx={{
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    mb: 1,
+                    fontFamily: 'Roboto, sans-serif',
+                  }}
                 >
-                  <Box
-                    onClick={() => handleClick(item.path)}
-                    sx={{
-                      ...commonStyles.menuCard(theme, item.color),
-                      width: 126,
-                      height: 126,
-                      borderRadius: 2,
-                      background: item.color,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      pt: 3,
-                      pb: 2,
-                      boxShadow: '0 2px 8px 0 rgba(60,60,120,0.10)',
-                      mx: 'auto',
-                    }}
+                  iSpeech Helper
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    fontWeight: 400,
+                    fontSize: '0.81rem',
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {t('main_subtitle')}
+                </Typography>
+              </Paper>
+            </motion.div>
+            <Grid container spacing={2} justifyContent="center" alignItems="center" sx={{ overflow: 'hidden', flex: 1, textAlign: 'center' }}>
+              {menuItems.map((item, index) => (
+                <Grid item xs={6} key={item.path} sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <motion.div
+                    custom={index}
+                    initial="hidden"
+                    animate="visible"
+                    variants={cardVariants}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
                   >
-                    {item.icon}
-                    <Typography
-                      variant="caption"
+                    <Box
+                      onClick={() => handleClick(item.path)}
                       sx={{
-                        fontWeight: 500,
-                        color: '#fff',
-                        textAlign: 'center',
-                        fontSize: '0.75rem',
+                        ...commonStyles.menuCard(theme, item.color),
+                        width: 126,
+                        height: 126,
+                        borderRadius: 2,
+                        background: item.color,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        pt: 3,
+                        pb: 2,
+                        boxShadow: '0 2px 8px 0 rgba(60,60,120,0.10)',
+                        mx: 'auto',
                       }}
                     >
-                      {item.title}
-                    </Typography>
-                  </Box>
-                </motion.div>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
+                      {item.icon}
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          fontWeight: 500,
+                          color: '#fff',
+                          textAlign: 'center',
+                          fontSize: '0.75rem',
+                        }}
+                      >
+                        {item.title}
+                      </Typography>
+                    </Box>
+                  </motion.div>
+                </Grid>
+              ))}
+            </Grid>
+          </Container>
+        </Box>
       </Box>
-    </Box>
+    </>
   );
 };
 
