@@ -179,6 +179,7 @@ const Functions = () => {
           setShowModal(false);
           navigate('/account');
         }}
+        trialExpired={blocked || (trialData?.trial?.isActive === false)}
       />
     );
   }

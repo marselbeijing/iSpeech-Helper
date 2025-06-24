@@ -55,6 +55,7 @@ const Assistant = () => {
           setShowModal(false);
           navigate('/account');
         }}
+        trialExpired={blocked || (trialData?.trial?.isActive === false)}
       />
     );
   }

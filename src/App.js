@@ -522,6 +522,7 @@ const App = () => {
         onClose={handleCloseWelcome}
         onStartTrial={handleStartTrial}
         onBuyPremium={handleBuyPremium}
+        trialExpired={trialData?.trial?.isActive === false}
       />
     </ThemeProvider>
   );
