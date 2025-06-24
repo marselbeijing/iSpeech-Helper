@@ -488,11 +488,20 @@ ${texts.allFeaturesAvailable}
   }
 
   async createInvoice(chatId, planType, user) {
+    // Получаем язык из TrialPeriod, если есть
+    let lang = user.language_code;
+    if (user.id) {
+      const trial = await TrialPeriod.findOne({ userId: user.id.toString() });
+      if (trial?.userInfo?.languageCode) {
+        lang = trial.userInfo.languageCode;
+      }
+    }
+    if (!lang) lang = 'en';
+    const texts = this.getTexts(lang);
+    
     try {
       // Импортируем модель Invoice напрямую вместо HTTP запроса
       const Invoice = require('./models/Invoice');
-      
-      const texts = this.getTexts(user.language_code);
       
       const PLANS = {
         monthly: { title: texts.monthlyTitle, amount: 299 },
