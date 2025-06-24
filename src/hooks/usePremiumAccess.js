@@ -45,6 +45,60 @@ const getTemporaryAccessInfo = () => {
   return { hoursLeft, expiresAt: new Date(parseInt(snoozedUntil)) };
 };
 
+// Функции для отладки - очистка кэша
+const clearTrialCacheDebug = () => {
+  console.log('🧹 Очистка кэша пробного периода...');
+  
+  const keysToRemove = [
+    'trialExpiredModalLastShown',
+    'trialModalSnoozedUntil'
+  ];
+  
+  keysToRemove.forEach(key => {
+    localStorage.removeItem(key);
+    console.log(`✅ Удален ключ: ${key}`);
+  });
+  
+  console.log('🎉 Кэш очищен! Перезагрузите страницу для применения изменений.');
+  return 'Кэш очищен! Перезагрузите страницу.';
+};
+
+const resetModalSettingsDebug = () => {
+  clearTrialCacheDebug();
+  console.log('🔄 Перезагружаем страницу...');
+  if (typeof window !== 'undefined') {
+    window.location.reload();
+  }
+};
+
+// Добавляем функции в глобальную область видимости для отладки
+if (typeof window !== 'undefined') {
+  window.clearTrialCache = clearTrialCacheDebug;
+  window.resetModalSettings = resetModalSettingsDebug;
+  console.log('🛠️ Функции отладки загружены: clearTrialCache() и resetModalSettings()');
+  
+  // Функция для проверки текущего состояния
+  window.checkModalState = () => {
+    const lastShown = getLastModalShown();
+    const snoozedUntil = localStorage.getItem('trialModalSnoozedUntil');
+    const canShow = canShowModal();
+    const isSnoozed = isModalSnoozed();
+    
+    const state = {
+      lastModalShown: lastShown ? new Date(lastShown).toLocaleString() : 'Никогда',
+      snoozedUntil: snoozedUntil ? new Date(parseInt(snoozedUntil)).toLocaleString() : 'Нет',
+      canShowModal: canShow,
+      isModalSnoozed: isSnoozed,
+      temporaryAccessInfo: getTemporaryAccessInfo()
+    };
+    
+    console.table(state);
+    return state;
+  };
+  
+  console.log('🛠️ Дополнительная функция отладки: checkModalState()');
+}
+
 export default function usePremiumAccess() {
   const [loading, setLoading] = useState(true);
   const [blocked, setBlocked] = useState(false);
@@ -93,6 +147,7 @@ export default function usePremiumAccess() {
   // Функция для попытки использовать функцию
   const tryUseFeature = (featureName) => {
     console.log(`🎯 Попытка использовать функцию: ${featureName}`);
+    console.log(`📊 Состояние доступа:`, { blocked, loading, hasTemporaryAccess: isModalSnoozed() });
     
     if (blocked) {
       console.log('❌ Доступ заблокирован, показываем модальное окно');
@@ -106,16 +161,31 @@ export default function usePremiumAccess() {
 
   // Функция для скрытия модального окна
   const hideModal = () => {
+    console.log('🔒 Скрываем модальное окно');
     setShouldShowModal(false);
   };
 
   // Функция для "отложить напоминание"
   const snoozeModalReminder = (hours = 8) => {
+    console.log(`⏰ Откладываем модальное окно на ${hours} часов`);
     snoozeModal(hours);
     setShouldShowModal(false);
     // Перезапускаем проверку доступа после отложения
     checkAccess();
   };
+
+  // Функция для принудительного скрытия модального окна (для отладки)
+  const forceHideModal = () => {
+    console.log('🔧 Принудительно скрываем модальное окно');
+    setShouldShowModal(false);
+    return 'Модальное окно скрыто принудительно';
+  };
+
+  // Добавляем функцию отладки в глобальную область видимости
+  if (typeof window !== 'undefined' && !window.forceHideModal) {
+    window.forceHideModal = forceHideModal;
+    console.log('🛠️ Функция отладки загружена: forceHideModal()');
+  }
 
   return { 
     loading, 
