@@ -234,11 +234,8 @@ const Account = () => {
     }
   }, [user]);
 
-  useEffect(() => {
-    if (!premiumLoading && blocked) {
-      setShowModal(true);
-    }
-  }, [premiumLoading, blocked]);
+  // НЕ показываем модальное окно автоматически на странице аккаунта
+  // Пользователь должен иметь возможность просматривать информацию о подписке
 
   const handlePurchase = async (type) => {
     try {

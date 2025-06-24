@@ -11,6 +11,7 @@ import { initTelegramWebApp } from './services/telegram';
 import telegramAnalytics from '@telegram-apps/analytics';
 import { initAudio } from './services/sound';
 import { getCurrentUser } from './services/telegram';
+import { clearTrialCache, resetModalSettings } from './utils/clearTrialCache';
 
 // Trial period components
 import TrialWelcomeModal from './components/TrialWelcomeModal';
@@ -192,6 +193,13 @@ const App = () => {
 
     // Загружаем статус с небольшой задержкой чтобы Telegram WebApp успел инициализироваться
     setTimeout(loadTrialStatus, 1000);
+
+    // Добавляем функции для отладки в глобальную область видимости
+    if (typeof window !== 'undefined') {
+      window.clearTrialCache = clearTrialCache;
+      window.resetModalSettings = resetModalSettings;
+      console.log('🛠️ Функции отладки доступны: window.clearTrialCache() и window.resetModalSettings()');
+    }
 
     // Добавляем обработчик для инициализации аудио после первого клика
     const handleFirstUserInteraction = async () => {
