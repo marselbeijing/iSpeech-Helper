@@ -77,3 +77,36 @@ window.addEventListener('unhandledrejection', function(event) {
     return;
   }
 });
+
+// === Функции отладки модального окна ===
+window.checkModalState = function() {
+  const lastShown = localStorage.getItem('trialExpiredModalLastShown');
+  const snoozedUntil = localStorage.getItem('trialModalSnoozedUntil');
+  const state = {
+    lastModalShown: lastShown ? new Date(parseInt(lastShown)).toLocaleString() : 'Никогда',
+    snoozedUntil: snoozedUntil ? new Date(parseInt(snoozedUntil)).toLocaleString() : 'Нет',
+    canShowModal: !lastShown || (Date.now() - parseInt(lastShown)) / (1000 * 60 * 60) >= 4,
+    isModalSnoozed: snoozedUntil && Date.now() < parseInt(snoozedUntil),
+    currentTime: new Date().toLocaleString()
+  };
+  console.table(state);
+  return state;
+};
+
+window.clearTrialCache = function() {
+  localStorage.removeItem('trialExpiredModalLastShown');
+  localStorage.removeItem('trialModalSnoozedUntil');
+  console.log('Кэш модального окна очищен!');
+};
+
+window.forceHideModal = function() {
+  const modals = document.querySelectorAll('[role="dialog"], .MuiModal-root');
+  modals.forEach(modal => {
+    if (modal.style.display !== 'none') {
+      modal.style.display = 'none';
+      console.log('Скрыто модальное окно:', modal);
+    }
+  });
+  return 'Все модальные окна скрыты принудительно';
+};
+// === Конец функций отладки ===
