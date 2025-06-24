@@ -121,19 +121,24 @@ export const purchaseWithStars = async (planType) => {
     console.log('openInvoice содержит баг в текущей версии Telegram WebApp');
     console.log('Используем альтернативный подход через бота...');
 
-    // Определяем язык пользователя
+    // Определяем язык пользователя из разных источников
     const testLanguage = localStorage.getItem('testLanguage');
-    const lang = testLanguage || user.language_code || 'ru';
+    const i18nLanguage = window.i18n?.language;
+    const storedLanguage = localStorage.getItem('lang');
+    const userLanguageCode = user.language_code;
+    
+    // Приоритет: testLanguage > i18n.language > localStorage.lang > user.language_code > 'ru'
+    const lang = testLanguage || i18nLanguage || storedLanguage || userLanguageCode || 'ru';
     const isEnglish = lang.startsWith('en');
 
     // Детальное логирование для отладки языка
     console.log('🌐 Отладка языка пользователя:', {
       'testLanguage': testLanguage,
-      'user.language_code': user.language_code,
-      'lang': lang,
+      'i18n.language': i18nLanguage,
+      'localStorage.lang': storedLanguage,
+      'user.language_code': userLanguageCode,
+      'finalLang': lang,
       'isEnglish': isEnglish,
-      'i18n.language': window.i18n?.language,
-      'localStorage.lang': localStorage.getItem('lang'),
       'navigator.language': navigator.language
     });
 
