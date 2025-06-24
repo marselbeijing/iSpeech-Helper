@@ -551,8 +551,18 @@ ${texts.allFeaturesAvailable}
     }
   }
 
-  async sendSubscriptionMenu(chatId, languageCode = 'ru') {
-    const texts = this.getTexts(languageCode);
+  async sendSubscriptionMenu(chatId, languageCode) {
+    // Получаем язык из TrialPeriod, если есть
+    let lang = languageCode;
+    if (!lang) {
+      // Пробуем найти пользователя в базе
+      const trial = await TrialPeriod.findOne({ userId: chatId.toString() });
+      if (trial?.userInfo?.languageCode) {
+        lang = trial.userInfo.languageCode;
+      }
+    }
+    if (!lang) lang = 'en';
+    const texts = this.getTexts(lang);
 
     await this.bot.sendMessage(chatId, texts.subscriptionMenu, {
       reply_markup: {
