@@ -145,12 +145,12 @@ export const purchaseWithStars = async (planType) => {
             {
               id: 'open_bot',
               type: 'default',
-              text: '🤖 Открыть бота'
+              text: '🤖 Open bot'
             },
             {
               id: 'cancel',
               type: 'cancel',
-              text: 'Отмена'
+              text: 'Cancel'
             }
           ]
         }, (buttonId) => {
