@@ -163,9 +163,8 @@ const App = () => {
         console.log('👤 Текущий пользователь:', user);
         
         if (!user?.id) {
-          console.log('❌ Пользователь не найден, показываем модальное окно для демонстрации');
-          // Для демонстрации показываем окно даже без пользователя
-          setShowWelcomeModal(true);
+          console.log('ℹ️ Пользователь не найден, но НЕ показываем модальное окно автоматически');
+          // НЕ показываем модальное окно автоматически
           return;
         }
         
@@ -173,21 +172,16 @@ const App = () => {
         console.log('📊 Статус пробного периода получен:', status);
         setTrialData(status);
         
-        // Показываем приветственное окно если пользователь его еще не видел
-        if (!status.hasActiveSubscription && status.trial && !status.trial.hasSeenWelcome) {
-          console.log('🎉 Показываем приветственное окно пробного периода');
-          setShowWelcomeModal(true);
-        } else {
-          console.log('ℹ️ Приветственное окно не показываем:', {
-            hasActiveSubscription: status.hasActiveSubscription,
-            hasSeenWelcome: status.trial?.hasSeenWelcome
-          });
-        }
+        // НЕ показываем приветственное окно автоматически
+        // Оно будет показано только при попытке использовать премиум-функции
+        console.log('ℹ️ Приветственное окно НЕ показываем автоматически:', {
+          hasActiveSubscription: status.hasActiveSubscription,
+          hasSeenWelcome: status.trial?.hasSeenWelcome
+        });
       } catch (error) {
         console.error('❌ Ошибка загрузки статуса пробного периода:', error);
-        // В случае ошибки показываем окно для демонстрации
-        console.log('🎭 Показываем демо-окно из-за ошибки');
-        setShowWelcomeModal(true);
+        // В случае ошибки НЕ показываем окно автоматически
+        console.log('ℹ️ Ошибка загрузки, но НЕ показываем модальное окно автоматически');
       }
     };
 
@@ -200,6 +194,9 @@ const App = () => {
       window.resetModalSettings = resetModalSettings;
       console.log('🛠️ Функции отладки доступны: window.clearTrialCache() и window.resetModalSettings()');
     }
+
+    // Настраиваем функции отладки
+    setupDebugFunctions();
 
     // Добавляем обработчик для инициализации аудио после первого клика
     const handleFirstUserInteraction = async () => {
@@ -454,6 +451,74 @@ const App = () => {
       divider: themeMode === 'dark' ? telegramColors.dark.divider : telegramColors.light.divider,
     },
   });
+
+  // Функции для отладки модального окна
+  const setupDebugFunctions = () => {
+    // Функция очистки кэша
+    window.clearTrialCache = () => {
+      console.log('🧹 Очистка кэша пробного периода...');
+      
+      const keysToRemove = [
+        'trialExpiredModalLastShown',
+        'trialModalSnoozedUntil'
+      ];
+      
+      keysToRemove.forEach(key => {
+        localStorage.removeItem(key);
+        console.log(`✅ Удален ключ: ${key}`);
+      });
+      
+      console.log('🎉 Кэш очищен! Перезагрузите страницу для применения изменений.');
+      return 'Кэш очищен! Перезагрузите страницу.';
+    };
+
+    // Функция сброса настроек
+    window.resetModalSettings = () => {
+      window.clearTrialCache();
+      console.log('🔄 Перезагружаем страницу...');
+      window.location.reload();
+    };
+
+    // Функция принудительного скрытия модального окна
+    window.forceHideModal = () => {
+      console.log('🔧 Принудительно скрываем все модальные окна');
+      
+      // Находим все открытые модальные окна и закрываем их
+      const modals = document.querySelectorAll('[role="dialog"], .MuiModal-root');
+      modals.forEach(modal => {
+        if (modal.style.display !== 'none') {
+          modal.style.display = 'none';
+          console.log('🔒 Скрыто модальное окно:', modal);
+        }
+      });
+      
+      return 'Все модальные окна скрыты принудительно';
+    };
+
+    // Функция проверки состояния
+    window.checkModalState = () => {
+      const lastShown = localStorage.getItem('trialExpiredModalLastShown');
+      const snoozedUntil = localStorage.getItem('trialModalSnoozedUntil');
+      
+      const state = {
+        lastModalShown: lastShown ? new Date(parseInt(lastShown)).toLocaleString() : 'Никогда',
+        snoozedUntil: snoozedUntil ? new Date(parseInt(snoozedUntil)).toLocaleString() : 'Нет',
+        canShowModal: !lastShown || (Date.now() - parseInt(lastShown)) / (1000 * 60 * 60) >= 4,
+        isModalSnoozed: snoozedUntil && Date.now() < parseInt(snoozedUntil),
+        currentTime: new Date().toLocaleString()
+      };
+      
+      console.table(state);
+      console.log('📊 Детальная информация:', state);
+      return state;
+    };
+
+    console.log('🛠️ Функции отладки загружены:');
+    console.log('- clearTrialCache() - очистить кэш');
+    console.log('- resetModalSettings() - сбросить настройки и перезагрузить');
+    console.log('- forceHideModal() - принудительно скрыть модальные окна');
+    console.log('- checkModalState() - проверить текущее состояние');
+  };
 
   return (
     <ThemeProvider theme={theme}>
