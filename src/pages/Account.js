@@ -313,7 +313,7 @@ const Account = () => {
     return (
       <Box sx={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: theme.palette.background.default }}>
         <Paper sx={{ p: 4, maxWidth: 400, textAlign: 'center' }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>
+          <Typography variant="h6" align="center" sx={{ mb: 2 }}>
             {t('trial_expired') || 'Пробный период завершён'}
           </Typography>
           <Typography variant="body1" sx={{ mb: 3 }}>
@@ -646,24 +646,24 @@ const Account = () => {
                 {t('about_app')}
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph style={{ whiteSpace: 'pre-line' }}>
-                {i18n.language === 'ru' && `iSpeech Helper — специализированное приложение для помощи людям с нарушениями речи. Оно создано для улучшения дикции, артикуляции и общего качества речи с помощью набора эффективных упражнений. Основные возможности: 
+                {i18n.language === 'ru' && `iSpeech Helper — специализированное приложение для помощи людям с нарушениями речи. Оно создано для улучшения дикции, артикуляции и общего качества речи с помощью набора эффективных упражнений. Основные возможности:
 
-★ Диафрагмальные дыхательные упражнения — развивают контроль над дыханием, способствуют плавности речи. 
-★ Скороговорки — тренируют дикцию, артикуляцию и чёткость произношения. 
-★ Тренажёр эмоций — учит выражать чувства голосом, делает речь более выразительной. 
-★ Плавное чтение — помогает развить ритм и плавность речи, снижает заикание. 
-★ Чтение с метрономом — формирует правильный темп и ритмичность речи. 
-★ DAF/MAF — техники обратной аудиосвязи и наложения шума для контроля скорости и плавности речи. 
+★ Диафрагмальные дыхательные упражнения — развивают контроль над дыханием, способствуют плавности речи.
+★ Скороговорки — тренируют дикцию, артикуляцию и чёткость произношения.
+★ Тренажёр эмоций — учит выражать чувства голосом, делает речь более выразительной.
+★ Плавное чтение — помогает развить ритм и плавность речи, снижает заикание.
+★ Чтение с метрономом — формирует правильный темп и ритмичность речи.
+★ DAF/MAF — техники обратной аудиосвязи и наложения шума для контроля скорости и плавности речи.
 
-Преимущества: 
-- Регулярные тренировки заметно улучшают разборчивость и выразительность речи. 
-- Персональный подбор упражнений под ваши цели. 
-- Система прогресса и достижений. 
-- Простой и современный интерфейс для всех возрастов. 
+Преимущества:
+- Регулярные тренировки заметно улучшают разборчивость и выразительность речи.
+- Персональный подбор упражнений под ваши цели.
+- Система прогресса и достижений.
+- Простой и современный интерфейс для всех возрастов.
 - Поддержка русского и английского языков.`}
                 {i18n.language === 'en' && `iSpeech Helper is a specialized application designed to help people with speech disorders. It is created to improve diction, articulation, and overall speech quality through a set of effective exercises.
 
-                Key Features:
+Key Features:
 
 ★ Diaphragmatic breathing exercises — develop breath control and promote smooth speech.
 ★ Tongue twisters — train diction, articulation, and clarity of pronunciation.
@@ -672,7 +672,7 @@ const Account = () => {
 ★ Metronome-assisted reading — builds correct tempo and speech rhythm.
 ★ DAF/MAF — delayed auditory feedback and masking techniques for controlling speech rate and fluency.
 
-                Benefits:
+Benefits:
 - Regular practice significantly improves speech clarity and expressiveness.
 - Personalized exercise selection for your goals.
 - Progress tracking and achievement system.

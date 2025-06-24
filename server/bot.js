@@ -75,24 +75,24 @@ class TelegramStarsBot {
       quarterlyButton: isEnglish ? '📅 3 months (699 ⭐)' : '📅 3 месяца (699 ⭐)',
       yearlyButton: isEnglish ? '📅 12 months (1999 ⭐)' : '📅 12 месяцев (1999 ⭐)',
       openAppButton: isEnglish ? '🚀 Open App' : '🚀 Открыть приложение',
-      buyButton: isEnglish ? '💳 Buy for' : '💳 Купить за',
+      buyButton: isEnglish ? '💳 Pay' : '💳 Купить за',
       backButton: isEnglish ? '🔙 Back to selection' : '🔙 Назад к выбору',
       monthlyTitle: isEnglish
-        ? `💫 Premium Monthly Subscription\n💰 Price: 299 ⭐ stars\n⏰ Duration: 30 days\n📝 Full access to all features for 1 month`
-        : `💫 Месячная подписка Premium\n💰 Стоимость: 299 ⭐ звезд\n⏰ Длительность: 30 дней\n📝 Полный доступ ко всем функциям на 1 месяц`,
+        ? `🪄 Premium Monthly Subscription  💰 Price: 299 ⭐ stars  ⏰ Duration: 30 days  📝 Full access to all features for 1 month`
+        : `🪄 Месячная подписка Premium  💰 Стоимость: 299 ⭐ звезд  ⏰ Длительность: 30 дней  📝 Полный доступ ко всем функциям на 1 месяц`,
       quarterlyTitle: isEnglish
-        ? `💫 Premium Quarterly Subscription\n💰 Price: 699 ⭐ stars\n⏰ Duration: 90 days\n📝 Full access to all features for 3 months (20% off)`
-        : `💫 Квартальная подписка Premium\n💰 Стоимость: 699 ⭐ звезд\n⏰ Длительность: 90 дней\n📝 Полный доступ ко всем функциям на 3 месяца (скидка 20%)`,
+        ? `🪄 Premium Quarterly Subscription  💰 Price: 699 ⭐ stars  ⏰ Duration: 90 days  📝 Full access to all features for 3 months (20% off)`
+        : `🪄 Квартальная подписка Premium  💰 Стоимость: 699 ⭐ звезд  ⏰ Длительность: 90 дней  📝 Полный доступ ко всем функциям на 3 месяца (скидка 20%)`,
       yearlyTitle: isEnglish
-        ? `💫 Premium Annual Subscription\n💰 Price: 1999 ⭐ stars\n⏰ Duration: 365 days\n📝 Full access to all features for 1 year (40% off)`
-        : `💫 Годовая подписка Premium\n💰 Стоимость: 1999 ⭐ звезд\n⏰ Длительность: 365 дней\n📝 Полный доступ ко всем функциям на 1 год (скидка 40%)`,
+        ? `🪄 Premium Annual Subscription  💰 Price: 1999 ⭐ stars  ⏰ Duration: 365 days  📝 Full access to all features for 1 year (40% off)`
+        : `🪄 Годовая подписка Premium  💰 Стоимость: 1999 ⭐ звезд  ⏰ Длительность: 365 дней  📝 Полный доступ ко всем функциям на 1 год (скидка 40%)`,
       duration30: isEnglish ? '30 days' : '30 дней',
       duration90: isEnglish ? '90 days' : '90 дней',
       duration365: isEnglish ? '365 days' : '365 дней',
       description1: isEnglish ? 'Full access to all features for 1 month' : 'Полный доступ ко всем функциям на 1 месяц',
-      description3: isEnglish ? 'Full access to all features for 3 months (20% discount)' : 'Полный доступ ко всем функциям на 3 месяца (скидка 20%)',
-      description12: isEnglish ? 'Full access to all features for 1 year (40% discount)' : 'Полный доступ ко всем функциям на 1 год (скидка 40%)',
-      cost: isEnglish ? 'Cost:' : 'Стоимость:',
+      description3: isEnglish ? 'Full access to all features for 3 months (20% off)' : 'Полный доступ ко всем функциям на 3 месяца (скидка 20%)',
+      description12: isEnglish ? 'Full access to all features for 1 year (40% off)' : 'Полный доступ ко всем функциям на 1 год (скидка 40%)',
+      cost: isEnglish ? 'Price:' : 'Стоимость:',
       duration: isEnglish ? 'Duration:' : 'Длительность:',
       stars: isEnglish ? 'stars' : 'звезд',
       clickToPay: isEnglish ? 'Click the button below to pay:' : 'Нажмите кнопку ниже для оплаты:',
