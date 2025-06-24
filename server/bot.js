@@ -272,8 +272,7 @@ class TelegramStarsBot {
 
     // Команда для выбора подписки
     this.bot.onText(/\/subscribe/, async (msg) => {
-      const lang = msg.from.language_code || 'ru';
-      await this.sendSubscriptionMenu(msg.chat.id, lang);
+      await this.sendSubscriptionMenu(msg.chat.id, null, msg.from.id);
     });
   }
 
@@ -467,7 +466,7 @@ ${texts.allFeaturesAvailable}
 
       if (data === 'subscription_menu') {
         console.log('📋 Показываем меню подписок');
-        await this.sendSubscriptionMenu(chatId, from.language_code);
+        await this.sendSubscriptionMenu(chatId, null, from.id);
       } else if (data.startsWith('buy_')) {
         const planType = data.replace('buy_', '');
         console.log('💰 Показываем предложение подписки:', planType);
@@ -551,12 +550,10 @@ ${texts.allFeaturesAvailable}
     }
   }
 
-  async sendSubscriptionMenu(chatId, languageCode) {
-    // Получаем язык из TrialPeriod, если есть
+  async sendSubscriptionMenu(chatId, languageCode, userId) {
     let lang = languageCode;
-    if (!lang) {
-      // Пробуем найти пользователя в базе
-      const trial = await TrialPeriod.findOne({ userId: chatId.toString() });
+    if (!lang && userId) {
+      const trial = await TrialPeriod.findOne({ userId: userId.toString() });
       if (trial?.userInfo?.languageCode) {
         lang = trial.userInfo.languageCode;
       }
