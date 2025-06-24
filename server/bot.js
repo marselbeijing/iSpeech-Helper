@@ -241,8 +241,35 @@ class TelegramStarsBot {
           { upsert: true }
         );
         const texts = this.getTexts(lang);
-        this.bot.sendMessage(query.message.chat.id, texts.welcomeMessage);
-        // Можно добавить дальнейшую логику (меню, предложения и т.д.)
+
+        // Проверяем, был ли start-параметр с покупкой
+        let startParam = null;
+        if (query.message && query.message.reply_to_message && query.message.reply_to_message.text) {
+          const parts = query.message.reply_to_message.text.split(' ');
+          if (parts.length > 1) startParam = parts[1];
+        }
+        if (!startParam && query.message && query.message.text) {
+          const parts = query.message.text.split(' ');
+          if (parts.length > 1) startParam = parts[1];
+        }
+        if (startParam && startParam.startsWith('buy_')) {
+          const planType = startParam.replace('buy_', '');
+          await this.sendSubscriptionOffer(query.message.chat.id, planType, { language_code: lang });
+        } else {
+          // Обычное приветствие с кнопками
+          this.bot.sendMessage(query.message.chat.id, texts.welcomeMessage, {
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  { text: texts.openAppButton, web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' } }
+                ],
+                [
+                  { text: texts.learnAboutSubscriptionButton, callback_data: 'subscription_menu' }
+                ]
+              ]
+            }
+          });
+        }
         return;
       }
       // ... существующая обработка других callback_query ...
