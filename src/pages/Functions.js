@@ -85,10 +85,14 @@ const Functions = () => {
   }, []);
 
   useEffect(() => {
-    if (!loading && blocked) {
-      setShowModal(true);
-    }
-  }, [loading, blocked]);
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    
+    return () => {
+      document.body.style.overflow = 'auto';
+      document.documentElement.style.overflow = 'auto';
+    };
+  }, []);
 
   const menuItems = React.useMemo(() => [
     {
@@ -168,21 +172,6 @@ const Functions = () => {
     vibrate('click');
     navigate('/');
   };
-
-  if (showModal) {
-    return (
-      <TrialWelcomeModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onStartTrial={() => setShowModal(false)}
-        onBuyPremium={() => {
-          setShowModal(false);
-          navigate('/account');
-        }}
-        trialExpired={blocked || (trialData?.trial?.isActive === false)}
-      />
-    );
-  }
 
   return (
     <Box sx={{ 

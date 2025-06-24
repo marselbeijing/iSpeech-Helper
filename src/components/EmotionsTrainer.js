@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Box,
@@ -31,29 +31,13 @@ const EmotionsTrainer = () => {
   const [currentEmotion, setCurrentEmotion] = useState(null);
   const [currentPhrase, setCurrentPhrase] = useState('');
 
-  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
+  const { blocked, loading, trialData, shouldShowModal, hideModal, snoozeModalReminder, tryUseFeature } = usePremiumAccess();
   const [showModal, setShowModal] = useState(false);
 
-  React.useEffect(() => {
-    if (!loading && blocked) {
-      setShowModal(true);
-    }
-  }, [loading, blocked]);
-
-  if (showModal) {
-    return (
-      <TrialWelcomeModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onStartTrial={() => setShowModal(false)}
-        onBuyPremium={() => {
-          setShowModal(false);
-          navigate('/account');
-        }}
-        trialExpired={blocked || (trialData?.trial?.isActive === false)}
-      />
-    );
-  }
+  // Синхронизируем локальное состояние с хуком
+  useEffect(() => {
+    setShowModal(shouldShowModal);
+  }, [shouldShowModal]);
 
   React.useEffect(() => {
     getRandomEmotionAndPhrase();
@@ -68,9 +52,20 @@ const EmotionsTrainer = () => {
   };
 
   const handleNextClick = () => {
-    getRandomEmotionAndPhrase();
-    playSound('click');
+    // Проверяем доступ перед использованием функции
+    if (!tryUseFeature('next_phrase')) {
+      return; // Доступ заблокирован, модальное окно уже показано
+    }
+    
+    if (settings.soundEffects) {
+      playSound('click');
+    }
     vibrate('click');
+    
+    setCurrentIndex(prevIndex => {
+      const nextIndex = (prevIndex + 1) % currentLanguagePhrases.length;
+      return nextIndex;
+    });
   };
 
   const handleBackClick = () => {
@@ -99,6 +94,21 @@ const EmotionsTrainer = () => {
     t('emotion_phrase_9'),
     t('emotion_phrase_10'),
   ];
+
+  if (showModal) {
+    return (
+      <TrialWelcomeModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onStartTrial={() => setShowModal(false)}
+        onBuyPremium={() => {
+          setShowModal(false);
+          navigate('/account');
+        }}
+        trialExpired={blocked || (trialData?.trial?.isActive === false)}
+      />
+    );
+  }
 
   return (
     <Box sx={{ 

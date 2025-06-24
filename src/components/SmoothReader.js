@@ -42,8 +42,8 @@ const SmoothReader = () => {
   const lastActiveRef = useRef(null);
   const startTimeRef = useRef(null);
   const navigate = useNavigate();
-  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
-  const [showModal, setShowModal] = React.useState(false);
+  const { blocked, loading, trialData, shouldShowModal, hideModal, snoozeModalReminder, tryUseFeature } = usePremiumAccess();
+  const [showModal, setShowModal] = useState(false);
   
   // Используем истории в зависимости от текущего языка
   const currentLanguageStories = stories[i18n.language] || stories.en;
@@ -85,26 +85,24 @@ const SmoothReader = () => {
     }
   }, [currentIndex]);
 
-  const handlePlayPause = () => {
-    if (isPlaying) {
-      setIsPlaying(false);
-      if (currentIndex >= totalLetters) {
-        handleExerciseComplete();
-      }
-    } else {
-      if (currentIndex >= totalLetters) {
-        setCurrentIndex(0);
-      }
-      startTimeRef.current = Date.now();
-      setIsPlaying(true);
+  // Синхронизируем локальное состояние с хуком
+  useEffect(() => {
+    setShowModal(shouldShowModal);
+  }, [shouldShowModal]);
+
+  const startReading = () => {
+    setCurrentIndex(0);
+    setIsPlaying(true);
+  };
+
+  const stopReading = () => {
+    setIsPlaying(false);
+    if (currentIndex >= totalLetters) {
+      handleExerciseComplete();
     }
   };
 
-  const handleSliderChange = (_, value) => {
-    setSpeed(value);
-  };
-
-  const handleRandomStory = () => {
+  const generateRandomStory = () => {
     let nextIndex = Math.floor(Math.random() * currentLanguageStories.length);
     // Исключаем повтор текущей истории
     if (nextIndex === storyIndex) {
@@ -113,6 +111,32 @@ const SmoothReader = () => {
     setStoryIndex(nextIndex);
     setCurrentIndex(0);
     setIsPlaying(false);
+  };
+
+  const handlePlayPause = () => {
+    // Проверяем доступ перед использованием функции
+    if (!tryUseFeature('play_pause')) {
+      return; // Доступ заблокирован, модальное окно уже показано
+    }
+    
+    if (isPlaying) {
+      stopReading();
+    } else {
+      startReading();
+    }
+  };
+
+  const handleSliderChange = (_, value) => {
+    setSpeed(value);
+  };
+
+  const handleRandomStory = () => {
+    // Проверяем доступ перед использованием функции
+    if (!tryUseFeature('random_text')) {
+      return; // Доступ заблокирован, модальное окно уже показано
+    }
+    
+    generateRandomStory();
   };
 
   const handleExerciseComplete = () => {
@@ -130,12 +154,6 @@ const SmoothReader = () => {
       document.body.style.height = originalHeight;
     };
   }, []);
-
-  React.useEffect(() => {
-    if (!loading && blocked) {
-      setShowModal(true);
-    }
-  }, [loading, blocked]);
 
   if (showModal) {
     return (

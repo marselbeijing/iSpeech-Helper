@@ -24,8 +24,8 @@ const BreathingExercises = () => {
   const [currentPhase, setCurrentPhase] = useState('inhale'); // inhale, hold, exhale, rest
   const [totalCycles] = useState(5);
   const { t, i18n } = useTranslation();
-  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
-  const [showModal, setShowModal] = React.useState(false);
+  const { blocked, loading, trialData, shouldShowModal, hideModal, snoozeModalReminder, tryUseFeature } = usePremiumAccess();
+  const [showModal, setShowModal] = useState(false);
 
   const phases = useMemo(() => ({
     inhale: { duration: 4, label: t('breathing_inhale') },
@@ -49,20 +49,40 @@ const BreathingExercises = () => {
     return () => clearTimeout(timer);
   }, [isPlaying, currentPhase, phases, totalCycles]);
 
-  const startExercise = useCallback(() => {
-    setIsPlaying(true);
-    setCurrentPhase('inhale');
-    playSound('click');
-    vibrate('click');
-  }, []);
+  useEffect(() => {
+    setShowModal(shouldShowModal);
+  }, [shouldShowModal]);
 
-  const stopExercise = useCallback(() => {
-    setIsPlaying(false);
-    setCurrentPhase('inhale');
-    playSound('click');
+  const startExercise = () => {
+    if (!tryUseFeature('start_breathing_exercise')) {
+      return;
+    }
+    
+    if (settings.soundEffects) {
+      playSound('click');
+    }
     vibrate('click');
+    
+    setIsPlaying(true);
+    setCurrentCycle(0);
+    setPhase('inhale');
+    setTimeLeft(inhaleTime);
+    setCurrentPhase('inhale');
+  };
+
+  const stopExercise = () => {
+    if (settings.soundEffects) {
+      playSound('click');
+    }
+    vibrate('click');
+    
+    setIsPlaying(false);
+    setCurrentCycle(0);
+    setPhase('inhale');
+    setTimeLeft(inhaleTime);
+    setCurrentPhase('inhale');
     handleExerciseComplete();
-  }, []);
+  };
 
   // Цвета для разных фаз
   const getColors = useCallback((phase) => {
@@ -104,12 +124,6 @@ const BreathingExercises = () => {
   const handleExerciseComplete = () => {
     updateProgress('breathing');
   };
-
-  React.useEffect(() => {
-    if (!loading && blocked) {
-      setShowModal(true);
-    }
-  }, [loading, blocked]);
 
   if (showModal) {
     return (

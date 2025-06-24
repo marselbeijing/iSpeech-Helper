@@ -76,11 +76,8 @@ export default function usePremiumAccess() {
       
       setBlocked(finalBlocked);
 
-      // Логика показа модального окна с ограничением частоты
-      if (isBlocked && !hasTemporaryAccess && canShowModal()) {
-        setShouldShowModal(true);
-        setLastModalShown();
-      }
+      // НЕ показываем модальное окно автоматически!
+      // Оно будет показано только при попытке использовать функции
 
     } catch (error) {
       console.error('Ошибка проверки доступа:', error);
@@ -93,6 +90,20 @@ export default function usePremiumAccess() {
     checkAccess();
   }, [checkAccess]);
 
+  // Функция для попытки использовать функцию
+  const tryUseFeature = (featureName) => {
+    console.log(`🎯 Попытка использовать функцию: ${featureName}`);
+    
+    if (blocked) {
+      console.log('❌ Доступ заблокирован, показываем модальное окно');
+      setShouldShowModal(true);
+      return false; // Доступ запрещен
+    }
+    
+    console.log('✅ Доступ разрешен');
+    return true; // Доступ разрешен
+  };
+
   // Функция для скрытия модального окна
   const hideModal = () => {
     setShouldShowModal(false);
@@ -102,6 +113,8 @@ export default function usePremiumAccess() {
   const snoozeModalReminder = (hours = 8) => {
     snoozeModal(hours);
     setShouldShowModal(false);
+    // Перезапускаем проверку доступа после отложения
+    checkAccess();
   };
 
   return { 
@@ -112,6 +125,7 @@ export default function usePremiumAccess() {
     snoozeModalReminder,
     trialData,
     checkAccess,
+    tryUseFeature, // Новая функция для проверки доступа к функциям
     getTemporaryAccessInfo,
     hasTemporaryAccess: isModalSnoozed()
   };

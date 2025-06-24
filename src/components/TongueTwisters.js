@@ -14,6 +14,7 @@ import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
+import usePremiumAccess from '../hooks/usePremiumAccess';
 
 const tongueTwistersRU = {
   beginner: [
@@ -166,8 +167,20 @@ const TongueTwisters = () => {
   const [currentTwister, setCurrentTwister] = useState('');
   const [isVisible, setIsVisible] = useState(true);
   const textBoxRef = useRef(null);
+  const { blocked, loading, trialData, shouldShowModal, hideModal, snoozeModalReminder, tryUseFeature } = usePremiumAccess();
+  const [showModal, setShowModal] = useState(false);
+
+  // Синхронизируем локальное состояние с хуком
+  useEffect(() => {
+    setShowModal(shouldShowModal);
+  }, [shouldShowModal]);
 
   const getRandomTwister = React.useCallback((lvl = level) => {
+    // Проверяем доступ перед использованием функции
+    if (!tryUseFeature('random_tongue_twister')) {
+      return; // Доступ заблокирован, модальное окно уже показано
+    }
+    
     setIsVisible(false);
     setTimeout(() => {
       const arr = i18n.language === 'ru' ? tongueTwistersRU[lvl] || tongueTwistersRU.beginner : tongueTwistersEN[lvl] || tongueTwistersEN.beginner;
@@ -183,7 +196,7 @@ const TongueTwisters = () => {
         }
       }, 350);
     }, 300);
-  }, [level, i18n.language]);
+  }, [level, i18n.language, tryUseFeature]);
 
   useEffect(() => {
     getRandomTwister(level);

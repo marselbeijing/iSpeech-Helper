@@ -52,11 +52,16 @@ const MetronomeReader = () => {
   const wordsRef = useRef([]);
   const textBoxRef = useRef(null);
   const lastActiveRef = useRef(null);
-  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
-  const [showModal, setShowModal] = React.useState(false);
+  const { blocked, loading, trialData, shouldShowModal, hideModal, snoozeModalReminder, tryUseFeature } = usePremiumAccess();
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
-  const handleGenerateAffirmation = React.useCallback(() => {
+  // Синхронизируем локальное состояние с хуком
+  useEffect(() => {
+    setShowModal(shouldShowModal);
+  }, [shouldShowModal]);
+
+  const generateRandomAffirmation = React.useCallback(() => {
     const affirmationKeys = Array.from({length: 25}, (_, i) => `affirmation_${i + 1}`);
     const randomKey = affirmationKeys[Math.floor(Math.random() * affirmationKeys.length)];
     const affirmation = t(randomKey);
@@ -134,20 +139,20 @@ const MetronomeReader = () => {
   };
 
   const handlePlayPause = () => {
-    if (!longAffirmation) return;
-    if (!isPlaying) {
-      if (audioContextRef.current.state === 'suspended') audioContextRef.current.resume();
-      nextNoteTimeRef.current = audioContextRef.current.currentTime;
-      scheduler();
-      setIsPlaying(true);
+    // Проверяем доступ перед использованием функции
+    if (!tryUseFeature('play_pause')) {
+      return; // Доступ заблокирован, модальное окно уже показано
+    }
+    
+    if (settings.soundEffects) {
       playSound('click');
-      vibrate('click');
+    }
+    vibrate('click');
+    
+    if (isPlaying) {
+      stopReading();
     } else {
-      cancelAnimationFrame(animationFrameRef.current);
-      setIsPlaying(false);
-      playSound('click');
-      vibrate('click');
-      handleExerciseComplete();
+      startReading();
     }
   };
 
@@ -163,11 +168,32 @@ const MetronomeReader = () => {
     updateProgress('metronome');
   };
 
-  React.useEffect(() => {
-    if (!loading && blocked) {
-      setShowModal(true);
+  const startReading = () => {
+    if (!longAffirmation) return;
+    if (audioContextRef.current.state === 'suspended') audioContextRef.current.resume();
+    nextNoteTimeRef.current = audioContextRef.current.currentTime;
+    scheduler();
+    setIsPlaying(true);
+  };
+
+  const stopReading = () => {
+    cancelAnimationFrame(animationFrameRef.current);
+    setIsPlaying(false);
+    handleExerciseComplete();
+  };
+
+  const handleGenerateAffirmation = () => {
+    // Проверяем доступ перед использованием функции
+    if (!tryUseFeature('generate_affirmation')) {
+      return; // Доступ заблокирован, модальное окно уже показано
     }
-  }, [loading, blocked]);
+    
+    if (settings.soundEffects) {
+      playSound('click');
+    }
+    vibrate('click');
+    generateRandomAffirmation();
+  };
 
   if (showModal) {
     return (
