@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { getTrialTexts } from '../services/trial';
 import { getCurrentUser } from '../services/telegram';
 
-const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
+const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExpired }) => {
   const theme = useTheme();
   
   console.log('DEBUG: до useTranslation');
@@ -78,7 +78,7 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
         }
       }}
     >
-      <DialogTitle sx={{ textAlign: 'center', pb: 1, width: '100%' }}>
+      <DialogTitle sx={{ display: 'flex', justifyContent: 'center', textAlign: 'center', pb: 1, width: '100%' }}>
         <Typography variant="h5" component="h2" fontWeight="bold" color="primary" sx={{ width: '100%', textAlign: 'center' }}>
           {texts.welcomeTitle || texts.trialExpired}
         </Typography>
@@ -159,22 +159,24 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
       </DialogContent>
 
       <DialogActions sx={{ p: 3, pt: 1, gap: 1, flexDirection: 'column' }}>
-        <Button
-          onClick={onStartTrial}
-          variant="contained"
-          size="large"
-          fullWidth
-          sx={{ 
-            background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: '0.9rem',
-            py: 1.5,
-            mb: 1
-          }}
-        >
-          {texts.startTrialButton}
-        </Button>
+        {!trialExpired && (
+          <Button
+            onClick={onStartTrial}
+            variant="contained"
+            size="large"
+            fullWidth
+            sx={{ 
+              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '0.9rem',
+              py: 1.5,
+              mb: 1
+            }}
+          >
+            {texts.startTrialButton}
+          </Button>
+        )}
         <Button
           variant="outlined"
           color="primary"

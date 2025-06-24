@@ -330,6 +330,7 @@ const Account = () => {
           setShowModal(false);
           navigate('/account');
         }}
+        trialExpired={true}
       />
     );
   }
