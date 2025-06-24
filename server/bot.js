@@ -524,7 +524,7 @@ ${texts.allFeaturesAvailable}
         subscriptionType: planType,
         stars: plan.amount,
         title: plan.title,
-        description: `Подписка iSpeech Helper - ${plan.title}`,
+        description: `iSpeech Helper - ${plan.title}`,
         payload: payload,
         status: 'created',
         expiresAt: expiresAt,
@@ -539,7 +539,7 @@ ${texts.allFeaturesAvailable}
       console.log('Инвойс создан:', { payload, userId: user.id, planType });
 
       // Отправляем инвойс через Telegram Bot API
-      await this.bot.sendInvoice(chatId, plan.title, `Подписка iSpeech Helper - ${plan.title}`,
+      await this.bot.sendInvoice(chatId, plan.title, `iSpeech Helper - ${plan.title}`,
         payload,
         '', // provider_token пустой для Stars
         'XTR', // Stars
