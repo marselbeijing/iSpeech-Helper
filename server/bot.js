@@ -586,7 +586,16 @@ ${texts.allFeaturesAvailable}
   }
 
   async sendSubscriptionOffer(chatId, planType, user) {
-    const texts = this.getTexts(user.language_code);
+    // Получаем язык из TrialPeriod, если есть
+    let lang = user.language_code;
+    if (user.id) {
+      const trial = await TrialPeriod.findOne({ userId: user.id.toString() });
+      if (trial?.userInfo?.languageCode) {
+        lang = trial.userInfo.languageCode;
+      }
+    }
+    if (!lang) lang = 'en';
+    const texts = this.getTexts(lang);
     
     const PLANS = {
       monthly: {
@@ -611,7 +620,7 @@ ${texts.allFeaturesAvailable}
 
     const plan = PLANS[planType];
     if (!plan) {
-      const isEnglish = user.language_code && user.language_code.startsWith('en');
+      const isEnglish = lang && lang.startsWith('en');
       const errorText = isEnglish ? 
         '❌ Unknown subscription type' : '❌ Неизвестный тип подписки';
       await this.bot.sendMessage(chatId, errorText);
