@@ -165,60 +165,24 @@ class TelegramStarsBot {
     });
 
     // Команда /start
-    this.bot.onText(/\/start/, async (msg) => {
+    this.bot.onText(/\/start(.*)/, async (msg) => {
       const chatId = msg.chat.id;
-      console.log('📨 Получена команда /start от пользователя:', msg.from.id, 'в чате:', chatId);
-      
-      // Получаем пробный период пользователя
+      const startParam = msg.text.split(' ')[1];
+      let userLang = 'en';
+      // Пытаемся получить язык из сохранённого профиля
       let trialPeriod = await TrialPeriod.findOne({ userId: msg.from.id.toString() });
-      // Определяем язык: сначала сохранённый, потом из Telegram
-      let userLang = trialPeriod?.userInfo?.languageCode || msg.from.language_code;
-      const texts = this.getTexts(userLang);
-      console.log('🔍 Параметр start:', msg.text);
-      
-      if (msg.text.startsWith('buy_')) {
-        // Если пришли с параметром покупки, сразу показываем предложение
-        const planType = msg.text.replace('buy_', '');
-        console.log('💳 Прямая покупка:', planType);
-        await this.sendSubscriptionOffer(chatId, planType, msg.from);
+      if (trialPeriod?.userInfo?.languageCode) {
+        userLang = trialPeriod.userInfo.languageCode;
+      } else if (msg.from.language_code) {
+        userLang = msg.from.language_code.startsWith('ru') ? 'ru' : 'en';
+      }
+      // Если есть параметр покупки — сразу показываем экран покупки
+      if (startParam && startParam.startsWith('buy_')) {
+        const planType = startParam.replace('buy_', '');
+        await this.sendSubscriptionOffer(chatId, planType, { language_code: userLang });
         return;
       }
-      
-      // Обработка реферальных ссылок
-      if (msg.text.startsWith('ref_')) {
-        const referrerId = msg.text.replace('ref_', '');
-        console.log('👥 Реферальная ссылка от:', referrerId);
-        await this.handleReferral(chatId, msg.from.id, referrerId);
-      }
-
-      // Создаем или проверяем пробный период для пользователя
-      try {
-        if (!trialPeriod) {
-          // Создаем новый пробный период
-          const startDate = new Date();
-          trialPeriod = new TrialPeriod({
-            userId: msg.from.id.toString(),
-            startDate: startDate,
-            endDate: new Date(startDate.getTime() + (3 * 24 * 60 * 60 * 1000)), // 3 дня
-            userInfo: {
-              firstName: msg.from.first_name,
-              lastName: msg.from.last_name,
-              username: msg.from.username,
-              languageCode: userLang
-            }
-          });
-          await trialPeriod.save();
-          console.log('✅ Создан пробный период для пользователя:', msg.from.id, 'до:', trialPeriod.endDate);
-        } else {
-          console.log('ℹ️ Пробный период уже существует для пользователя:', msg.from.id);
-        }
-      } catch (error) {
-        console.error('❌ Ошибка создания пробного периода:', error);
-      }
-      
-      console.log('DEBUG BUTTONS:', texts.openAppButton, texts.learnAboutSubscriptionButton);
-      console.log('DEBUG LANGUAGE:', userLang);
-      // Показываем выбор языка сразу при /start
+      // Если нет параметра — показываем выбор языка
       this.bot.sendMessage(chatId, 'Выберите язык / Choose your language', {
         reply_markup: {
           inline_keyboard: [
