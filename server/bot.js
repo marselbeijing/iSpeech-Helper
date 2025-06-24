@@ -169,29 +169,30 @@ class TelegramStarsBot {
       const chatId = msg.chat.id;
       console.log('📨 Получена команда /start от пользователя:', msg.from.id, 'в чате:', chatId);
       
-      // Проверяем, есть ли параметр start
-      const startParam = msg.text.split(' ')[1];
-      console.log('🔍 Параметр start:', startParam);
+      // Получаем пробный период пользователя
+      let trialPeriod = await TrialPeriod.findOne({ userId: msg.from.id.toString() });
+      // Определяем язык: сначала сохранённый, потом из Telegram
+      let userLang = trialPeriod?.userInfo?.languageCode || msg.from.language_code;
+      const texts = this.getTexts(userLang);
+      console.log('🔍 Параметр start:', msg.text);
       
-      if (startParam && startParam.startsWith('buy_')) {
+      if (msg.text.startsWith('buy_')) {
         // Если пришли с параметром покупки, сразу показываем предложение
-        const planType = startParam.replace('buy_', '');
+        const planType = msg.text.replace('buy_', '');
         console.log('💳 Прямая покупка:', planType);
         await this.sendSubscriptionOffer(chatId, planType, msg.from);
         return;
       }
       
       // Обработка реферальных ссылок
-      if (startParam && startParam.startsWith('ref_')) {
-        const referrerId = startParam.replace('ref_', '');
+      if (msg.text.startsWith('ref_')) {
+        const referrerId = msg.text.replace('ref_', '');
         console.log('👥 Реферальная ссылка от:', referrerId);
         await this.handleReferral(chatId, msg.from.id, referrerId);
       }
 
       // Создаем или проверяем пробный период для пользователя
       try {
-        let trialPeriod = await TrialPeriod.findOne({ userId: msg.from.id.toString() });
-        
         if (!trialPeriod) {
           // Создаем новый пробный период
           const startDate = new Date();
@@ -203,7 +204,7 @@ class TelegramStarsBot {
               firstName: msg.from.first_name,
               lastName: msg.from.last_name,
               username: msg.from.username,
-              languageCode: msg.from.language_code
+              languageCode: userLang
             }
           });
           await trialPeriod.save();
@@ -215,10 +216,8 @@ class TelegramStarsBot {
         console.error('❌ Ошибка создания пробного периода:', error);
       }
       
-      // Определяем язык пользователя
-      const texts = this.getTexts(msg.from.language_code);
       console.log('DEBUG BUTTONS:', texts.openAppButton, texts.learnAboutSubscriptionButton);
-      console.log('DEBUG LANGUAGE:', msg.from.language_code);
+      console.log('DEBUG LANGUAGE:', userLang);
       await this.bot.sendMessage(chatId, texts.welcomeMessage, {
         reply_markup: {
           inline_keyboard: [
@@ -233,6 +232,35 @@ class TelegramStarsBot {
           ]
         }
       });
+
+      // Показываем выбор языка сразу при /start
+      this.bot.sendMessage(chatId, 'Выберите язык / Choose your language', {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: 'Русский', callback_data: 'set_lang_ru_start' },
+              { text: 'English', callback_data: 'set_lang_en_start' }
+            ]
+          ]
+        }
+      });
+    });
+
+    // Обработка выбора языка через inline-кнопки при старте
+    this.bot.on('callback_query', async (query) => {
+      if (query.data === 'set_lang_en_start' || query.data === 'set_lang_ru_start') {
+        const lang = query.data === 'set_lang_en_start' ? 'en' : 'ru';
+        await TrialPeriod.findOneAndUpdate(
+          { userId: query.from.id.toString() },
+          { $set: { 'userInfo.languageCode': lang } },
+          { upsert: true }
+        );
+        const texts = this.getTexts(lang);
+        this.bot.sendMessage(query.message.chat.id, texts.welcomeMessage);
+        // Можно добавить дальнейшую логику (меню, предложения и т.д.)
+        return;
+      }
+      // ... существующая обработка других callback_query ...
     });
 
     // Команда /paysupport - обязательная для платежных ботов
