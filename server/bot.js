@@ -121,8 +121,8 @@ class TelegramStarsBot {
         yearly: isEnglish ? 'annual' : 'годовую'
       },
       welcomeMessage: isEnglish
-        ? `🗣 I'm your personal assistant for improving speech and diction. Here you'll find exercises for:\n\n✨ Clear articulation\n🫁 Proper breathing and voice control\n🎯 Confident communication\n🎭 Expressive speech\n🎁 Enjoy a 3-day FREE trial with full access to all features!\n\n[language_code: ${languageCode}]`
-        : `🗣 Я ваш персональный помощник для улучшения речи и дикции. Здесь вас ждут упражнения для:\n\n✨ Четкой артикуляции\n🫁 Правильного дыхания и голоса\n🎯 Уверенной коммуникации\n🎭 Выразительности речи\n🎁 Получите 3 дня БЕСПЛАТНОГО доступа ко всем функциям!\n\n[language_code: ${languageCode}]`,
+        ? `🗣 I'm your personal assistant for improving speech and diction. Here you'll find exercises for:\n\n✨ Clear articulation\n🫁 Proper breathing and voice control\n🎯 Confident communication\n🎭 Expressive speech\n🎁 Enjoy a 3-day FREE trial with full access to all features!`
+        : `🗣 Я ваш персональный помощник для улучшения речи и дикции. Здесь вас ждут упражнения для:\n\n✨ Четкой артикуляции\n🫁 Правильного дыхания и голоса\n🎯 Уверенной коммуникации\n🎭 Выразительности речи\n🎁 Получите 3 дня БЕСПЛАТНОГО доступа ко всем функциям!`,
       learnAboutSubscriptionButton: isEnglish ? '💫 Learn about subscription' : '💫 Подробнее о подписке',
     };
   }
@@ -218,21 +218,6 @@ class TelegramStarsBot {
       
       console.log('DEBUG BUTTONS:', texts.openAppButton, texts.learnAboutSubscriptionButton);
       console.log('DEBUG LANGUAGE:', userLang);
-      await this.bot.sendMessage(chatId, texts.welcomeMessage, {
-        reply_markup: {
-          inline_keyboard: [
-            [{
-              text: texts.openAppButton,
-              web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' }
-            }],
-            [{
-              text: texts.learnAboutSubscriptionButton,
-              callback_data: 'subscription_menu'
-            }]
-          ]
-        }
-      });
-
       // Показываем выбор языка сразу при /start
       this.bot.sendMessage(chatId, 'Выберите язык / Choose your language', {
         reply_markup: {
