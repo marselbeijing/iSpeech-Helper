@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { getTrialStatus } from '../services/trial';
 import { getCurrentUser } from '../services/telegram';
-import { getUserSubscriptionStatus, getTrialData } from '../services/api';
+import { checkSubscriptionStatus } from '../services/subscription';
 
 // Функции для управления частотой показа модального окна
 const MODAL_COOLDOWN_HOURS = 4; // Не показывать чаще 1 раза в 4 часа
@@ -77,26 +77,7 @@ if (typeof window !== 'undefined') {
   window.resetModalSettings = resetModalSettingsDebug;
   console.log('🛠️ Функции отладки загружены: clearTrialCache() и resetModalSettings()');
   
-  // Функция для проверки текущего состояния
-  window.checkModalState = () => {
-    const lastShown = getLastModalShown();
-    const snoozedUntil = localStorage.getItem('trialModalSnoozedUntil');
-    const canShow = canShowModal();
-    const isSnoozed = isModalSnoozed();
-    
-    const state = {
-      lastModalShown: lastShown ? new Date(lastShown).toLocaleString() : 'Никогда',
-      snoozedUntil: snoozedUntil ? new Date(parseInt(snoozedUntil)).toLocaleString() : 'Нет',
-      canShowModal: canShow,
-      isModalSnoozed: isSnoozed,
-      temporaryAccessInfo: getTemporaryAccessInfo()
-    };
-    
-    console.table(state);
-    return state;
-  };
-  
-  console.log('🛠️ Дополнительная функция отладки: checkModalState()');
+  console.log('🛠️ Функции отладки уже загружены в index.js');
 }
 
 export default function usePremiumAccess() {
@@ -114,15 +95,15 @@ export default function usePremiumAccess() {
         return;
       }
 
-      const [status, trial] = await Promise.all([
-        getUserSubscriptionStatus(user.id),
-        getTrialData(user.id)
+      const [subscriptionStatus, trialStatus] = await Promise.all([
+        checkSubscriptionStatus(),
+        getTrialStatus()
       ]);
 
-      setTrialData(trial);
+      setTrialData(trialStatus);
 
-      const isBlocked = !status.hasActiveSubscription && 
-                       (!status.trialActive || status.trialExpired);
+      const isBlocked = !subscriptionStatus.isActive && 
+                       (!trialStatus.trial?.isActive || false);
       
       // Если модальное окно отложено, даём временный доступ
       const hasTemporaryAccess = isModalSnoozed();
