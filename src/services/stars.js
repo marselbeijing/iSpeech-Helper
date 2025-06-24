@@ -122,8 +122,20 @@ export const purchaseWithStars = async (planType) => {
     console.log('Используем альтернативный подход через бота...');
 
     // Определяем язык пользователя
-    const lang = user.language_code || 'ru';
+    const testLanguage = localStorage.getItem('testLanguage');
+    const lang = testLanguage || user.language_code || 'ru';
     const isEnglish = lang.startsWith('en');
+
+    // Детальное логирование для отладки языка
+    console.log('🌐 Отладка языка пользователя:', {
+      'testLanguage': testLanguage,
+      'user.language_code': user.language_code,
+      'lang': lang,
+      'isEnglish': isEnglish,
+      'i18n.language': window.i18n?.language,
+      'localStorage.lang': localStorage.getItem('lang'),
+      'navigator.language': navigator.language
+    });
 
     // Локализованные тексты
     const planTitles = {
