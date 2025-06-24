@@ -147,16 +147,29 @@ export default function usePremiumAccess() {
   // Функция для попытки использовать функцию
   const tryUseFeature = (featureName) => {
     console.log(`🎯 Попытка использовать функцию: ${featureName}`);
-    console.log(`📊 Состояние доступа:`, { blocked, loading, hasTemporaryAccess: isModalSnoozed() });
-    
-    if (blocked) {
-      console.log('❌ Доступ заблокирован, показываем модальное окно');
-      setShouldShowModal(true);
-      return false; // Доступ запрещен
+    const hasSnooze = isModalSnoozed();
+    const canShow = canShowModal();
+    console.log(`📊 Состояние доступа:`, { blocked, loading, hasTemporaryAccess: hasSnooze, canShowModal: canShow });
+
+    // Если есть временный доступ (snooze) — разрешаем доступ
+    if (hasSnooze) {
+      return true;
     }
-    
-    console.log('✅ Доступ разрешен');
-    return true; // Доступ разрешен
+
+    // Если заблокировано и можно показать модалку (cooldown прошёл)
+    if (blocked && canShow) {
+      setShouldShowModal(true);
+      setLastModalShown(); // Запоминаем время показа
+      return false;
+    }
+
+    // Если заблокировано, но cooldown не прошёл — просто запрещаем доступ, не показываем окно
+    if (blocked && !canShow) {
+      return false;
+    }
+
+    // Доступ разрешён
+    return true;
   };
 
   // Функция для скрытия модального окна
