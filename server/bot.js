@@ -59,120 +59,72 @@ class TelegramStarsBot {
 
   // Функция для получения локализованных текстов
   getTexts(languageCode) {
-    const isEnglish = languageCode === 'en' || (languageCode && languageCode.startsWith('en'));
-    
+    let lang = 'en';
+    if (languageCode && typeof languageCode === 'string') {
+      if (languageCode.startsWith('ru')) lang = 'ru';
+      else if (languageCode.startsWith('en')) lang = 'en';
+    }
+    const isEnglish = lang === 'en';
     return {
-      invoiceCreated: `✨ Инвойс создан! Нажмите кнопку «Buy» выше для оплаты.
-
-✨ Invoice created! Click the «Buy» button above to complete the payment.`,
-      
-      subscriptionMenu: 
-      `💫 Выберите подписку iSpeech Helper (Полный доступ ко всем функциям):
-🔸 1 месяц — 299 ⭐ (30 дней доступа)
-🔸 3 месяца — 699 ⭐ (−20%)
-🔸 12 месяцев — 1999 ⭐ (−40%)
-
-💫 Choose your iSpeech Helper subscription (Full access to all features):
-🔸 1 month — 299 ⭐ (30 days access)
-🔸 3 months — 699 ⭐ (−20%)
-🔸 12 months — 1999 ⭐ (−40%)`,
-      
-      monthlyButton: '📅 1 month (299 ⭐)',
-      quarterlyButton: '📅 3 months (699 ⭐)',
-      yearlyButton: '📅 12 months (1999 ⭐)',
-      openAppButton: '🚀 Open App',
-      
-      buyButton: '💳 Buy for',
-      backButton: '🔙 Back to selection',
-      
-      monthlyTitle: `💫 Месячная подписка Premium 
-💰 Стоимость: 299 ⭐ звезд 
-⏰ Длительность: 30 дней 
-📝 Полный доступ ко всем функциям на 1 месяц
-
-💫 Premium Monthly Subscription
-💰 Price: 299 ⭐ stars
-⏰ Duration: 30 days
-📝 Full access to all features for 1 month`,
-      quarterlyTitle: `💫 Квартальная подписка Premium 
-💰 Стоимость: 699 ⭐ звезд 
-⏰ Длительность: 90 дней 
-📝 Полный доступ ко всем функциям на 3 месяца (скидка 20%)
-
-💫 Premium Quarterly Subscription
-💰 Price: 699 ⭐ stars
-⏰ Duration: 90 days
-📝 Full access to all features for 3 months (20% off)`,
-      yearlyTitle: `💫 Годовая подписка Premium 
-💰 Стоимость: 1999 ⭐ звезд 
-⏰ Длительность: 365 дней 
-📝 Полный доступ ко всем функциям на 1 год (скидка 40%)
-
-💫 Premium Annual Subscription
-💰 Price: 1999 ⭐ stars
-⏰ Duration: 365 days
-📝 Full access to all features for 1 year (40% off)`,
-      
+      invoiceCreated: isEnglish
+        ? `✨ Invoice created! Click the «Buy» button above to complete the payment.`
+        : `✨ Инвойс создан! Нажмите кнопку «Buy» выше для оплаты.`,
+      subscriptionMenu: isEnglish
+        ? `💫 Choose your iSpeech Helper subscription (Full access to all features):\n🔸 1 month — 299 ⭐ (30 days access)\n🔸 3 months — 699 ⭐ (−20%)\n🔸 12 months — 1999 ⭐ (−40%)`
+        : `💫 Выберите подписку iSpeech Helper (Полный доступ ко всем функциям):\n🔸 1 месяц — 299 ⭐ (30 дней доступа)\n🔸 3 месяца — 699 ⭐ (−20%)\n🔸 12 месяцев — 1999 ⭐ (−40%)`,
+      monthlyButton: isEnglish ? '📅 1 month (299 ⭐)' : '📅 1 месяц (299 ⭐)',
+      quarterlyButton: isEnglish ? '📅 3 months (699 ⭐)' : '📅 3 месяца (699 ⭐)',
+      yearlyButton: isEnglish ? '📅 12 months (1999 ⭐)' : '📅 12 месяцев (1999 ⭐)',
+      openAppButton: isEnglish ? '🚀 Open App' : '🚀 Открыть приложение',
+      buyButton: isEnglish ? '💳 Buy for' : '💳 Купить за',
+      backButton: isEnglish ? '🔙 Back to selection' : '🔙 Назад к выбору',
+      monthlyTitle: isEnglish
+        ? `💫 Premium Monthly Subscription\n💰 Price: 299 ⭐ stars\n⏰ Duration: 30 days\n📝 Full access to all features for 1 month`
+        : `💫 Месячная подписка Premium\n💰 Стоимость: 299 ⭐ звезд\n⏰ Длительность: 30 дней\n📝 Полный доступ ко всем функциям на 1 месяц`,
+      quarterlyTitle: isEnglish
+        ? `💫 Premium Quarterly Subscription\n💰 Price: 699 ⭐ stars\n⏰ Duration: 90 days\n📝 Full access to all features for 3 months (20% off)`
+        : `💫 Квартальная подписка Premium\n💰 Стоимость: 699 ⭐ звезд\n⏰ Длительность: 90 дней\n📝 Полный доступ ко всем функциям на 3 месяца (скидка 20%)`,
+      yearlyTitle: isEnglish
+        ? `💫 Premium Annual Subscription\n💰 Price: 1999 ⭐ stars\n⏰ Duration: 365 days\n📝 Full access to all features for 1 year (40% off)`
+        : `💫 Годовая подписка Premium\n💰 Стоимость: 1999 ⭐ звезд\n⏰ Длительность: 365 дней\n📝 Полный доступ ко всем функциям на 1 год (скидка 40%)`,
       duration30: isEnglish ? '30 days' : '30 дней',
-      duration90: isEnglish ? '90 days' : '90 дней', 
+      duration90: isEnglish ? '90 days' : '90 дней',
       duration365: isEnglish ? '365 days' : '365 дней',
-      
       description1: isEnglish ? 'Full access to all features for 1 month' : 'Полный доступ ко всем функциям на 1 месяц',
       description3: isEnglish ? 'Full access to all features for 3 months (20% discount)' : 'Полный доступ ко всем функциям на 3 месяца (скидка 20%)',
       description12: isEnglish ? 'Full access to all features for 1 year (40% discount)' : 'Полный доступ ко всем функциям на 1 год (скидка 40%)',
-      
       cost: isEnglish ? 'Cost:' : 'Стоимость:',
       duration: isEnglish ? 'Duration:' : 'Длительность:',
       stars: isEnglish ? 'stars' : 'звезд',
       clickToPay: isEnglish ? 'Click the button below to pay:' : 'Нажмите кнопку ниже для оплаты:',
-      
-      // Сообщения об успешной оплате
       paymentSuccess: isEnglish ? '✅ Payment processed successfully!' : '✅ Платеж успешно обработан!',
       subscriptionActivated: isEnglish ? '🎉 Your subscription has been activated!' : '🎉 Ваша подписка активирована!',
       validUntil: isEnglish ? '⏰ Valid until:' : '⏰ Действует до:',
       starsSpent: isEnglish ? '⭐ Stars spent:' : '⭐ Потрачено Stars:',
       allFeaturesAvailable: isEnglish ? 'All app features are now available to you!' : 'Теперь вам доступны все функции приложения!',
-      
       monthly: isEnglish ? 'monthly' : 'месячная',
       quarterly: isEnglish ? 'quarterly' : 'квартальная',
       yearly: isEnglish ? 'annual' : 'годовая',
-      
       invoiceNotFound: isEnglish ? '❌ Error: invoice not found. Please contact support.' : '❌ Ошибка: инвойс не найден. Обратитесь в поддержку.',
-      
-      // Реферальные сообщения
       newReferralTitle: isEnglish ? '🎉 You have a new referral!' : '🎉 У вас новый реферал!',
       newReferralText: isEnglish ? 'A user joined using your link. When they purchase a subscription, you will receive a bonus in stars!' : 'Пользователь присоединился по вашей ссылке. Когда он купит подписку, вы получите бонус в звездах!',
       bonusesForSubs: isEnglish ? '⭐ Bonuses for subscriptions:' : '⭐ Бонусы за подписки:',
       monthlyBonus: isEnglish ? '• Monthly: 60 ⭐ (20% of 299)' : '• Месячная: 60 ⭐ (20% от 299)',
       quarterlyBonus: isEnglish ? '• Quarterly: 140 ⭐ (20% of 699)' : '• Квартальная: 140 ⭐ (20% от 699)',
       yearlyBonus: isEnglish ? '• Annual: 400 ⭐ (20% of 1999)' : '• Годовая: 400 ⭐ (20% от 1999)',
-      
       congratsBonus: isEnglish ? '🎉 Congratulations! You received a bonus!' : '🎉 Поздравляем! Вы получили бонус!',
       referralBought: isEnglish ? 'Your referral bought a' : 'Ваш реферал купил',
       youReceived: isEnglish ? 'You received:' : 'Вы получили:',
       currentBalanceCheck: isEnglish ? '💰 You can check your current balance in the app in the "Referral Program" section.' : '💰 Ваш текущий баланс можно посмотреть в приложении в разделе "Партнерская программа".',
-      
       subscriptionNames: {
         monthly: isEnglish ? 'monthly' : 'месячную',
-        quarterly: isEnglish ? 'quarterly' : 'квартальную', 
+        quarterly: isEnglish ? 'quarterly' : 'квартальную',
         yearly: isEnglish ? 'annual' : 'годовую'
       },
-      welcomeMessage: `🗣 Я ваш персональный помощник для улучшения речи и дикции. Здесь вас ждут упражнения для:
-
-✨ Четкой артикуляции
-🫁 Правильного дыхания и голоса
-🎯 Уверенной коммуникации
-🎭 Выразительности речи
-🎁 Получите 3 дня БЕСПЛАТНОГО доступа ко всем функциям!
-
-🗣 I'm your personal assistant for improving speech and diction. Here you'll find exercises for:
-
-✨ Clear articulation
-🫁 Proper breathing and voice control
-🎯 Confident communication
-🎭 Expressive speech
-🎁 Enjoy a 3-day FREE trial with full access to all features!`,
-      learnAboutSubscriptionButton: '💫 Learn about subscription',
+      welcomeMessage: isEnglish
+        ? `🗣 I'm your personal assistant for improving speech and diction. Here you'll find exercises for:\n\n✨ Clear articulation\n🫁 Proper breathing and voice control\n🎯 Confident communication\n🎭 Expressive speech\n🎁 Enjoy a 3-day FREE trial with full access to all features!`
+        : `🗣 Я ваш персональный помощник для улучшения речи и дикции. Здесь вас ждут упражнения для:\n\n✨ Четкой артикуляции\n🫁 Правильного дыхания и голоса\n🎯 Уверенной коммуникации\n🎭 Выразительности речи\n🎁 Получите 3 дня БЕСПЛАТНОГО доступа ко всем функциям!`,
+      learnAboutSubscriptionButton: isEnglish ? '💫 Learn about subscription' : '💫 Подробнее о подписке',
     };
   }
 
