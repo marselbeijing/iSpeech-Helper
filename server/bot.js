@@ -75,7 +75,7 @@ class TelegramStarsBot {
       quarterlyButton: isEnglish ? '📅 3 months (699 ⭐)' : '📅 3 месяца (699 ⭐)',
       yearlyButton: isEnglish ? '📅 12 months (1999 ⭐)' : '📅 12 месяцев (1999 ⭐)',
       openAppButton: isEnglish ? '🚀 Open App' : '🚀 Открыть приложение',
-      buyButton: isEnglish ? '💳 Pay' : '💳 Купить за',
+      buyButton: '💳 Pay',
       backButton: isEnglish ? '🔙 Back to selection' : '🔙 Назад к выбору',
       monthlyTitle: isEnglish
         ? `🪄 Premium Monthly Subscription  💰 Price: 299 ⭐ stars  ⏰ Duration: 30 days  📝 Full access to all features for 1 month`
@@ -524,7 +524,7 @@ ${texts.allFeaturesAvailable}
         subscriptionType: planType,
         stars: plan.amount,
         title: plan.title,
-        description: `iSpeech Helper - ${plan.title}`,
+        description: plan.title,
         payload: payload,
         status: 'created',
         expiresAt: expiresAt,
@@ -539,7 +539,7 @@ ${texts.allFeaturesAvailable}
       console.log('Инвойс создан:', { payload, userId: user.id, planType });
 
       // Отправляем инвойс через Telegram Bot API
-      await this.bot.sendInvoice(chatId, plan.title, `iSpeech Helper - ${plan.title}`,
+      await this.bot.sendInvoice(chatId, plan.title, plan.title,
         payload,
         '', // provider_token пустой для Stars
         'XTR', // Stars
