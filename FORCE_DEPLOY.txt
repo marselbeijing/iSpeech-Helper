@@ -1,1 +1,6 @@
 Force deploy: Sat Jun 21 14:20:19 +05 2025
+
+FORCE_DEPLOY_TIMESTAMP: 2025-01-29T10:45:00Z
+REASON: Fix services/api import error on Vercel
+CHANGES: Replaced non-existent services/api imports with correct services
+STATUS: Local build successful, forcing Vercel cache clear
