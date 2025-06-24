@@ -201,9 +201,6 @@ const App = () => {
       console.log('🛠️ Функции отладки доступны: window.clearTrialCache() и window.resetModalSettings()');
     }
 
-    // Настраиваем функции отладки
-    setupDebugFunctions();
-
     // Добавляем обработчик для инициализации аудио после первого клика
     const handleFirstUserInteraction = async () => {
       try {
