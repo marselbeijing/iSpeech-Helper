@@ -1,6 +1,13 @@
 Force deploy: Sat Jun 21 14:20:19 +05 2025
 
-FORCE_DEPLOY_TIMESTAMP: 2025-01-29T10:45:00Z
-REASON: Fix services/api import error on Vercel
-CHANGES: Replaced non-existent services/api imports with correct services
-STATUS: Local build successful, forcing Vercel cache clear
+DEPLOY_TIMESTAMP: 2025-01-29T11:05:00Z
+ISSUE: Vercel использует старый коммит 9a7fbac вместо нового 6cfbbcf
+SOLUTION: Создан файл services/api.js для совместимости
+STATUS: Принудительное обновление для синхронизации с Vercel
+LATEST_COMMIT: 6cfbbcf - Создание временного файла services/api.js
+
+=== ОБНОВЛЕНИЕ ===
+НОВЫЙ_КОММИТ: 83f1448 - Пересоздание файла services/api.js
+ДЕЙСТВИЕ: Файл удалён и пересоздан для принудительного обновления
+СТАТУС: Локальная сборка успешна, ожидаем Vercel
+ВРЕМЯ: 2025-01-29T11:05:00Z
