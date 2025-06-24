@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -29,11 +29,11 @@ const Home = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const { t } = useTranslation();
-  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
-  const [showModal, setShowModal] = React.useState(false);
+  const { loading, blocked, shouldShowModal, hideModal, snoozeModalReminder, trialData } = usePremiumAccess();
+  const [showModal, setShowModal] = useState(false);
 
   // Блокировка прокрутки на странице
-  React.useEffect(() => {
+  useEffect(() => {
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
     
@@ -43,11 +43,10 @@ const Home = () => {
     };
   }, []);
 
-  React.useEffect(() => {
-    if (!loading && blocked) {
-      setShowModal(true);
-    }
-  }, [loading, blocked]);
+  // Синхронизируем локальное состояние с хуком
+  useEffect(() => {
+    setShowModal(shouldShowModal);
+  }, [shouldShowModal]);
 
   const menuItems = [
     {
@@ -111,11 +110,22 @@ const Home = () => {
     return (
       <TrialWelcomeModal
         open={showModal}
-        onClose={() => setShowModal(false)}
-        onStartTrial={() => setShowModal(false)}
+        onClose={() => {
+          hideModal();
+          setShowModal(false);
+        }}
+        onStartTrial={() => {
+          hideModal();
+          setShowModal(false);
+        }}
         onBuyPremium={() => {
+          hideModal();
           setShowModal(false);
           navigate('/account');
+        }}
+        onSnooze={(hours) => {
+          snoozeModalReminder(hours);
+          setShowModal(false);
         }}
         trialExpired={blocked || (trialData?.trial?.isActive === false)}
       />
