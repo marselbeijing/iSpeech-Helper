@@ -78,28 +78,47 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExp
         }
       }}
     >
-      <DialogTitle sx={{ display: 'flex', justifyContent: 'center', textAlign: 'center', pb: 1, width: '100%' }}>
-        <Typography variant="h5" component="h2" fontWeight="bold" color="primary" sx={{ width: '100%', textAlign: 'center' }}>
-          {texts.welcomeTitle || texts.trialExpired}
+      <DialogTitle sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        textAlign: 'center', 
+        pb: 1, 
+        width: '100%',
+        px: 3
+      }}>
+        <Typography 
+          variant="h5" 
+          component="h2" 
+          fontWeight="bold" 
+          color="primary" 
+          sx={{ 
+            width: '100%', 
+            textAlign: 'center',
+            lineHeight: 1.2
+          }}
+        >
+          {trialExpired ? texts.trialExpired : texts.welcomeTitle}
         </Typography>
       </DialogTitle>
 
       <DialogContent sx={{ pt: 1 }}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>
-          <Chip
-            label={texts.freeTrialChip}
-            color="primary"
-            size="large"
-            sx={{
-              fontSize: '1rem',
-              fontWeight: 'bold',
-              mb: 2,
-              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-              color: 'white'
-            }}
-          />
+          {!trialExpired && (
+            <Chip
+              label={texts.freeTrialChip}
+              color="primary"
+              size="large"
+              sx={{
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                mb: 2,
+                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                color: 'white'
+              }}
+            />
+          )}
           <Typography variant="body1" sx={{ mb: 2, color: 'white' }}>
-            {texts.trialDescription}
+            {trialExpired ? texts.subscribeNow : texts.trialDescription}
           </Typography>
         </Box>
 
