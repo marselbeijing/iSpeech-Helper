@@ -14,6 +14,8 @@ import { vibrate } from '../services/vibration';
 import { useNavigate } from 'react-router-dom';
 import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
+import usePremiumAccess from '../hooks/usePremiumAccess';
+import TrialWelcomeModal from './TrialWelcomeModal';
 
 const BreathingExercises = () => {
   const theme = useTheme();
@@ -22,6 +24,8 @@ const BreathingExercises = () => {
   const [currentPhase, setCurrentPhase] = useState('inhale'); // inhale, hold, exhale, rest
   const [totalCycles] = useState(5);
   const { t, i18n } = useTranslation();
+  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
+  const [showModal, setShowModal] = React.useState(false);
 
   const phases = useMemo(() => ({
     inhale: { duration: 4, label: t('breathing_inhale') },
@@ -100,6 +104,26 @@ const BreathingExercises = () => {
   const handleExerciseComplete = () => {
     updateProgress('breathing');
   };
+
+  React.useEffect(() => {
+    if (!loading && blocked) {
+      setShowModal(true);
+    }
+  }, [loading, blocked]);
+
+  if (showModal) {
+    return (
+      <TrialWelcomeModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onStartTrial={() => setShowModal(false)}
+        onBuyPremium={() => {
+          setShowModal(false);
+          navigate('/account');
+        }}
+      />
+    );
+  }
 
   return (
     <Box sx={{ 

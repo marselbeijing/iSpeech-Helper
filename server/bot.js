@@ -66,7 +66,7 @@ class TelegramStarsBot {
     const isEnglish = lang === 'en';
     return {
       invoiceCreated: isEnglish
-        ? `✨ Invoice created! Click the «Buy» button above to complete the payment.`
+        ? `✨ Invoice created! Click the «Pay» button above to complete the payment.`
         : `✨ Инвойс создан! Нажмите кнопку «Buy» выше для оплаты.`,
       subscriptionMenu: isEnglish
         ? `💫 Choose your iSpeech Helper subscription (Full access to all features):\n🔸 1 month — 299 ⭐ (30 days access)\n🔸 3 months — 699 ⭐ (−20%)\n🔸 12 months — 1999 ⭐ (−40%)`

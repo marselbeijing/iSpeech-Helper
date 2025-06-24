@@ -21,6 +21,8 @@ import {
   Refresh,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import usePremiumAccess from '../hooks/usePremiumAccess';
+import TrialWelcomeModal from './TrialWelcomeModal';
 
 const EmotionsTrainer = () => {
   const theme = useTheme();
@@ -29,12 +31,33 @@ const EmotionsTrainer = () => {
   const [currentEmotion, setCurrentEmotion] = useState(null);
   const [currentPhrase, setCurrentPhrase] = useState('');
 
+  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
+  const [showModal, setShowModal] = useState(false);
+
+  React.useEffect(() => {
+    if (!loading && blocked) {
+      setShowModal(true);
+    }
+  }, [loading, blocked]);
+
+  if (showModal) {
+    return (
+      <TrialWelcomeModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onStartTrial={() => setShowModal(false)}
+        onBuyPremium={() => {
+          setShowModal(false);
+          navigate('/account');
+        }}
+      />
+    );
+  }
+
   React.useEffect(() => {
     getRandomEmotionAndPhrase();
     // eslint-disable-next-line
   }, []);
-
-
 
   const getRandomEmotionAndPhrase = () => {
     const randomEmotionIndex = Math.floor(Math.random() * emotions.length);

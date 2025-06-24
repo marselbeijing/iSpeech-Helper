@@ -10,6 +10,9 @@ import {
   Stack
 } from '@mui/material';
 import { CheckCircle, Error } from '@mui/icons-material';
+import usePremiumAccess from '../hooks/usePremiumAccess';
+import TrialWelcomeModal from '../components/TrialWelcomeModal';
+import { useNavigate } from 'react-router-dom';
 
 const AnalyticsTest = () => {
   const [analyticsStatus, setAnalyticsStatus] = useState({
@@ -18,10 +21,19 @@ const AnalyticsTest = () => {
     telegramWebApp: false,
     errors: []
   });
+  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
+  const [showModal, setShowModal] = React.useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     checkAnalyticsStatus();
   }, []);
+
+  React.useEffect(() => {
+    if (!loading && blocked) {
+      setShowModal(true);
+    }
+  }, [loading, blocked]);
 
   const checkAnalyticsStatus = () => {
     const status = {
@@ -96,6 +108,20 @@ const AnalyticsTest = () => {
       variant="outlined"
     />
   );
+
+  if (showModal) {
+    return (
+      <TrialWelcomeModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onStartTrial={() => setShowModal(false)}
+        onBuyPremium={() => {
+          setShowModal(false);
+          navigate('/account');
+        }}
+      />
+    );
+  }
 
   return (
     <Box sx={{ p: 3, maxWidth: 600, mx: 'auto' }}>

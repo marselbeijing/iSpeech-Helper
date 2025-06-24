@@ -22,11 +22,15 @@ import { vibrate } from '../services/vibration';
 import { commonStyles } from '../styles/TelegramStyles';
 import BackgroundAnimation from '../components/BackgroundAnimation';
 import { useTranslation } from 'react-i18next';
+import usePremiumAccess from '../hooks/usePremiumAccess';
+import TrialWelcomeModal from '../components/TrialWelcomeModal';
 
 const Home = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const { t } = useTranslation();
+  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
+  const [showModal, setShowModal] = React.useState(false);
 
   // Блокировка прокрутки на странице
   React.useEffect(() => {
@@ -38,6 +42,12 @@ const Home = () => {
       document.documentElement.style.overflow = '';
     };
   }, []);
+
+  React.useEffect(() => {
+    if (!loading && blocked) {
+      setShowModal(true);
+    }
+  }, [loading, blocked]);
 
   const menuItems = [
     {
@@ -96,6 +106,20 @@ const Home = () => {
       },
     }),
   };
+
+  if (showModal) {
+    return (
+      <TrialWelcomeModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onStartTrial={() => setShowModal(false)}
+        onBuyPremium={() => {
+          setShowModal(false);
+          navigate('/account');
+        }}
+      />
+    );
+  }
 
   return (
     <Box sx={{

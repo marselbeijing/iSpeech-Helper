@@ -19,6 +19,8 @@ import { vibrate } from '../services/vibration';
 import ProgressCounter from '../components/ProgressCounter';
 import { getUserStats, saveUserStats, DEFAULT_STATS } from '../services/storage';
 import { useTranslation } from 'react-i18next';
+import usePremiumAccess from '../hooks/usePremiumAccess';
+import TrialWelcomeModal from '../components/TrialWelcomeModal';
 
 const Progress = () => {
   const theme = useTheme();
@@ -26,6 +28,8 @@ const Progress = () => {
   const progressData = getUserStats();
   const { t } = useTranslation();
   const [resetDialogOpen, setResetDialogOpen] = React.useState(false);
+  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
+  const [showModal, setShowModal] = React.useState(false);
   
   const handleBack = () => {
     playSound('click');
@@ -48,6 +52,26 @@ const Progress = () => {
   const handleCancelReset = () => {
     setResetDialogOpen(false);
   };
+
+  React.useEffect(() => {
+    if (!loading && blocked) {
+      setShowModal(true);
+    }
+  }, [loading, blocked]);
+
+  if (showModal) {
+    return (
+      <TrialWelcomeModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onStartTrial={() => setShowModal(false)}
+        onBuyPremium={() => {
+          setShowModal(false);
+          navigate('/account');
+        }}
+      />
+    );
+  }
 
   return (
     <Container maxWidth="md" sx={{ 

@@ -18,6 +18,7 @@ import {
 import {
   Close as CloseIcon,
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 import { verifyTelegramAuth, getCurrentUser } from '../services/telegram';
 import { playSound } from '../services/sound';
@@ -33,6 +34,8 @@ import ReferralProgram from '../components/ReferralProgram';
 // Trial period components
 import TrialTimer from '../components/TrialTimer';
 import { getTrialStatus } from '../services/trial';
+import usePremiumAccess from '../hooks/usePremiumAccess';
+import TrialWelcomeModal from '../components/TrialWelcomeModal';
 
 const Account = () => {
   const theme = useTheme();
@@ -50,6 +53,10 @@ const Account = () => {
   // Trial period state
   const [trialData, setTrialData] = useState(null);
   const [showBuyModal, setShowBuyModal] = useState(false);
+
+  const { blocked, loading: premiumLoading, trialData: premiumTrialData, checkAccess } = usePremiumAccess();
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
 
   // Инициализация пользователя (только один раз)
   useEffect(() => {
@@ -227,6 +234,12 @@ const Account = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (!premiumLoading && blocked) {
+      setShowModal(true);
+    }
+  }, [premiumLoading, blocked]);
+
   const handlePurchase = async (type) => {
     try {
       setIsPurchasing(true);
@@ -279,8 +292,6 @@ const Account = () => {
     }
   };
 
-
-
   if (loading) {
     return (
       <Box sx={{ 
@@ -331,6 +342,20 @@ const Account = () => {
           </Button>
         </Paper>
       </Box>
+    );
+  }
+
+  if (showModal) {
+    return (
+      <TrialWelcomeModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onStartTrial={() => setShowModal(false)}
+        onBuyPremium={() => {
+          setShowModal(false);
+          navigate('/account');
+        }}
+      />
     );
   }
 

@@ -9,6 +9,8 @@ import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
 import stories from '../data/stories';
 import { ArrowBack } from '@mui/icons-material';
+import usePremiumAccess from '../hooks/usePremiumAccess';
+import TrialWelcomeModal from './TrialWelcomeModal';
 
 const MIN_SPEED = 1;
 const MAX_SPEED = 100;
@@ -40,6 +42,8 @@ const SmoothReader = () => {
   const lastActiveRef = useRef(null);
   const startTimeRef = useRef(null);
   const navigate = useNavigate();
+  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
+  const [showModal, setShowModal] = React.useState(false);
   
   // Используем истории в зависимости от текущего языка
   const currentLanguageStories = stories[i18n.language] || stories.en;
@@ -126,6 +130,26 @@ const SmoothReader = () => {
       document.body.style.height = originalHeight;
     };
   }, []);
+
+  React.useEffect(() => {
+    if (!loading && blocked) {
+      setShowModal(true);
+    }
+  }, [loading, blocked]);
+
+  if (showModal) {
+    return (
+      <TrialWelcomeModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onStartTrial={() => setShowModal(false)}
+        onBuyPremium={() => {
+          setShowModal(false);
+          navigate('/account');
+        }}
+      />
+    );
+  }
 
   return (
     <Box sx={{
