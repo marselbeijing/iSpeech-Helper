@@ -60,9 +60,8 @@ class TelegramStarsBot {
   // Функция для получения локализованных текстов
   getTexts(languageCode) {
     let lang = 'en';
-    if (languageCode && typeof languageCode === 'string') {
-      if (languageCode.startsWith('ru')) lang = 'ru';
-      else if (languageCode.startsWith('en')) lang = 'en';
+    if (languageCode && typeof languageCode === 'string' && languageCode.startsWith('ru')) {
+      lang = 'ru';
     }
     const isEnglish = lang === 'en';
     return {
@@ -122,8 +121,8 @@ class TelegramStarsBot {
         yearly: isEnglish ? 'annual' : 'годовую'
       },
       welcomeMessage: isEnglish
-        ? `🗣 I'm your personal assistant for improving speech and diction. Here you'll find exercises for:\n\n✨ Clear articulation\n🫁 Proper breathing and voice control\n🎯 Confident communication\n🎭 Expressive speech\n🎁 Enjoy a 3-day FREE trial with full access to all features!`
-        : `🗣 Я ваш персональный помощник для улучшения речи и дикции. Здесь вас ждут упражнения для:\n\n✨ Четкой артикуляции\n🫁 Правильного дыхания и голоса\n🎯 Уверенной коммуникации\n🎭 Выразительности речи\n🎁 Получите 3 дня БЕСПЛАТНОГО доступа ко всем функциям!`,
+        ? `🗣 I'm your personal assistant for improving speech and diction. Here you'll find exercises for:\n\n✨ Clear articulation\n🫁 Proper breathing and voice control\n🎯 Confident communication\n🎭 Expressive speech\n🎁 Enjoy a 3-day FREE trial with full access to all features!\n\n[language_code: ${languageCode}]`
+        : `🗣 Я ваш персональный помощник для улучшения речи и дикции. Здесь вас ждут упражнения для:\n\n✨ Четкой артикуляции\n🫁 Правильного дыхания и голоса\n🎯 Уверенной коммуникации\n🎭 Выразительности речи\n🎁 Получите 3 дня БЕСПЛАТНОГО доступа ко всем функциям!\n\n[language_code: ${languageCode}]`,
       learnAboutSubscriptionButton: isEnglish ? '💫 Learn about subscription' : '💫 Подробнее о подписке',
     };
   }
