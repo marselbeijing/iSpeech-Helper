@@ -31,10 +31,29 @@ const EmotionsTrainer = () => {
   const [currentEmotion, setCurrentEmotion] = useState(null);
   const [currentPhrase, setCurrentPhrase] = useState('');
 
-  const { blocked, trialData } = usePremiumAccess();
+  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
   const [showModal, setShowModal] = useState(false);
 
+  React.useEffect(() => {
+    if (!loading && blocked) {
+      setShowModal(true);
+    }
+  }, [loading, blocked]);
 
+  if (showModal) {
+    return (
+      <TrialWelcomeModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onStartTrial={() => setShowModal(false)}
+        onBuyPremium={() => {
+          setShowModal(false);
+          navigate('/account');
+        }}
+        trialExpired={blocked || (trialData?.trial?.isActive === false)}
+      />
+    );
+  }
 
   React.useEffect(() => {
     getRandomEmotionAndPhrase();
@@ -80,21 +99,6 @@ const EmotionsTrainer = () => {
     t('emotion_phrase_9'),
     t('emotion_phrase_10'),
   ];
-
-  if (showModal) {
-    return (
-      <TrialWelcomeModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onStartTrial={() => setShowModal(false)}
-        onBuyPremium={() => {
-          setShowModal(false);
-          navigate('/account');
-        }}
-        trialExpired={blocked || (trialData?.trial?.isActive === false)}
-      />
-    );
-  }
 
   return (
     <Box sx={{ 

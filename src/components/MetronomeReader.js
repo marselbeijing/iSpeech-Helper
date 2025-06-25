@@ -52,16 +52,11 @@ const MetronomeReader = () => {
   const wordsRef = useRef([]);
   const textBoxRef = useRef(null);
   const lastActiveRef = useRef(null);
-  const { blocked, trialData, triggerModalOnAction } = usePremiumAccess();
+  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
   const [showModal, setShowModal] = React.useState(false);
   const navigate = useNavigate();
 
   const handleGenerateAffirmation = React.useCallback(() => {
-    if (blocked && triggerModalOnAction()) {
-      setShowModal(true);
-      return;
-    }
-
     const affirmationKeys = Array.from({length: 25}, (_, i) => `affirmation_${i + 1}`);
     const randomKey = affirmationKeys[Math.floor(Math.random() * affirmationKeys.length)];
     const affirmation = t(randomKey);
@@ -71,7 +66,7 @@ const MetronomeReader = () => {
     wordsRef.current = splitWords;
     setCurrentWordIndex(-1);
     setIsPlaying(false);
-  }, [t, blocked, triggerModalOnAction]);
+  }, [t]);
 
   const scheduler = React.useCallback(() => {
     const currentTime = audioContextRef.current.currentTime;
@@ -139,11 +134,6 @@ const MetronomeReader = () => {
   };
 
   const handlePlayPause = () => {
-    if (blocked && triggerModalOnAction()) {
-      setShowModal(true);
-      return;
-    }
-
     if (!longAffirmation) return;
     if (!isPlaying) {
       if (audioContextRef.current.state === 'suspended') audioContextRef.current.resume();
@@ -172,6 +162,12 @@ const MetronomeReader = () => {
   const handleExerciseComplete = () => {
     updateProgress('metronome');
   };
+
+  React.useEffect(() => {
+    if (!loading && blocked) {
+      setShowModal(true);
+    }
+  }, [loading, blocked]);
 
   if (showModal) {
     return (

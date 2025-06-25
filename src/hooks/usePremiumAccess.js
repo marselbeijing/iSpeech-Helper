@@ -1,20 +1,24 @@
 import { useEffect, useState, useCallback } from 'react';
-import { getCurrentUser } from '../services/telegram';
-import { checkSubscriptionStatus } from '../services/subscription';
 import { getTrialStatus } from '../services/trial';
+import { getCurrentUser } from '../services/telegram';
+import { getUserSubscriptionStatus, getTrialData } from '../services/api';
 
-// Функции для управления модальным окном
+// Функции для управления частотой показа модального окна
+const MODAL_COOLDOWN_HOURS = 4; // Не показывать чаще 1 раза в 4 часа
+
+const getLastModalShown = () => {
+  const lastShown = localStorage.getItem('trialExpiredModalLastShown');
+  return lastShown ? parseInt(lastShown) : 0;
+};
+
 const setLastModalShown = () => {
   localStorage.setItem('trialExpiredModalLastShown', Date.now().toString());
 };
 
 const canShowModal = () => {
-  const lastShown = localStorage.getItem('trialExpiredModalLastShown');
-  if (!lastShown) return true;
-  
-  const timeSinceLastShown = Date.now() - parseInt(lastShown);
-  const fourHours = 4 * 60 * 60 * 1000; // 4 часа в миллисекундах
-  return timeSinceLastShown >= fourHours;
+  const lastShown = getLastModalShown();
+  const hoursSinceLastShown = (Date.now() - lastShown) / (1000 * 60 * 60);
+  return hoursSinceLastShown >= MODAL_COOLDOWN_HOURS;
 };
 
 // Функция для "отложить напоминание" на определенное время
@@ -37,7 +41,7 @@ const getTemporaryAccessInfo = () => {
   const timeLeft = parseInt(snoozedUntil) - Date.now();
   if (timeLeft <= 0) return null;
   
-  const hoursLeft = Math.ceil(timeLeft / (60 * 60 * 1000));
+  const hoursLeft = Math.ceil(timeLeft / (1000 * 60 * 60));
   return { hoursLeft, expiresAt: new Date(parseInt(snoozedUntil)) };
 };
 
@@ -46,7 +50,6 @@ export default function usePremiumAccess() {
   const [blocked, setBlocked] = useState(false);
   const [shouldShowModal, setShouldShowModal] = useState(false);
   const [trialData, setTrialData] = useState(null);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const checkAccess = useCallback(async () => {
     setLoading(true);
@@ -57,15 +60,15 @@ export default function usePremiumAccess() {
         return;
       }
 
-      const [subscriptionStatus, trialStatus] = await Promise.all([
-        checkSubscriptionStatus(),
-        getTrialStatus()
+      const [status, trial] = await Promise.all([
+        getUserSubscriptionStatus(user.id),
+        getTrialData(user.id)
       ]);
 
-      setTrialData(trialStatus);
+      setTrialData(trial);
 
-      const isBlocked = !subscriptionStatus.isActive && 
-                       (!trialStatus.trial?.isActive || trialStatus.trial?.timeLeftMs <= 0);
+      const isBlocked = !status.hasActiveSubscription && 
+                       (!status.trialActive || status.trialExpired);
       
       // Если модальное окно отложено, даём временный доступ
       const hasTemporaryAccess = isModalSnoozed();
@@ -73,34 +76,22 @@ export default function usePremiumAccess() {
       
       setBlocked(finalBlocked);
 
-      // Показываем модальное окно только при первом запуске приложения
-      if (isInitialLoad && finalBlocked && canShowModal()) {
+      // Логика показа модального окна с ограничением частоты
+      if (isBlocked && !hasTemporaryAccess && canShowModal()) {
         setShouldShowModal(true);
         setLastModalShown();
       }
-      
-      setIsInitialLoad(false);
 
     } catch (error) {
       console.error('Ошибка проверки доступа:', error);
     } finally {
       setLoading(false);
     }
-  }, [isInitialLoad]);
+  }, []);
 
   useEffect(() => {
     checkAccess();
   }, [checkAccess]);
-
-  // Функция для показа модального окна при попытке использовать премиум-функции
-  const triggerModalOnAction = () => {
-    if (blocked && !isModalSnoozed() && canShowModal()) {
-      setShouldShowModal(true);
-      setLastModalShown();
-      return true; // Показали модальное окно
-    }
-    return false; // Не показали модальное окно
-  };
 
   // Функция для скрытия модального окна
   const hideModal = () => {
@@ -122,7 +113,6 @@ export default function usePremiumAccess() {
     trialData,
     checkAccess,
     getTemporaryAccessInfo,
-    hasTemporaryAccess: isModalSnoozed(),
-    triggerModalOnAction
+    hasTemporaryAccess: isModalSnoozed()
   };
 } 

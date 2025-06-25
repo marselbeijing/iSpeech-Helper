@@ -14,9 +14,6 @@ import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
-import usePremiumAccess from '../hooks/usePremiumAccess';
-import TrialWelcomeModal from './TrialWelcomeModal';
-import { useNavigate } from 'react-router-dom';
 
 const tongueTwistersRU = {
   beginner: [
@@ -169,17 +166,8 @@ const TongueTwisters = () => {
   const [currentTwister, setCurrentTwister] = useState('');
   const [isVisible, setIsVisible] = useState(true);
   const textBoxRef = useRef(null);
-  const { blocked, trialData, triggerModalOnAction } = usePremiumAccess();
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
 
   const getRandomTwister = React.useCallback((lvl = level) => {
-    // Проверяем премиум-доступ перед выполнением действия
-    if (blocked && triggerModalOnAction()) {
-      setShowModal(true);
-      return;
-    }
-
     setIsVisible(false);
     setTimeout(() => {
       const arr = i18n.language === 'ru' ? tongueTwistersRU[lvl] || tongueTwistersRU.beginner : tongueTwistersEN[lvl] || tongueTwistersEN.beginner;
@@ -195,7 +183,7 @@ const TongueTwisters = () => {
         }
       }, 350);
     }, 300);
-  }, [level, i18n.language, blocked, triggerModalOnAction]);
+  }, [level, i18n.language]);
 
   useEffect(() => {
     getRandomTwister(level);
@@ -210,21 +198,6 @@ const TongueTwisters = () => {
   const handleExerciseComplete = () => {
     updateProgress('tongueTwister');
   };
-
-  if (showModal) {
-    return (
-      <TrialWelcomeModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onStartTrial={() => setShowModal(false)}
-        onBuyPremium={() => {
-          setShowModal(false);
-          navigate('/account');
-        }}
-        trialExpired={blocked || (trialData?.trial?.isActive === false)}
-      />
-    );
-  }
 
   return (
     <Box sx={{ 

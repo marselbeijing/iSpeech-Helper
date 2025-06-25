@@ -24,7 +24,7 @@ const BreathingExercises = () => {
   const [currentPhase, setCurrentPhase] = useState('inhale'); // inhale, hold, exhale, rest
   const [totalCycles] = useState(5);
   const { t, i18n } = useTranslation();
-  const { blocked, trialData, triggerModalOnAction } = usePremiumAccess();
+  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
   const [showModal, setShowModal] = React.useState(false);
 
   const phases = useMemo(() => ({
@@ -49,26 +49,20 @@ const BreathingExercises = () => {
     return () => clearTimeout(timer);
   }, [isPlaying, currentPhase, phases, totalCycles]);
 
-  const startExercise = () => {
-    // Проверяем премиум-доступ перед выполнением действия
-    if (blocked && triggerModalOnAction()) {
-      setShowModal(true);
-      return;
-    }
-
+  const startExercise = useCallback(() => {
     setIsPlaying(true);
     setCurrentPhase('inhale');
     playSound('click');
     vibrate('click');
-  };
+  }, []);
 
-  const stopExercise = () => {
+  const stopExercise = useCallback(() => {
     setIsPlaying(false);
     setCurrentPhase('inhale');
     playSound('click');
     vibrate('click');
     handleExerciseComplete();
-  };
+  }, []);
 
   // Цвета для разных фаз
   const getColors = useCallback((phase) => {
@@ -111,7 +105,11 @@ const BreathingExercises = () => {
     updateProgress('breathing');
   };
 
-
+  React.useEffect(() => {
+    if (!loading && blocked) {
+      setShowModal(true);
+    }
+  }, [loading, blocked]);
 
   if (showModal) {
     return (

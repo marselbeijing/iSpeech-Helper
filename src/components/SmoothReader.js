@@ -42,7 +42,7 @@ const SmoothReader = () => {
   const lastActiveRef = useRef(null);
   const startTimeRef = useRef(null);
   const navigate = useNavigate();
-  const { blocked, trialData, triggerModalOnAction } = usePremiumAccess();
+  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
   const [showModal, setShowModal] = React.useState(false);
   
   // Используем истории в зависимости от текущего языка
@@ -86,12 +86,6 @@ const SmoothReader = () => {
   }, [currentIndex]);
 
   const handlePlayPause = () => {
-    // Проверяем премиум-доступ перед выполнением действия
-    if (blocked && triggerModalOnAction()) {
-      setShowModal(true);
-      return;
-    }
-
     if (isPlaying) {
       setIsPlaying(false);
       if (currentIndex >= totalLetters) {
@@ -111,12 +105,6 @@ const SmoothReader = () => {
   };
 
   const handleRandomStory = () => {
-    // Проверяем премиум-доступ перед выполнением действия
-    if (blocked && triggerModalOnAction()) {
-      setShowModal(true);
-      return;
-    }
-
     let nextIndex = Math.floor(Math.random() * currentLanguageStories.length);
     // Исключаем повтор текущей истории
     if (nextIndex === storyIndex) {
@@ -142,6 +130,12 @@ const SmoothReader = () => {
       document.body.style.height = originalHeight;
     };
   }, []);
+
+  React.useEffect(() => {
+    if (!loading && blocked) {
+      setShowModal(true);
+    }
+  }, [loading, blocked]);
 
   if (showModal) {
     return (

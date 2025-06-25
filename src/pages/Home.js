@@ -30,7 +30,7 @@ const Home = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const { t } = useTranslation();
-  const { blocked, shouldShowModal, hideModal, snoozeModalReminder, trialData, hasTemporaryAccess, getTemporaryAccessInfo } = usePremiumAccess();
+  const { loading, blocked, shouldShowModal, hideModal, snoozeModalReminder, trialData, hasTemporaryAccess, getTemporaryAccessInfo } = usePremiumAccess();
   const [showModal, setShowModal] = useState(false);
 
   // Блокировка прокрутки на странице

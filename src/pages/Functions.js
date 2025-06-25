@@ -68,7 +68,7 @@ const Functions = () => {
     vibration: true,
     language: savedLang,
   });
-  const { blocked, trialData } = usePremiumAccess();
+  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
@@ -84,7 +84,11 @@ const Functions = () => {
     }
   }, []);
 
-
+  useEffect(() => {
+    if (!loading && blocked) {
+      setShowModal(true);
+    }
+  }, [loading, blocked]);
 
   const menuItems = React.useMemo(() => [
     {
