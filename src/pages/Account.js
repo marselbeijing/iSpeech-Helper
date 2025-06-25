@@ -33,7 +33,7 @@ import ReferralProgram from '../components/ReferralProgram';
 
 // Trial period components
 import TrialTimer from '../components/TrialTimer';
-import { getTrialStatus, setPostponeTime } from '../services/trial';
+import { getTrialStatus, getTrialTexts } from '../services/trial';
 import usePremiumAccess from '../hooks/usePremiumAccess';
 import TrialWelcomeModal from '../components/TrialWelcomeModal';
 
@@ -325,14 +325,9 @@ const Account = () => {
       <TrialWelcomeModal
         open={showModal}
         onClose={() => setShowModal(false)}
-        onStartTrial={() => setShowModal(false)}
         onBuyPremium={() => {
           setShowModal(false);
           navigate('/account');
-        }}
-        onPostpone={() => {
-          setPostponeTime();
-          setShowModal(false);
         }}
         trialExpired={true}
       />
