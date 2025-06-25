@@ -31,9 +31,16 @@ class TelegramStarsBot {
     
     // Обработка ошибок polling - минимальное логирование
     this.bot.on('polling_error', (error) => {
-      // Игнорируем частые сетевые ошибки
-      if (error.code === 'EFATAL' || error.code === 'ENOTFOUND' || error.code === 'ETIMEDOUT') {
-        return; // Не логируем сетевые ошибки
+      // Игнорируем частые сетевые ошибки и конфликты
+      if (
+        error.code === 'EFATAL' || 
+        error.code === 'ENOTFOUND' || 
+        error.code === 'ETIMEDOUT' ||
+        error.code === 'ETELEGRAM' ||
+        (error.message && error.message.includes('409 Conflict')) ||
+        (error.message && error.message.includes('terminated by other getUpdates'))
+      ) {
+        return; // Не логируем эти ошибки
       }
       
       // Логируем только критические ошибки
