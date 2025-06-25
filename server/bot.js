@@ -75,7 +75,7 @@ class TelegramStarsBot {
       quarterlyButton: isEnglish ? '📅 3 months (699 ⭐)' : '📅 3 месяца (699 ⭐)',
       yearlyButton: isEnglish ? '📅 12 months (1999 ⭐)' : '📅 12 месяцев (1999 ⭐)',
       openAppButton: isEnglish ? '🚀 Open App' : '🚀 Открыть приложение',
-      buyButton: isEnglish ? '💳 Pay' : '💳 Pay',
+      buyButton: isEnglish ? '💳 Pay' : '💳 Заплатить',
       backButton: isEnglish ? '🔙 Back to selection' : '🔙 Назад к выбору',
       monthlyTitle: isEnglish
         ? `🪄 Premium Monthly Subscription  💰 Price: 299 ⭐ stars  ⏰ Duration: 30 days  📝 Full access to all features for 1 month`
@@ -488,11 +488,15 @@ ${texts.allFeaturesAvailable}
   }
 
   async createInvoice(chatId, planType, user) {
-    // Всегда используем текущий язык из Telegram, а не сохраненный
-    let lang = 'en';
-    if (user.language_code && user.language_code.startsWith('ru')) {
-      lang = 'ru';
+    // Получаем язык из TrialPeriod, если есть
+    let lang = user.language_code;
+    if (user.id) {
+      const trial = await TrialPeriod.findOne({ userId: user.id.toString() });
+      if (trial?.userInfo?.languageCode) {
+        lang = trial.userInfo.languageCode;
+      }
     }
+    if (!lang) lang = 'en';
     const texts = this.getTexts(lang);
     
     try {
@@ -591,11 +595,15 @@ ${texts.allFeaturesAvailable}
   }
 
   async sendSubscriptionOffer(chatId, planType, user) {
-    // Всегда используем текущий язык из Telegram, а не сохраненный
-    let lang = 'en';
-    if (user.language_code && user.language_code.startsWith('ru')) {
-      lang = 'ru';
+    // Получаем язык из TrialPeriod, если есть
+    let lang = user.language_code;
+    if (user.id) {
+      const trial = await TrialPeriod.findOne({ userId: user.id.toString() });
+      if (trial?.userInfo?.languageCode) {
+        lang = trial.userInfo.languageCode;
+      }
     }
+    if (!lang) lang = 'en';
     const texts = this.getTexts(lang);
     
     const PLANS = {
