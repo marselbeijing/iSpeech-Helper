@@ -57,6 +57,34 @@ export const getTrialStatus = async () => {
     const user = getCurrentUser();
     console.log('🔍 Получение статуса пробного периода для пользователя:', user);
     
+    // В development режиме используем только локальные данные
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔧 Development mode: используем только локальные данные');
+      
+      const startDate = getTrialStartDate();
+      const trialInfo = calculateTrialTimeLeft(startDate);
+      const hasSeenWelcome = localStorage.getItem(TRIAL_WELCOME_SEEN_KEY) === 'true';
+      
+      console.log('📱 Локальный пробный период (development):', {
+        startDate,
+        hasSeenWelcome,
+        isActive: trialInfo.isActive,
+        timeLeft: trialInfo.timeLeft
+      });
+      
+      return {
+        hasActiveSubscription: false,
+        trial: {
+          isActive: trialInfo.isActive,
+          hasSeenWelcome: hasSeenWelcome,
+          startDate: startDate,
+          endDate: trialInfo.endDate,
+          timeLeft: trialInfo.timeLeft,
+          timeLeftMs: trialInfo.timeLeftMs
+        }
+      };
+    }
+    
     if (!user?.id) {
       console.log('❌ Пользователь не найден, используем локальный пробный период');
       
@@ -182,10 +210,45 @@ export const markWelcomeSeen = async () => {
 };
 
 // Функция для сброса пробного периода (для тестирования)
-export const resetTrialPeriod = () => {
-  localStorage.removeItem(TRIAL_START_DATE_KEY);
-  localStorage.removeItem(TRIAL_WELCOME_SEEN_KEY);
-  console.log('🔄 Пробный период сброшен');
+export const resetTrialPeriod = async () => {
+  try {
+    localStorage.removeItem(TRIAL_START_DATE_KEY);
+    localStorage.removeItem(TRIAL_WELCOME_SEEN_KEY);
+    console.log('🔄 Локальный пробный период сброшен');
+    
+    // Принудительно создаем новую дату начала пробного периода
+    const newStartDate = new Date().toISOString();
+    localStorage.setItem(TRIAL_START_DATE_KEY, newStartDate);
+    console.log('🆕 Создана новая дата начала пробного периода:', newStartDate);
+    
+    // Сброс на сервере только в production
+    if (process.env.NODE_ENV === 'production') {
+      const user = getCurrentUser();
+      if (user?.id) {
+        try {
+          const response = await fetch(`${API_BASE}/api/trial/reset/${user.id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          
+          if (response.ok) {
+            const result = await response.json();
+            console.log('✅ Пробный период сброшен на сервере:', result);
+          } else {
+            console.log('⚠️ Не удалось сбросить пробный период на сервере');
+          }
+        } catch (error) {
+          console.log('⚠️ Ошибка сброса пробного периода на сервере:', error);
+        }
+      }
+    } else {
+      console.log('🔧 Development mode: пропускаем серверный сброс');
+    }
+  } catch (error) {
+    console.error('❌ Ошибка при сбросе пробного периода:', error);
+  }
 };
 
 // Проверка доступа к функции

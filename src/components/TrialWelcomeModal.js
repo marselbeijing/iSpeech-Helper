@@ -78,14 +78,11 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
         }
       }}
     >
-      <DialogTitle sx={{ textAlign: 'center', pb: 1 }}>
-        <Typography variant="h5" component="h2" fontWeight="bold" color="primary">
-          {texts.welcomeTitle}
-        </Typography>
-      </DialogTitle>
-
-      <DialogContent sx={{ pt: 1 }}>
+      <DialogContent sx={{ pt: 3 }}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>
+          <Typography variant="h5" fontWeight="bold" sx={{ color: 'white', mb: 2 }}>
+            {texts.welcomeTitle}
+          </Typography>
           <Chip
             label={texts.freeTrialChip}
             color="primary"
@@ -103,7 +100,7 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
           </Typography>
         </Box>
 
-        <Typography variant="h6" gutterBottom color="primary" fontWeight="bold" sx={{ textAlign: 'center', mb: 2 }}>
+        <Typography variant="h6" gutterBottom fontWeight="bold" sx={{ textAlign: 'center', mb: 2, color: 'white' }}>
           {texts.premiumFeatures}
         </Typography>
 
@@ -111,37 +108,37 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
           <ListItem sx={{ py: 0.5 }}>
             <ListItemText 
               primary={texts.feature1}
-              primaryTypographyProps={{ fontSize: '0.95rem' }}
+              primaryTypographyProps={{ fontSize: '0.95rem', color: 'white' }}
             />
           </ListItem>
           <ListItem sx={{ py: 0.5 }}>
             <ListItemText 
               primary={texts.feature2}
-              primaryTypographyProps={{ fontSize: '0.95rem' }}
+              primaryTypographyProps={{ fontSize: '0.95rem', color: 'white' }}
             />
           </ListItem>
           <ListItem sx={{ py: 0.5 }}>
             <ListItemText 
               primary={texts.feature3}
-              primaryTypographyProps={{ fontSize: '0.95rem' }}
+              primaryTypographyProps={{ fontSize: '0.95rem', color: 'white' }}
             />
           </ListItem>
           <ListItem sx={{ py: 0.5 }}>
             <ListItemText 
               primary={texts.feature4}
-              primaryTypographyProps={{ fontSize: '0.95rem' }}
+              primaryTypographyProps={{ fontSize: '0.95rem', color: 'white' }}
             />
           </ListItem>
           <ListItem sx={{ py: 0.5 }}>
             <ListItemText 
               primary={texts.feature5}
-              primaryTypographyProps={{ fontSize: '0.95rem' }}
+              primaryTypographyProps={{ fontSize: '0.95rem', color: 'white' }}
             />
           </ListItem>
           <ListItem sx={{ py: 0.5 }}>
             <ListItemText 
               primary={texts.feature6}
-              primaryTypographyProps={{ fontSize: '0.95rem' }}
+              primaryTypographyProps={{ fontSize: '0.95rem', color: 'white' }}
             />
           </ListItem>
         </List>

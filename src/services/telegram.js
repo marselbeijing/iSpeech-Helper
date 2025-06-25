@@ -61,20 +61,16 @@ export const getCurrentUser = () => {
     return user;
   }
   
-  // Возвращаем демо-пользователя с тестовым языком
-  const testLanguage = localStorage.getItem('testLanguage');
-  if (testLanguage) {
-    return {
-      id: 'demo_user',
-      firstName: 'Demo',
-      lastName: 'User',
-      username: 'demo',
-      language_code: testLanguage,
-      photo_url: null
-    };
-  }
-  
-  return null;
+  // Возвращаем демо-пользователя с английским языком по умолчанию
+  const testLanguage = localStorage.getItem('testLanguage') || 'en'; // По умолчанию английский
+  return {
+    id: 'demo_user',
+    firstName: 'Demo',
+    lastName: 'User',
+    username: 'demo',
+    language_code: testLanguage,
+    photo_url: null
+  };
 };
 
 // Function to logout

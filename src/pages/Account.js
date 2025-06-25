@@ -197,11 +197,25 @@ const Account = () => {
             try {
               const status = await checkSubscriptionStatus();
               setSubscription(status);
-    } catch (error) {
+            } catch (error) {
               console.log('Ошибка проверки подписки при возврате:', error);
-    }
+            }
           }, 1000); // Небольшая задержка для корректной проверки
         }
+      }
+      
+      // Также обновляем данные пробного периода
+      if (user) {
+        setTimeout(async () => {
+          try {
+            console.log('🔄 Обновляем данные пробного периода в Account');
+            const trialStatus = await getTrialStatus();
+            console.log('📊 Обновленные данные пробного периода:', trialStatus);
+            setTrialData(trialStatus);
+          } catch (error) {
+            console.log('Ошибка обновления пробного периода:', error);
+          }
+        }, 500);
       }
     };
 

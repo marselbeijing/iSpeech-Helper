@@ -164,6 +164,35 @@ router.post('/welcome-seen/:userId', async (req, res) => {
   }
 });
 
+// Сброс/обновление пробного периода
+router.post('/reset/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    console.log('🔄 Сброс пробного периода для пользователя:', userId);
+    
+    const startDate = new Date();
+    const endDate = new Date(startDate.getTime() + (3 * 24 * 60 * 60 * 1000)); // 3 дня
+    
+    await TrialPeriod.findOneAndUpdate(
+      { userId },
+      { 
+        startDate,
+        endDate,
+        isActive: true,
+        hasSeenWelcome: true
+      },
+      { upsert: true }
+    );
+
+    console.log('✅ Пробный период обновлен:', { startDate, endDate });
+    res.json({ success: true, startDate, endDate });
+
+  } catch (error) {
+    console.error('❌ Ошибка сброса пробного периода:', error);
+    res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+  }
+});
+
 // Проверка доступа к функции
 router.get('/check-access/:userId', async (req, res) => {
   try {

@@ -293,6 +293,12 @@ const App = () => {
     // Инициализация Telegram Analytics SDK
     const initAnalytics = () => {
       try {
+        // Проверяем, что мы в Telegram WebApp, а не в локальной разработке
+        if (!window.Telegram?.WebApp || process.env.NODE_ENV === 'development') {
+          console.log('⚠️ Пропускаем инициализацию Telegram Analytics (локальная разработка или вне Telegram)');
+          return;
+        }
+        
         console.log('🔍 Проверка доступности telegramAnalytics:', typeof telegramAnalytics);
         console.log('🔍 Методы SDK:', Object.keys(telegramAnalytics));
         
@@ -377,13 +383,56 @@ const App = () => {
   // Обработчики модального окна пробного периода
   const handleStartTrial = async () => {
     try {
+      console.log('🚀 handleStartTrial начат');
+      
+      // Принудительно создаем дату начала пробного периода если её нет
+      const existingStartDate = localStorage.getItem('trialStartDate');
+      if (!existingStartDate) {
+        const startDate = new Date().toISOString();
+        localStorage.setItem('trialStartDate', startDate);
+        console.log('🆕 Создана дата начала пробного периода:', startDate);
+      }
+      
+      console.log('📝 Отмечаем просмотр приветствия...');
       await markWelcomeSeen();
+      console.log('✅ Приветствие отмечено');
+      
+      // Сбрасываем пробный период на сервере
+      const user = getCurrentUser();
+      if (user?.id && process.env.NODE_ENV === 'production') {
+        try {
+          console.log('🔄 Сбрасываем пробный период на сервере...');
+          const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://ispeech-backend.onrender.com'}/api/trial/reset/${user.id}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          
+          if (response.ok) {
+            const result = await response.json();
+            console.log('✅ Пробный период сброшен на сервере:', result);
+          } else {
+            console.log('⚠️ Не удалось сбросить пробный период на сервере');
+          }
+        } catch (error) {
+          console.log('⚠️ Ошибка сброса пробного периода на сервере:', error);
+        }
+      } else if (process.env.NODE_ENV === 'development') {
+        console.log('🔧 Development mode: пропускаем серверный сброс в handleStartTrial');
+      }
+      
+      console.log('🔄 Закрываем модальное окно...');
       setShowWelcomeModal(false);
-      // Обновляем данные пробного периода
+      console.log('✅ Модальное окно закрыто');
+      
+      console.log('📊 Обновляем данные пробного периода...');
       const status = await getTrialStatus();
+      console.log('📊 Новый статус пробного периода:', status);
       setTrialData(status);
+      console.log('✅ handleStartTrial завершен успешно');
     } catch (error) {
-      console.error('Ошибка при начале пробного периода:', error);
+      console.error('❌ Ошибка при начале пробного периода:', error);
     }
   };
 
@@ -495,7 +544,43 @@ const App = () => {
           <Button 
             variant="outlined" 
             size="small" 
-            onClick={() => console.log('Trial data:', trialData)}
+            onClick={() => {
+              // Сбрасываем язык на английский по умолчанию
+              localStorage.removeItem('testLanguage');
+              localStorage.removeItem('lang'); // Сбрасываем i18n язык
+              window.location.reload();
+            }}
+            sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
+          >
+            🔄 EN Default
+          </Button>
+          <Button 
+            variant="outlined" 
+            size="small" 
+            onClick={() => {
+              console.log('=== ОТЛАДОЧНАЯ ИНФОРМАЦИЯ ===');
+              console.log('Trial data:', trialData);
+              console.log('localStorage trialStartDate:', localStorage.getItem('trialStartDate'));
+              console.log('localStorage trialWelcomeSeen:', localStorage.getItem('trialWelcomeSeen'));
+              console.log('localStorage testLanguage:', localStorage.getItem('testLanguage'));
+              console.log('Current time:', new Date().toISOString());
+              
+              // Проверяем расчет времени
+              const startDate = localStorage.getItem('trialStartDate');
+              if (startDate) {
+                const start = new Date(startDate);
+                const end = new Date(start.getTime() + 3 * 24 * 60 * 60 * 1000);
+                const now = new Date();
+                const timeLeftMs = end.getTime() - now.getTime();
+                
+                console.log('Start date:', start.toISOString());
+                console.log('End date:', end.toISOString());
+                console.log('Current time:', now.toISOString());
+                console.log('Time left (ms):', timeLeftMs);
+                console.log('Is active:', timeLeftMs > 0);
+              }
+              console.log('=============================');
+            }}
             sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
           >
             📊 Лог
@@ -504,11 +589,12 @@ const App = () => {
             variant="contained" 
             color="error"
             size="small" 
-            onClick={() => {
-              resetTrialPeriod();
+            onClick={async () => {
+              await resetTrialPeriod();
               setShowWelcomeModal(true);
               // Обновляем данные
-              getTrialStatus().then(status => setTrialData(status));
+              const status = await getTrialStatus();
+              setTrialData(status);
             }}
             sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
           >

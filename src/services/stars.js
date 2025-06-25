@@ -168,7 +168,7 @@ export const purchaseWithStars = async (planType) => {
 ${texts.orStart}`;
 
     // Показываем popup с выбором действий
-    if (typeof webApp.showPopup === 'function') {
+    if (typeof webApp.showPopup === 'function' && process.env.NODE_ENV !== 'development') {
       // Устанавливаем флаг что попап открыт
       isPopupOpen = true;
       
@@ -363,28 +363,55 @@ ${texts.orStartForSelection}`);
       });
     } 
     
-    // Fallback для старых версий без showPopup
-    else if (typeof webApp.showAlert === 'function') {
+    // Fallback для старых версий без showPopup или development окружения
+    else if (typeof webApp.showAlert === 'function' || process.env.NODE_ENV === 'development') {
       // Устанавливаем флаг что попап открыт
       isPopupOpen = true;
       
       return new Promise((resolve) => {
-        webApp.showAlert(message, () => {
+        // В development используем обычный alert
+        if (process.env.NODE_ENV === 'development') {
+          const confirmed = window.confirm(`${message}\n\nОткрыть бота для покупки?`);
+          
           // Сбрасываем флаг когда попап закрыт
           isPopupOpen = false;
           
-          // Автоматически открываем бота
-          if (typeof webApp.openTelegramLink === 'function') {
-            webApp.openTelegramLink(botUrlWithStart);
+          if (confirmed) {
+            // Автоматически открываем бота
+            window.open(botUrlWithStart, '_blank');
+            
+            resolve({
+              success: false,
+              cancelled: false,
+              redirected: true,
+              message: texts.redirectedToBot
+            });
+          } else {
+            resolve({
+              success: false,
+              cancelled: true,
+              status: 'cancelled'
+            });
           }
-          
-          resolve({
-            success: false,
-            cancelled: false,
-            redirected: true,
-            message: texts.redirectedToBot
+        } else {
+          // Обычный showAlert для старых версий
+          webApp.showAlert(message, () => {
+            // Сбрасываем флаг когда попап закрыт
+            isPopupOpen = false;
+            
+            // Автоматически открываем бота
+            if (typeof webApp.openTelegramLink === 'function') {
+              webApp.openTelegramLink(botUrlWithStart);
+            }
+            
+            resolve({
+              success: false,
+              cancelled: false,
+              redirected: true,
+              message: texts.redirectedToBot
+            });
           });
-        });
+        }
       });
     } 
     
