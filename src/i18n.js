@@ -3,10 +3,9 @@ import { initReactI18next } from 'react-i18next';
 import en from './locales/en.json';
 import ru from './locales/ru.json';
 
-// Get saved language from localStorage or use browser language
+// Get saved language from localStorage or default to English
 const savedLang = typeof window !== 'undefined' ? localStorage.getItem('lang') : null;
-const browserLang = navigator.language.split('-')[0];
-const defaultLang = savedLang || (browserLang === 'ru' ? 'ru' : 'en');
+const defaultLang = savedLang || 'en'; // По умолчанию английский
 
 i18n
   .use(initReactI18next)
@@ -16,8 +15,8 @@ i18n
       ru: { translation: ru }
     },
     lng: defaultLang,
-    fallbackLng: 'en',
+    fallbackLng: 'en', // Fallback тоже английский
     interpolation: { escapeValue: false }
   });
 
-export default i18n; 
+export default i18n;

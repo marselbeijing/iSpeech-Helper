@@ -215,11 +215,27 @@ const App = () => {
               const defaultLang = user.language_code.startsWith('ru') ? 'ru' : 'en';
               await i18n.changeLanguage(defaultLang);
               console.log('✅ Установлен язык по умолчанию:', defaultLang);
+            } else {
+              // Если язык пользователя тоже не найден, используем английский по умолчанию
+              await i18n.changeLanguage('en');
+              console.log('✅ Установлен английский язык по умолчанию');
             }
           }
+        } else {
+          // Если пользователь не найден, устанавливаем английский по умолчанию
+          console.log('⚠️ Пользователь не найден, устанавливаем английский язык по умолчанию');
+          await i18n.changeLanguage('en');
+          console.log('✅ Установлен английский язык по умолчанию (нет пользователя)');
         }
       } catch (error) {
         console.error('❌ Ошибка загрузки языка пользователя:', error);
+        // В случае ошибки тоже устанавливаем английский
+        try {
+          await i18n.changeLanguage('en');
+          console.log('✅ Установлен английский язык по умолчанию (ошибка)');
+        } catch (e) {
+          console.error('❌ Критическая ошибка установки языка:', e);
+        }
       }
     };
 
