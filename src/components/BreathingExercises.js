@@ -16,7 +16,7 @@ import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
 import usePremiumAccess from '../hooks/usePremiumAccess';
 import TrialWelcomeModal from './TrialWelcomeModal';
-import { setPostponeTime } from '../services/trial';
+import { getTrialTexts } from '../services/trial';
 
 const BreathingExercises = () => {
   const theme = useTheme();
@@ -117,17 +117,8 @@ const BreathingExercises = () => {
       <TrialWelcomeModal
         open={showModal}
         onClose={() => setShowModal(false)}
-        onStartTrial={() => setShowModal(false)}
         onBuyPremium={() => {
           setShowModal(false);
-          navigate('/account');
-        }}
-        onPostpone={() => {
-          setPostponeTime();
-          setShowModal(false);
-        }}
-        onPostponeComplete={() => {
-          checkAccess();
         }}
         trialExpired={blocked || (trialData?.trial?.isActive === false)}
       />

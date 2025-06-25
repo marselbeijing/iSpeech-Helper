@@ -188,32 +188,6 @@ export const resetTrialPeriod = () => {
   console.log('🔄 Пробный период сброшен');
 };
 
-// Функции для работы с отложенным показом модального окна
-const POSTPONE_KEY = 'trialModalPostponed';
-
-export const setPostponeTime = () => {
-  const postponeUntil = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2 часа
-  localStorage.setItem(POSTPONE_KEY, postponeUntil.toISOString());
-  console.log('⏰ Модальное окно отложено до:', postponeUntil);
-};
-
-export const isPostponed = () => {
-  const postponeUntil = localStorage.getItem(POSTPONE_KEY);
-  if (!postponeUntil) return false;
-  
-  const now = new Date();
-  const postponeTime = new Date(postponeUntil);
-  
-  if (now < postponeTime) {
-    console.log('⏰ Модальное окно отложено до:', postponeTime);
-    return true;
-  }
-  
-  // Время истекло, удаляем запись
-  localStorage.removeItem(POSTPONE_KEY);
-  return false;
-};
-
 // Проверка доступа к функции
 export const checkAccess = async () => {
   try {
@@ -255,9 +229,14 @@ export const getTrialTexts = (language = 'ru') => {
   
   return {
     welcomeTitle: isEnglish ? 'Welcome to iSpeech Helper!' : 'Добро пожаловать в iSpeech Helper!',
-    trialDescription: isEnglish ? 
-      'You can use the app for FREE for 3 days with full access to all features!' :
-      'Вы можете пользоваться приложением БЕСПЛАТНО 3 дня с полным доступом ко всем функциям!',
+    welcomeDescription: isEnglish ? 'Get 3 days of premium features for free!' : 'Получите 3 дня премиум-функций бесплатно!',
+    trialDescription: isEnglish ? 'Try all premium features for free for 3 days.' : 'Попробуйте все премиум-функции бесплатно в течение 3 дней.',
+    trialExpired: isEnglish ? 'Trial period expired' : 'Пробный период истёк',
+    subscribeNow: isEnglish ? 'Subscribe to continue using premium features.' : 'Оформите подписку, чтобы продолжить использовать премиум-функции.',
+    startTrialButton: isEnglish ? 'Start Free Trial' : 'Начать бесплатный период',
+    buyPremiumButton: isEnglish ? 'Buy Premium' : 'Купить Премиум',
+    closeButton: isEnglish ? 'Close' : 'Закрыть',
+    chipText: isEnglish ? '3 DAYS FREE' : '3 ДНЯ БЕСПЛАТНО',
     premiumFeatures: isEnglish ? 'Premium features include:' : 'В премиум подписку входит:',
     feature1: isEnglish ? '🎯 All speech exercises' : '🎯 Все упражнения для речи',
     feature2: isEnglish ? '🫁 Breathing exercises' : '🫁 Дыхательные упражнения', 
@@ -265,23 +244,11 @@ export const getTrialTexts = (language = 'ru') => {
     feature4: isEnglish ? '📚 Reading exercises' : '📚 Упражнения для чтения',
     feature5: isEnglish ? '🎨 Emotions trainer' : '🎨 Тренажер эмоций',
     feature6: isEnglish ? '📊 Progress tracking' : '📊 Отслеживание прогресса',
-    startTrialButton: isEnglish ? 'Start Free Trial' : 'Начать бесплатный период',
-    buyNowButton: isEnglish ? 'Buy Premium' : 'Купить Премиум',
     trialTimeLeft: isEnglish ? 'Trial time left:' : 'Осталось пробного времени:',
-    trialExpired: isEnglish ? 'Trial period expired' : 'Пробный период истек',
-    subscribeNow: isEnglish ? 'Subscribe now to continue using all features' : 'Оформите подписку, чтобы продолжить пользоваться всеми функциями',
     trialActive: isEnglish ? 'Free trial active' : 'Бесплатный период активен',
-    
-    // Новые тексты для модального окна
-    freeTrialChip: isEnglish ? '3 days FREE' : '3 дня БЕСПЛАТНО',
     subscriptionNote: isEnglish ? 
       'After the trial period ends, you will need to purchase a subscription to continue using all features' :
       'После окончания пробного периода нужно будет оформить подписку для продолжения использования всех функций',
-    
-    // Кнопка отложить
-    postponeButton: isEnglish ? 'Postpone for 2 hours' : 'Отложить на 2 часа',
-    
-    // Единицы времени для таймера
     timeUnits: {
       days: isEnglish ? 'days' : 'дней',
       hours: isEnglish ? 'hours' : 'часов', 

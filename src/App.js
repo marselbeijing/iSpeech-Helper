@@ -14,7 +14,7 @@ import { getCurrentUser } from './services/telegram';
 
 // Trial period components
 import TrialWelcomeModal from './components/TrialWelcomeModal';
-import { getTrialStatus, markWelcomeSeen, resetTrialPeriod, setPostponeTime, isPostponed } from './services/trial';
+import { getTrialStatus, markWelcomeSeen, resetTrialPeriod } from './services/trial';
 
 // Components
 import Root from './components/Root';
@@ -172,16 +172,12 @@ const App = () => {
         console.log('📊 Статус пробного периода получен:', status);
         setTrialData(status);
         
-        // Проверяем отложенное время
-        const postponed = isPostponed();
-        console.log('⏰ Модальное окно отложено:', postponed);
-        
         // Показываем модальное окно в двух случаях:
         // 1. Пользователь не видел приветствие (новый пользователь)
         // 2. Триал истёк и модальное окно не отложено
         const shouldShowModal = !status.hasActiveSubscription && (
           (!status.trial?.hasSeenWelcome) || 
-          (status.trial?.isActive === false && !postponed)
+          (status.trial?.isActive === false)
         );
         
         if (shouldShowModal) {
@@ -189,7 +185,6 @@ const App = () => {
           console.log('🎉 Показываем модальное окно:', {
             isNewUser: !status.trial?.hasSeenWelcome,
             isTrialExpired: isTrialExpired,
-            postponed: postponed
           });
           
           // Для истёкшего триала показываем через 4 секунды
@@ -203,7 +198,6 @@ const App = () => {
             hasActiveSubscription: status.hasActiveSubscription,
             hasSeenWelcome: status.trial?.hasSeenWelcome,
             isTrialActive: status.trial?.isActive,
-            postponed: postponed
           });
         }
       } catch (error) {
@@ -448,11 +442,6 @@ const App = () => {
     }
   };
 
-  const handlePostpone = () => {
-    setPostponeTime();
-    setShowWelcomeModal(false);
-  };
-  
   // Создаем тему на основе настроек
   const theme = createTheme({
     ...baseTheme,
@@ -551,19 +540,6 @@ const App = () => {
         onClose={handleCloseWelcome}
         onStartTrial={handleStartTrial}
         onBuyPremium={handleBuyPremium}
-        onPostpone={handlePostpone}
-        onPostponeComplete={() => {
-          // Перепроверяем статус триала после отложения
-          const loadTrialStatus = async () => {
-            try {
-              const status = await getTrialStatus();
-              setTrialData(status);
-            } catch (error) {
-              console.error('Ошибка обновления статуса триала:', error);
-            }
-          };
-          loadTrialStatus();
-        }}
         trialExpired={trialData?.trial?.isActive === false}
       />
     </ThemeProvider>

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { getTrialStatus, isPostponed } from '../services/trial';
+import { getTrialStatus } from '../services/trial';
 
 export default function usePremiumAccess() {
   const [loading, setLoading] = useState(true);
@@ -12,20 +12,15 @@ export default function usePremiumAccess() {
       const status = await getTrialStatus();
       setTrialData(status);
       
-      // Проверяем отложенное время
-      const postponed = isPostponed();
-      
       console.log('🔒 Проверка доступа usePremiumAccess:', {
         hasActiveSubscription: status.hasActiveSubscription,
-        trialIsActive: status.trial?.isActive,
-        postponed: postponed
+        trialIsActive: status.trial?.isActive
       });
       
       if (!status.hasActiveSubscription && (!status.trial?.isActive)) {
-        // Если модальное окно отложено, не блокируем доступ
-        const shouldBlock = !postponed;
-        setBlocked(shouldBlock);
-        console.log('🔒 Доступ заблокирован:', shouldBlock, 'причина: триал истёк, отложено:', postponed);
+        // Блокируем доступ если нет подписки и триал истёк
+        setBlocked(true);
+        console.log('🔒 Доступ заблокирован: триал истёк и нет подписки');
       } else {
         setBlocked(false);
         console.log('🔓 Доступ разрешён: есть подписка или активный триал');

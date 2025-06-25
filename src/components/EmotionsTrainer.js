@@ -23,7 +23,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import usePremiumAccess from '../hooks/usePremiumAccess';
 import TrialWelcomeModal from './TrialWelcomeModal';
-import { setPostponeTime } from '../services/trial';
+import { getTrialTexts } from '../services/trial';
 
 const EmotionsTrainer = () => {
   const theme = useTheme();
@@ -46,17 +46,8 @@ const EmotionsTrainer = () => {
       <TrialWelcomeModal
         open={showModal}
         onClose={() => setShowModal(false)}
-        onStartTrial={() => setShowModal(false)}
         onBuyPremium={() => {
           setShowModal(false);
-          navigate('/account');
-        }}
-        onPostpone={() => {
-          setPostponeTime();
-          setShowModal(false);
-        }}
-        onPostponeComplete={() => {
-          checkAccess();
         }}
         trialExpired={blocked || (trialData?.trial?.isActive === false)}
       />
