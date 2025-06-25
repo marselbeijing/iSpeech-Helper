@@ -17,11 +17,14 @@ import { useTranslation } from 'react-i18next';
 import { getTrialTexts } from '../services/trial';
 import { getCurrentUser } from '../services/telegram';
 
-const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExpired }) => {
+const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
   const theme = useTheme();
-  const { i18n } = useTranslation();
   
-  // Определяем язык: i18n > тестовый язык > язык пользователя > fallback
+  console.log('DEBUG: до useTranslation');
+  const { i18n } = useTranslation();
+  console.log('DEBUG: после useTranslation');
+  
+  // Определяем язык: тестовый язык > язык пользователя > язык i18n
   const testLanguage = localStorage.getItem('testLanguage');
   let user = null;
   try {
@@ -30,28 +33,27 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExp
     console.error('Error getting user:', e);
     user = null;
   }
-  
-  // Приоритет: i18n.language > testLanguage > user.language_code > 'ru'
-  const currentLanguage = i18n.language || testLanguage || user?.language_code || 'ru';
+  const userLanguage = testLanguage || user?.language_code || i18n.language || 'ru';
+  console.log('DEBUG: testLanguage', testLanguage);
   
   // Логируем для отладки
   React.useEffect(() => {
     if (open) {
       console.log('🌐 Язык модального окна:', {
-        i18nLanguage: i18n.language,
         testLanguage,
         userLanguage: user?.language_code,
-        finalLanguage: currentLanguage,
-        isEnglish: currentLanguage?.startsWith('en')
+        i18nLanguage: i18n.language,
+        finalLanguage: userLanguage,
+        isEnglish: userLanguage?.startsWith('en')
       });
     }
-  }, [open, i18n.language, testLanguage, user?.language_code, currentLanguage]);
+  }, [open, testLanguage, user?.language_code, i18n.language, userLanguage]);
 
   let texts = {};
   try {
-    texts = getTrialTexts(currentLanguage);
+    texts = getTrialTexts(userLanguage);
   } catch (e) {
-    console.error('Error in getTrialTexts:', e, currentLanguage);
+    console.error('Error in getTrialTexts:', e, userLanguage);
     texts = {};
   }
 
@@ -76,47 +78,28 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExp
         }
       }}
     >
-      <DialogTitle sx={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        textAlign: 'center', 
-        pb: 1, 
-        width: '100%',
-        px: 3
-      }}>
-        <Typography 
-          variant="h5" 
-          component="h2" 
-          fontWeight="bold" 
-          color="primary" 
-          sx={{ 
-            width: '100%', 
-            textAlign: 'center',
-            lineHeight: 1.2
-          }}
-        >
-          {trialExpired ? texts.trialExpired : texts.welcomeTitle}
+      <DialogTitle sx={{ textAlign: 'center', pb: 1 }}>
+        <Typography variant="h5" component="h2" fontWeight="bold" color="primary">
+          {texts.welcomeTitle}
         </Typography>
       </DialogTitle>
 
       <DialogContent sx={{ pt: 1 }}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>
-          {!trialExpired && (
-            <Chip
-              label={texts.freeTrialChip}
-              color="primary"
-              size="large"
-              sx={{
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                mb: 2,
-                background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                color: 'white'
-              }}
-            />
-          )}
+          <Chip
+            label={texts.freeTrialChip}
+            color="primary"
+            size="large"
+            sx={{
+              fontSize: '1rem',
+              fontWeight: 'bold',
+              mb: 2,
+              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+              color: 'white'
+            }}
+          />
           <Typography variant="body1" sx={{ mb: 2, color: 'white' }}>
-            {trialExpired ? texts.subscribeNow : texts.trialDescription}
+            {texts.trialDescription}
           </Typography>
         </Box>
 
@@ -176,24 +159,22 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExp
       </DialogContent>
 
       <DialogActions sx={{ p: 3, pt: 1, gap: 1, flexDirection: 'column' }}>
-        {!trialExpired && (
-          <Button
-            onClick={onStartTrial}
-            variant="contained"
-            size="large"
-            fullWidth
-            sx={{ 
-              background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: '0.9rem',
-              py: 1.5,
-              mb: 1
-            }}
-          >
-            {texts.startTrialButton}
-          </Button>
-        )}
+        <Button
+          onClick={onStartTrial}
+          variant="contained"
+          size="large"
+          fullWidth
+          sx={{ 
+            background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+            color: 'white',
+            fontWeight: 'bold',
+            fontSize: '0.9rem',
+            py: 1.5,
+            mb: 1
+          }}
+        >
+          {texts.startTrialButton}
+        </Button>
         <Button
           variant="outlined"
           color="primary"

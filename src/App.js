@@ -7,58 +7,14 @@ import { telegramColors } from './styles/TelegramStyles';
 
 import './i18n';
 import { useTranslation } from 'react-i18next';
-import { initTelegramWebApp, getCurrentUser, getUserLanguageFromDatabase } from './services/telegram';
+import { initTelegramWebApp } from './services/telegram';
 import telegramAnalytics from '@telegram-apps/analytics';
 import { initAudio } from './services/sound';
-
-// Подавляем ошибки WebSocket и Telegram Client
-const originalConsoleError = console.error;
-console.error = function(...args) {
-  const message = args.join(' ');
-  if (
-    message.includes('WebSocket connection') ||
-    message.includes('PromisedWebSockets') ||
-    message.includes('MTProtoSender') ||
-    message.includes('TelegramClient') ||
-    message.includes('_updateLoop') ||
-    message.includes('TIMEOUT') ||
-    message.includes('fallback connection') ||
-    message.includes('zws2-1.web.telegram.org') ||
-    message.includes('launch parameters') ||
-    message.includes('telegram-apps-sdk')
-  ) {
-    return; // Подавляем эти ошибки
-  }
-  originalConsoleError.apply(console, args);
-};
-
-// Подавляем предупреждения о версии Telegram WebApp
-const originalConsoleWarn = console.warn;
-console.warn = function(...args) {
-  const message = args.join(' ');
-  if (
-    message.includes('Header color is not supported') ||
-    message.includes('Background color is not supported') ||
-    message.includes('version 6.0')
-  ) {
-    return; // Подавляем эти предупреждения
-  }
-  originalConsoleWarn.apply(console, args);
-};
+import { getCurrentUser } from './services/telegram';
 
 // Trial period components
 import TrialWelcomeModal from './components/TrialWelcomeModal';
-import { 
-  getTrialStatus, 
-  markWelcomeSeen,
-  calculateTrialTimeLeft, 
-  isTrialActive, 
-  hasSeenWelcome, 
-  markWelcomeAsSeen,
-  resetTrialPeriod,
-  clearAllBrowserData,
-  setExpiredTrial
-} from './services/trial';
+import { getTrialStatus, markWelcomeSeen, resetTrialPeriod } from './services/trial';
 
 // Components
 import Root from './components/Root';
@@ -182,100 +138,11 @@ const App = () => {
       console.log('Telegram WebApp инициализация пропущена');
     }
 
-    // Добавляем функции для тестирования в глобальную область
-    if (typeof window !== 'undefined') {
-      window.resetTrial = resetTrialPeriod;
-      window.clearAllData = () => {
-        console.log('🧹 Начинаем максимальную очистку браузера...');
-        
-        // Очищаем localStorage полностью
-        if (typeof localStorage !== 'undefined') {
-          localStorage.clear();
-          console.log('🗑 LocalStorage полностью очищен');
-        }
-        
-        // Очищаем sessionStorage полностью
-        if (typeof sessionStorage !== 'undefined') {
-          sessionStorage.clear();
-          console.log('🗑 SessionStorage полностью очищен');
-        }
-        
-        // Очищаем все cookies
-        if (typeof document !== 'undefined') {
-          document.cookie.split(";").forEach(function(c) { 
-            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
-          });
-          console.log('🗑 Все cookies очищены');
-        }
-        
-        console.log('✅ Максимальная очистка завершена');
-        console.log('🔄 Перезагружаем страницу через 2 секунды...');
-        
-        // Перезагружаем страницу
-        setTimeout(() => {
-          window.location.reload(true);
-        }, 2000);
-      };
-      window.setExpiredTrial = setExpiredTrial;
-      
-      console.log('🔧 Доступные функции для тестирования:');
-      console.log('- window.resetTrial() - полный сброс пользователя');
-      console.log('- window.clearAllData() - максимальная очистка браузера');
-      console.log('- window.setExpiredTrial() - установить истёкший триал');
-    }
-
     // Загружаем сохраненные настройки
     const savedSettings = getUserSettings();
     if (savedSettings) {
       updateTheme(savedSettings.darkMode || false);
     }
-
-    // Загружаем язык пользователя из базы данных бота
-    const loadUserLanguage = async () => {
-      try {
-        const user = getCurrentUser();
-        if (user?.id) {
-          console.log('🌐 Загружаем язык пользователя из базы данных...');
-          const userLanguage = await getUserLanguageFromDatabase(user.id);
-          
-          if (userLanguage) {
-            console.log('✅ Язык пользователя найден в базе данных:', userLanguage);
-            // Устанавливаем язык в i18n
-            await i18n.changeLanguage(userLanguage);
-            console.log('✅ Язык интерфейса установлен:', userLanguage);
-          } else {
-            console.log('⚠️ Язык пользователя не найден в базе данных, используем язык по умолчанию');
-            // Если язык не найден, используем язык пользователя из Telegram
-            if (user.language_code) {
-              const defaultLang = user.language_code.startsWith('ru') ? 'ru' : 'en';
-              await i18n.changeLanguage(defaultLang);
-              console.log('✅ Установлен язык по умолчанию:', defaultLang);
-            } else {
-              // Если язык пользователя тоже не найден, используем английский по умолчанию
-              await i18n.changeLanguage('en');
-              console.log('✅ Установлен английский язык по умолчанию');
-            }
-          }
-        } else {
-          // Если пользователь не найден, устанавливаем английский по умолчанию
-          console.log('⚠️ Пользователь не найден, устанавливаем английский язык по умолчанию');
-          await i18n.changeLanguage('en');
-          console.log('✅ Установлен английский язык по умолчанию (нет пользователя)');
-        }
-      } catch (error) {
-        console.error('❌ Ошибка загрузки языка пользователя:', error);
-        // В случае ошибки тоже устанавливаем английский
-        try {
-          await i18n.changeLanguage('en');
-          console.log('✅ Установлен английский язык по умолчанию (ошибка)');
-        } catch (e) {
-          console.error('❌ Критическая ошибка установки языка:', e);
-        }
-      }
-    };
-
-    // Загружаем язык пользователя
-    loadUserLanguage();
 
     // Загружаем статус пробного периода
     const loadTrialStatus = async () => {
@@ -305,18 +172,14 @@ const App = () => {
         console.log('📊 Статус пробного периода получен:', status);
         setTrialData(status);
         
-        // Показываем модальное окно только для новых пользователей
-        // Для истёкшего триала модальное окно показывается только при попытке использовать функции
-        const shouldShowModal = !status.hasActiveSubscription && !status.trial?.hasSeenWelcome;
-        
-        if (shouldShowModal) {
-          console.log('🎉 Показываем приветственное модальное окно для нового пользователя');
+        // Показываем приветственное окно если пользователь его еще не видел
+        if (!status.hasActiveSubscription && status.trial && !status.trial.hasSeenWelcome) {
+          console.log('🎉 Показываем приветственное окно пробного периода');
           setShowWelcomeModal(true);
         } else {
-          console.log('ℹ️ Модальное окно не показываем при загрузке:', {
+          console.log('ℹ️ Приветственное окно не показываем:', {
             hasActiveSubscription: status.hasActiveSubscription,
-            hasSeenWelcome: status.trial?.hasSeenWelcome,
-            isTrialActive: status.trial?.isActive
+            hasSeenWelcome: status.trial?.hasSeenWelcome
           });
         }
       } catch (error) {
@@ -560,7 +423,7 @@ const App = () => {
       console.error('Ошибка при закрытии приветствия:', error);
     }
   };
-
+  
   // Создаем тему на основе настроек
   const theme = createTheme({
     ...baseTheme,
@@ -659,7 +522,6 @@ const App = () => {
         onClose={handleCloseWelcome}
         onStartTrial={handleStartTrial}
         onBuyPremium={handleBuyPremium}
-        trialExpired={trialData?.trial?.isActive === false}
       />
     </ThemeProvider>
   );

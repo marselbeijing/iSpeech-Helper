@@ -25,7 +25,7 @@ const getTrialStartDate = () => {
 // Функция для расчета оставшегося времени пробного периода
 const calculateTrialTimeLeft = (startDate) => {
   const start = new Date(startDate);
-  const end = new Date(start.getTime() + 15 * 60 * 1000); // 15 минут для тестирования
+  const end = new Date(start.getTime() + 3 * 24 * 60 * 60 * 1000); // 3 дня
   const now = new Date();
   
   const timeLeftMs = end.getTime() - now.getTime();
@@ -183,99 +183,9 @@ export const markWelcomeSeen = async () => {
 
 // Функция для сброса пробного периода (для тестирования)
 export const resetTrialPeriod = () => {
-  console.log('🔄 Начинаем полный сброс пользователя...');
-  
-  // Удаляем основные ключи пробного периода
   localStorage.removeItem(TRIAL_START_DATE_KEY);
   localStorage.removeItem(TRIAL_WELCOME_SEEN_KEY);
-  
-  // Полная очистка всех связанных ключей
-  const keysToRemove = [
-    'telegramUser',
-    'trialStartDate', 
-    'trialWelcomeSeen',
-    'userProgress',
-    'testLanguage',
-    'user',
-    'authToken',
-    'userId',
-    'telegram_auth',
-    'telegram_user',
-    'webapp_user',
-    'subscription_status',
-    'premium_access',
-    'trial_status',
-    'user_session',
-    'auth_data',
-    'login_data'
-  ];
-  
-  // Удаляем все ключи из localStorage
-  keysToRemove.forEach(key => {
-    if (localStorage.getItem(key)) {
-      localStorage.removeItem(key);
-      console.log(`🗑 Удален ключ: ${key}`);
-    }
-  });
-  
-  // Очищаем sessionStorage тоже
-  if (typeof sessionStorage !== 'undefined') {
-    sessionStorage.clear();
-    console.log('🗑 SessionStorage очищен');
-  }
-  
-  // Очищаем cookies если есть
-  if (typeof document !== 'undefined') {
-    document.cookie.split(";").forEach(function(c) { 
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
-    });
-    console.log('🗑 Cookies очищены');
-  }
-  
-  // Очищаем данные Telegram WebApp если доступны
-  if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-    try {
-      // Сбрасываем состояние WebApp
-      if (window.Telegram.WebApp.close) {
-        console.log('📱 Попытка сброса Telegram WebApp...');
-      }
-    } catch (error) {
-      console.log('⚠️ Не удалось сбросить Telegram WebApp:', error);
-    }
-  }
-  
-  console.log('✅ Полный сброс пользователя завершен');
-  console.log('🔄 Перезагружаем страницу через 1 секунду...');
-  
-  // Перезагружаем страницу для применения изменений
-  if (typeof window !== 'undefined') {
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
-  }
-};
-
-// Функция для установки истёкшего триала (для тестирования)
-export const setExpiredTrial = () => {
-  console.log('⏰ Устанавливаем истёкший пробный период...');
-  
-  // Устанавливаем дату начала на неделю назад
-  const pastDate = new Date();
-  pastDate.setDate(pastDate.getDate() - 7);
-  localStorage.setItem(TRIAL_START_DATE_KEY, pastDate.toISOString());
-  
-  // Отмечаем что приветствие уже показано
-  localStorage.setItem(TRIAL_WELCOME_SEEN_KEY, 'true');
-  
-  console.log('✅ Пробный период установлен как истёкший');
-  console.log('🔄 Перезагружаем страницу...');
-  
-  // Перезагружаем страницу для применения изменений
-  if (typeof window !== 'undefined') {
-    setTimeout(() => {
-      window.location.reload();
-    }, 500);
-  }
+  console.log('🔄 Пробный период сброшен');
 };
 
 // Проверка доступа к функции
@@ -319,15 +229,9 @@ export const getTrialTexts = (language = 'ru') => {
   
   return {
     welcomeTitle: isEnglish ? 'Welcome to iSpeech Helper!' : 'Добро пожаловать в iSpeech Helper!',
-    welcomeDescription: isEnglish ? 'Get 15 minutes of premium features for free!' : 'Получите 15 минут премиум-функций бесплатно!',
-    trialDescription: isEnglish ? 'Try all premium features for free for 15 minutes.' : 'Попробуйте все премиум-функции бесплатно в течение 15 минут.',
-    trialExpired: isEnglish ? 'Trial period expired' : 'Пробный период истёк',
-    subscribeNow: isEnglish ? 'Subscribe to continue using premium features.' : 'Оформите подписку, чтобы продолжить использовать премиум-функции.',
-    startTrialButton: isEnglish ? 'Start Free Trial' : 'Начать бесплатный период',
-    buyPremiumButton: isEnglish ? 'Buy Premium' : 'Купить Премиум',
-    closeButton: isEnglish ? 'Close' : 'Закрыть',
-    chipText: isEnglish ? '15 MIN FREE' : '15 МИН БЕСПЛАТНО',
-    freeTrialChip: isEnglish ? '15 MIN FREE' : '15 МИН БЕСПЛАТНО',
+    trialDescription: isEnglish ? 
+      'You can use the app for FREE for 3 days with full access to all features!' :
+      'Вы можете пользоваться приложением БЕСПЛАТНО 3 дня с полным доступом ко всем функциям!',
     premiumFeatures: isEnglish ? 'Premium features include:' : 'В премиум подписку входит:',
     feature1: isEnglish ? '🎯 All speech exercises' : '🎯 Все упражнения для речи',
     feature2: isEnglish ? '🫁 Breathing exercises' : '🫁 Дыхательные упражнения', 
@@ -335,11 +239,20 @@ export const getTrialTexts = (language = 'ru') => {
     feature4: isEnglish ? '📚 Reading exercises' : '📚 Упражнения для чтения',
     feature5: isEnglish ? '🎨 Emotions trainer' : '🎨 Тренажер эмоций',
     feature6: isEnglish ? '📊 Progress tracking' : '📊 Отслеживание прогресса',
+    startTrialButton: isEnglish ? 'Start Free Trial' : 'Начать бесплатный период',
+    buyNowButton: isEnglish ? 'Buy Premium' : 'Купить Премиум',
     trialTimeLeft: isEnglish ? 'Trial time left:' : 'Осталось пробного времени:',
+    trialExpired: isEnglish ? 'Trial period expired' : 'Пробный период истек',
+    subscribeNow: isEnglish ? 'Subscribe now to continue using all features' : 'Оформите подписку, чтобы продолжить пользоваться всеми функциями',
     trialActive: isEnglish ? 'Free trial active' : 'Бесплатный период активен',
+    
+    // Новые тексты для модального окна
+    freeTrialChip: isEnglish ? '3 days FREE' : '3 дня БЕСПЛАТНО',
     subscriptionNote: isEnglish ? 
       'After the trial period ends, you will need to purchase a subscription to continue using all features' :
       'После окончания пробного периода нужно будет оформить подписку для продолжения использования всех функций',
+    
+    // Единицы времени для таймера
     timeUnits: {
       days: isEnglish ? 'days' : 'дней',
       hours: isEnglish ? 'hours' : 'часов', 
@@ -347,65 +260,4 @@ export const getTrialTexts = (language = 'ru') => {
       seconds: isEnglish ? 'seconds' : 'секунд'
     }
   };
-};
-
-// Функция для максимальной очистки браузера (для тестирования)
-export const clearAllBrowserData = () => {
-  console.log('🧹 Начинаем максимальную очистку браузера...');
-  
-  // Очищаем localStorage полностью
-  if (typeof localStorage !== 'undefined') {
-    localStorage.clear();
-    console.log('🗑 LocalStorage полностью очищен');
-  }
-  
-  // Очищаем sessionStorage полностью
-  if (typeof sessionStorage !== 'undefined') {
-    sessionStorage.clear();
-    console.log('🗑 SessionStorage полностью очищен');
-  }
-  
-  // Очищаем все cookies
-  if (typeof document !== 'undefined') {
-    document.cookie.split(";").forEach(function(c) { 
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
-    });
-    console.log('🗑 Все cookies очищены');
-  }
-  
-  // Очищаем IndexedDB если доступен
-  if (typeof window !== 'undefined' && window.indexedDB) {
-    try {
-      window.indexedDB.databases().then(databases => {
-        databases.forEach(db => {
-          window.indexedDB.deleteDatabase(db.name);
-          console.log(`🗑 IndexedDB база ${db.name} удалена`);
-        });
-      });
-    } catch (error) {
-      console.log('⚠️ Не удалось очистить IndexedDB:', error);
-    }
-  }
-  
-  // Очищаем кэш если доступен
-  if (typeof window !== 'undefined' && 'caches' in window) {
-    caches.keys().then(names => {
-      names.forEach(name => {
-        caches.delete(name);
-        console.log(`🗑 Кэш ${name} удален`);
-      });
-    });
-  }
-  
-  console.log('✅ Максимальная очистка завершена');
-  console.log('🔄 Перезагружаем страницу через 2 секунды...');
-  
-  // Перезагружаем страницу
-  if (typeof window !== 'undefined') {
-    setTimeout(() => {
-      window.location.reload(true); // Принудительная перезагрузка
-    }, 2000);
-  }
-};
-
- 
+}; 

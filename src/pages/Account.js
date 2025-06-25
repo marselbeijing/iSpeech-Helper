@@ -18,7 +18,6 @@ import {
 import {
   Close as CloseIcon,
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 
 import { verifyTelegramAuth, getCurrentUser } from '../services/telegram';
 import { playSound } from '../services/sound';
@@ -33,9 +32,7 @@ import ReferralProgram from '../components/ReferralProgram';
 
 // Trial period components
 import TrialTimer from '../components/TrialTimer';
-import { getTrialStatus, getTrialTexts } from '../services/trial';
-import usePremiumAccess from '../hooks/usePremiumAccess';
-import TrialWelcomeModal from '../components/TrialWelcomeModal';
+import { getTrialStatus } from '../services/trial';
 
 const Account = () => {
   const theme = useTheme();
@@ -53,10 +50,6 @@ const Account = () => {
   // Trial period state
   const [trialData, setTrialData] = useState(null);
   const [showBuyModal, setShowBuyModal] = useState(false);
-
-  const { blocked, loading: premiumLoading, trialData: premiumTrialData, checkAccess } = usePremiumAccess();
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
 
   // Инициализация пользователя (только один раз)
   useEffect(() => {
@@ -234,12 +227,6 @@ const Account = () => {
     }
   }, [user]);
 
-  useEffect(() => {
-    if (!premiumLoading && blocked) {
-      setShowModal(true);
-    }
-  }, [premiumLoading, blocked]);
-
   const handlePurchase = async (type) => {
     try {
       setIsPurchasing(true);
@@ -292,6 +279,8 @@ const Account = () => {
     }
   };
 
+
+
   if (loading) {
     return (
       <Box sx={{ 
@@ -320,24 +309,38 @@ const Account = () => {
     );
   }
 
-  if (showModal) {
+  if (showBuyModal) {
     return (
-      <TrialWelcomeModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onBuyPremium={() => {
-          setShowModal(false);
-          navigate('/account');
-        }}
-        trialExpired={true}
-      />
+      <Box sx={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: theme.palette.background.default }}>
+        <Paper sx={{ p: 4, maxWidth: 400, textAlign: 'center' }}>
+          <Typography variant="h6" align="center" sx={{ mb: 2 }}>
+            {t('trial_expired') || 'Пробный период завершён'}
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 3 }}>
+            {t('subscribe_to_continue') || 'Оформите подписку, чтобы продолжить пользоваться всеми функциями приложения.'}
+          </Typography>
+          <Button variant="contained" color="primary" size="large" onClick={() => {
+            setShowBuyModal(false);
+            // Прокрутка к блоку подписок
+            const subscriptionBlock = document.querySelector('[data-subscription-block]');
+            if (subscriptionBlock) {
+              subscriptionBlock.scrollIntoView({ behavior: 'smooth' });
+            }
+          }}>
+            {t('buy') || 'Купить подписку'}
+          </Button>
+        </Paper>
+      </Box>
     );
   }
 
   return (
     <Box sx={{
+      minHeight: '100vh',
       width: '100%',
       backgroundColor: theme.palette.background.default,
+      overflowY: 'auto',
+      paddingBottom: { xs: 0, sm: '72px' },
       display: 'flex',
       flexDirection: 'column',
     }}>
@@ -349,8 +352,6 @@ const Account = () => {
         px: { xs: 0, sm: 2 },
         flex: 1,
         width: '100%',
-        overflowY: 'auto',
-        minHeight: '100vh',
       }}>
         <Paper
           elevation={0}
@@ -645,24 +646,24 @@ const Account = () => {
                 {t('about_app')}
               </Typography>
               <Typography variant="body2" color="text.secondary" paragraph style={{ whiteSpace: 'pre-line' }}>
-                {i18n.language === 'ru' && `iSpeech Helper — специализированное приложение для помощи людям с нарушениями речи. Оно создано для улучшения дикции, артикуляции и общего качества речи с помощью набора эффективных упражнений. Основные возможности:
+                {i18n.language === 'ru' && `iSpeech Helper — специализированное приложение для помощи людям с нарушениями речи. Оно создано для улучшения дикции, артикуляции и общего качества речи с помощью набора эффективных упражнений. Основные возможности: 
 
-★ Диафрагмальные дыхательные упражнения — развивают контроль над дыханием, способствуют плавности речи.
-★ Скороговорки — тренируют дикцию, артикуляцию и чёткость произношения.
-★ Тренажёр эмоций — учит выражать чувства голосом, делает речь более выразительной.
-★ Плавное чтение — помогает развить ритм и плавность речи, снижает заикание.
-★ Чтение с метрономом — формирует правильный темп и ритмичность речи.
-★ DAF/MAF — техники обратной аудиосвязи и наложения шума для контроля скорости и плавности речи.
+★ Диафрагмальные дыхательные упражнения — развивают контроль над дыханием, способствуют плавности речи. 
+★ Скороговорки — тренируют дикцию, артикуляцию и чёткость произношения. 
+★ Тренажёр эмоций — учит выражать чувства голосом, делает речь более выразительной. 
+★ Плавное чтение — помогает развить ритм и плавность речи, снижает заикание. 
+★ Чтение с метрономом — формирует правильный темп и ритмичность речи. 
+★ DAF/MAF — техники обратной аудиосвязи и наложения шума для контроля скорости и плавности речи. 
 
-Преимущества:
-- Регулярные тренировки заметно улучшают разборчивость и выразительность речи.
-- Персональный подбор упражнений под ваши цели.
-- Система прогресса и достижений.
-- Простой и современный интерфейс для всех возрастов.
+Преимущества: 
+- Регулярные тренировки заметно улучшают разборчивость и выразительность речи. 
+- Персональный подбор упражнений под ваши цели. 
+- Система прогресса и достижений. 
+- Простой и современный интерфейс для всех возрастов. 
 - Поддержка русского и английского языков.`}
                 {i18n.language === 'en' && `iSpeech Helper is a specialized application designed to help people with speech disorders. It is created to improve diction, articulation, and overall speech quality through a set of effective exercises.
 
-Key Features:
+                Key Features:
 
 ★ Diaphragmatic breathing exercises — develop breath control and promote smooth speech.
 ★ Tongue twisters — train diction, articulation, and clarity of pronunciation.
@@ -671,7 +672,7 @@ Key Features:
 ★ Metronome-assisted reading — builds correct tempo and speech rhythm.
 ★ DAF/MAF — delayed auditory feedback and masking techniques for controlling speech rate and fluency.
 
-Benefits:
+                Benefits:
 - Regular practice significantly improves speech clarity and expressiveness.
 - Personalized exercise selection for your goals.
 - Progress tracking and achievement system.
@@ -681,68 +682,6 @@ Benefits:
             </Paper>
           </Fade>
         </Modal>
-
-        {/* Кнопка для сброса данных пользователя (для тестирования) */}
-        <Paper
-          sx={{
-            p: 3,
-            mb: 3,
-            borderRadius: 2,
-            background: theme.palette.mode === 'dark' 
-              ? 'linear-gradient(135deg, #ff1744 0%, #d50000 100%)'
-              : 'linear-gradient(135deg, #ff5722 0%, #d84315 100%)',
-            color: 'white'
-          }}
-        >
-          <Typography variant="h6" gutterBottom sx={{ textAlign: 'center', fontWeight: 'bold' }}>
-            🔧 Тестирование приложения
-          </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'center', mb: 2, opacity: 0.9 }}>
-            Сбросить все данные и стать новым пользователем с пробным периодом
-          </Typography>
-          <Button
-            variant="contained"
-            fullWidth
-            size="large"
-            onClick={() => {
-              if (window.confirm('Вы уверены? Это удалит все ваши данные и сбросит приложение!')) {
-                console.log('🧹 Начинаем полный сброс данных...');
-                
-                // Полная очистка всех данных
-                localStorage.clear();
-                sessionStorage.clear();
-                
-                // Очистка cookies
-                document.cookie.split(";").forEach(function(c) { 
-                  document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
-                });
-                
-                // Сброс состояния пользователя
-                setUser(null);
-                setSubscription(null);
-                setTrialData(null);
-                
-                console.log('✅ Все данные очищены');
-                alert('Данные очищены! Страница перезагрузится через 2 секунды.');
-                
-                // Перезагрузка страницы с полной очисткой кеша
-                setTimeout(() => {
-                  window.location.href = window.location.href;
-                }, 2000);
-              }
-            }}
-            sx={{
-              background: 'rgba(255,255,255,0.2)',
-              color: 'white',
-              fontWeight: 'bold',
-              '&:hover': {
-                background: 'rgba(255,255,255,0.3)',
-              }
-            }}
-          >
-            🗑️ СБРОСИТЬ ВСЕ ДАННЫЕ
-          </Button>
-        </Paper>
 
         <ReferralProgram />
 

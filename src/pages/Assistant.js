@@ -10,10 +10,6 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { keyframes } from '@emotion/react';
 import { styled } from '@mui/material/styles';
-import usePremiumAccess from '../hooks/usePremiumAccess';
-import TrialWelcomeModal from '../components/TrialWelcomeModal';
-import { useNavigate } from 'react-router-dom';
-import { getTrialTexts } from '../services/trial';
 
 const gradientAnimation = keyframes`
   0% { background-position: 0% 50% }
@@ -36,28 +32,6 @@ const AnimatedCircle = styled(Box)`
 const Assistant = () => {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
-  const [showModal, setShowModal] = React.useState(false);
-  const navigate = useNavigate();
-
-  React.useEffect(() => {
-    if (!loading && blocked) {
-      setShowModal(true);
-    }
-  }, [loading, blocked]);
-
-  if (showModal) {
-    return (
-      <TrialWelcomeModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onBuyPremium={() => {
-          setShowModal(false);
-        }}
-        trialExpired={blocked || (trialData?.trial?.isActive === false)}
-      />
-    );
-  }
 
   return (
     <Container 

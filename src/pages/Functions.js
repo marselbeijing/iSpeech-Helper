@@ -25,9 +25,6 @@ import { vibrate } from '../services/vibration';
 import { getUserSettings, saveUserSettings } from '../services/storage';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import usePremiumAccess from '../hooks/usePremiumAccess';
-import TrialWelcomeModal from '../components/TrialWelcomeModal';
-import { getTrialTexts } from '../services/trial';
 
 const CustomSwitch = styled(MuiSwitch)(({ theme }) => ({
   width: 52,
@@ -69,8 +66,6 @@ const Functions = () => {
     vibration: true,
     language: savedLang,
   });
-  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
-  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     // Загрузка настроек из хранилища при монтировании компонента
@@ -84,12 +79,6 @@ const Functions = () => {
       });
     }
   }, []);
-
-  useEffect(() => {
-    if (!loading && blocked) {
-      setShowModal(true);
-    }
-  }, [loading, blocked]);
 
   const menuItems = React.useMemo(() => [
     {
@@ -169,19 +158,6 @@ const Functions = () => {
     vibrate('click');
     navigate('/');
   };
-
-  if (showModal) {
-    return (
-      <TrialWelcomeModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onBuyPremium={() => {
-          setShowModal(false);
-        }}
-        trialExpired={blocked || (trialData?.trial?.isActive === false)}
-      />
-    );
-  }
 
   return (
     <Box sx={{ 
