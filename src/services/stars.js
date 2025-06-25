@@ -30,7 +30,9 @@ Go manually to @iSpeechHelper_bot and write:
     yearlyTitle: isEnglish ? 'Annual Subscription' : 'Годовая подписка',
     monthlyDescription: isEnglish ? 'Access to all features for 30 days.' : 'Доступ ко всем функциям на 30 дней.',
     quarterlyDescription: isEnglish ? 'Access to all features for 90 days.' : 'Доступ ко всем функциям на 90 дней.',
-    yearlyDescription: isEnglish ? 'Access to all features for 365 days.' : 'Доступ ко всем функциям на 365 дней.'
+    yearlyDescription: isEnglish ? 'Access to all features for 365 days.' : 'Доступ ко всем функциям на 365 дней.',
+    openBot: isEnglish ? 'Open bot' : 'Открыть бота',
+    cancel: isEnglish ? 'Cancel' : 'Отмена'
   };
 };
 
@@ -178,12 +180,12 @@ ${texts.orStart}`;
             {
               id: 'open_bot',
               type: 'default',
-              text: '🤖 Open bot'
+              text: `🤖 ${texts.openBot}`
             },
             {
               id: 'cancel',
               type: 'cancel',
-              text: 'Cancel'
+              text: texts.cancel
             }
           ]
         }, (buttonId) => {
