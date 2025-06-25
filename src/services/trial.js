@@ -224,7 +224,7 @@ export const formatTimeLeft = (timeLeft) => {
 };
 
 // Локализованные тексты для пробного периода
-export const getTrialTexts = (language = 'ru') => {
+export const getTrialTexts = (language = 'en') => {
   const isEnglish = language === 'en' || language?.startsWith('en');
   
   return {

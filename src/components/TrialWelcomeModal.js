@@ -33,7 +33,7 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
     console.error('Error getting user:', e);
     user = null;
   }
-  const userLanguage = testLanguage || user?.language_code || i18n.language || 'ru';
+  const userLanguage = testLanguage || user?.language_code || i18n.language || 'en';
   console.log('DEBUG: testLanguage', testLanguage);
   
   // Логируем для отладки
