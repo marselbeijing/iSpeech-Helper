@@ -183,18 +183,34 @@ export const markWelcomeSeen = async () => {
 
 // Функция для сброса пробного периода (для тестирования)
 export const resetTrialPeriod = () => {
+  console.log('🔄 Начинаем полный сброс пользователя...');
+  
+  // Удаляем основные ключи пробного периода
   localStorage.removeItem(TRIAL_START_DATE_KEY);
   localStorage.removeItem(TRIAL_WELCOME_SEEN_KEY);
   
-  // Дополнительная очистка всех связанных ключей
+  // Полная очистка всех связанных ключей
   const keysToRemove = [
     'telegramUser',
     'trialStartDate', 
     'trialWelcomeSeen',
     'userProgress',
-    'testLanguage'
+    'testLanguage',
+    'user',
+    'authToken',
+    'userId',
+    'telegram_auth',
+    'telegram_user',
+    'webapp_user',
+    'subscription_status',
+    'premium_access',
+    'trial_status',
+    'user_session',
+    'auth_data',
+    'login_data'
   ];
   
+  // Удаляем все ключи из localStorage
   keysToRemove.forEach(key => {
     if (localStorage.getItem(key)) {
       localStorage.removeItem(key);
@@ -202,13 +218,40 @@ export const resetTrialPeriod = () => {
     }
   });
   
-  console.log('🔄 Пробный период полностью сброшен');
+  // Очищаем sessionStorage тоже
+  if (typeof sessionStorage !== 'undefined') {
+    sessionStorage.clear();
+    console.log('🗑 SessionStorage очищен');
+  }
+  
+  // Очищаем cookies если есть
+  if (typeof document !== 'undefined') {
+    document.cookie.split(";").forEach(function(c) { 
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+    });
+    console.log('🗑 Cookies очищены');
+  }
+  
+  // Очищаем данные Telegram WebApp если доступны
+  if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+    try {
+      // Сбрасываем состояние WebApp
+      if (window.Telegram.WebApp.close) {
+        console.log('📱 Попытка сброса Telegram WebApp...');
+      }
+    } catch (error) {
+      console.log('⚠️ Не удалось сбросить Telegram WebApp:', error);
+    }
+  }
+  
+  console.log('✅ Полный сброс пользователя завершен');
+  console.log('🔄 Перезагружаем страницу через 1 секунду...');
   
   // Перезагружаем страницу для применения изменений
   if (typeof window !== 'undefined') {
     setTimeout(() => {
       window.location.reload();
-    }, 500);
+    }, 1000);
   }
 };
 
@@ -297,4 +340,81 @@ export const getTrialTexts = (language = 'ru') => {
       seconds: isEnglish ? 'seconds' : 'секунд'
     }
   };
-}; 
+};
+
+// Функция для максимальной очистки браузера (для тестирования)
+export const clearAllBrowserData = () => {
+  console.log('🧹 Начинаем максимальную очистку браузера...');
+  
+  // Очищаем localStorage полностью
+  if (typeof localStorage !== 'undefined') {
+    localStorage.clear();
+    console.log('🗑 LocalStorage полностью очищен');
+  }
+  
+  // Очищаем sessionStorage полностью
+  if (typeof sessionStorage !== 'undefined') {
+    sessionStorage.clear();
+    console.log('🗑 SessionStorage полностью очищен');
+  }
+  
+  // Очищаем все cookies
+  if (typeof document !== 'undefined') {
+    document.cookie.split(";").forEach(function(c) { 
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+    });
+    console.log('🗑 Все cookies очищены');
+  }
+  
+  // Очищаем IndexedDB если доступен
+  if (typeof window !== 'undefined' && window.indexedDB) {
+    try {
+      window.indexedDB.databases().then(databases => {
+        databases.forEach(db => {
+          window.indexedDB.deleteDatabase(db.name);
+          console.log(`🗑 IndexedDB база ${db.name} удалена`);
+        });
+      });
+    } catch (error) {
+      console.log('⚠️ Не удалось очистить IndexedDB:', error);
+    }
+  }
+  
+  // Очищаем кэш если доступен
+  if (typeof window !== 'undefined' && 'caches' in window) {
+    caches.keys().then(names => {
+      names.forEach(name => {
+        caches.delete(name);
+        console.log(`🗑 Кэш ${name} удален`);
+      });
+    });
+  }
+  
+  console.log('✅ Максимальная очистка завершена');
+  console.log('🔄 Перезагружаем страницу через 2 секунды...');
+  
+  // Перезагружаем страницу
+  if (typeof window !== 'undefined') {
+    setTimeout(() => {
+      window.location.reload(true); // Принудительная перезагрузка
+    }, 2000);
+  }
+};
+
+// Добавляем функции в глобальную область для тестирования
+if (typeof window !== 'undefined') {
+  // Функция для полного сброса пользователя
+  window.resetTrial = resetTrialPeriod;
+  
+  // Функция для максимальной очистки браузера
+  window.clearAllData = clearAllBrowserData;
+  
+  // Функция для установки истёкшего триала
+  window.setExpiredTrial = setExpiredTrial;
+  
+  // Выводим подсказки в консоль
+  console.log('🔧 Доступные функции для тестирования:');
+  console.log('- window.resetTrial() - полный сброс пользователя');
+  console.log('- window.clearAllData() - максимальная очистка браузера');
+  console.log('- window.setExpiredTrial() - установить истёкший триал');
+} 
