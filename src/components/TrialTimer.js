@@ -95,7 +95,7 @@ const TrialTimer = ({ trialData, onBuyPremium }) => {
       />
 
       <Box sx={{ position: 'relative', zIndex: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: isExpired ? 'center' : 'space-between', mb: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <TimeIcon color={isExpired ? 'error' : 'primary'} />
             <Typography variant="h6" fontWeight="bold" color={isExpired ? 'error' : 'primary'}>
