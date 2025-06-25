@@ -682,6 +682,63 @@ Benefits:
           </Fade>
         </Modal>
 
+        {/* Кнопка для сброса данных пользователя (для тестирования) */}
+        <Paper
+          sx={{
+            p: 3,
+            mb: 3,
+            borderRadius: 2,
+            background: theme.palette.mode === 'dark' 
+              ? 'linear-gradient(135deg, #ff1744 0%, #d50000 100%)'
+              : 'linear-gradient(135deg, #ff5722 0%, #d84315 100%)',
+            color: 'white'
+          }}
+        >
+          <Typography variant="h6" gutterBottom sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+            🔧 Тестирование приложения
+          </Typography>
+          <Typography variant="body2" sx={{ textAlign: 'center', mb: 2, opacity: 0.9 }}>
+            Сбросить все данные и стать новым пользователем с пробным периодом
+          </Typography>
+          <Button
+            variant="contained"
+            fullWidth
+            size="large"
+            onClick={() => {
+              if (window.confirm('Вы уверены? Это удалит все ваши данные и сбросит приложение!')) {
+                console.log('🧹 Начинаем полный сброс данных...');
+                
+                // Полная очистка всех данных
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                // Очистка cookies
+                document.cookie.split(";").forEach(function(c) { 
+                  document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+                });
+                
+                console.log('✅ Все данные очищены');
+                alert('Данные очищены! Страница перезагрузится через 2 секунды.');
+                
+                // Перезагрузка страницы
+                setTimeout(() => {
+                  window.location.reload(true);
+                }, 2000);
+              }
+            }}
+            sx={{
+              background: 'rgba(255,255,255,0.2)',
+              color: 'white',
+              fontWeight: 'bold',
+              '&:hover': {
+                background: 'rgba(255,255,255,0.3)',
+              }
+            }}
+          >
+            🗑️ СБРОСИТЬ ВСЕ ДАННЫЕ
+          </Button>
+        </Paper>
+
         <ReferralProgram />
 
         <Snackbar
