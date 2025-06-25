@@ -157,23 +157,3 @@ export const getTelegramWebAppUser = () => {
   }
 };
 
-// Function to get user language from bot database
-export const getUserLanguageFromDatabase = async (userId) => {
-  try {
-    if (!userId) return null;
-    
-    const API_BASE = process.env.REACT_APP_API_BASE || 'https://ispeech-backend.onrender.com';
-    const response = await fetch(`${API_BASE}/api/trial/user-language/${userId}`);
-    
-    if (!response.ok) {
-      console.log('Не удалось получить язык пользователя из базы данных');
-      return null;
-    }
-    
-    const data = await response.json();
-    return data.language || null;
-  } catch (error) {
-    console.log('Ошибка при получении языка пользователя:', error);
-    return null;
-  }
-}; 
