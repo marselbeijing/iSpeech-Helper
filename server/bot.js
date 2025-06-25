@@ -642,7 +642,7 @@ ${texts.allFeaturesAvailable}
       reply_markup: {
         inline_keyboard: [
           [{
-            text: `💳 ${texts.buyButton} ${plan.amount} ⭐`,
+            text: `💳 Pay ${plan.amount} ⭐`,
             callback_data: `pay_${planType}`
           }],
           [{
