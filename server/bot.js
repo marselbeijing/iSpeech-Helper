@@ -543,7 +543,7 @@ ${texts.allFeaturesAvailable}
         payload,
         '', // provider_token пустой для Stars
         'XTR', // Stars
-        [{ label: plan.title, amount: plan.amount }]
+        [{ label: 'Pay', amount: plan.amount }]
       );
 
       // Используем уже объявленную переменную texts
