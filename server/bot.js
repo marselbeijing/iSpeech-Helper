@@ -511,15 +511,24 @@ ${texts.allFeaturesAvailable}
   }
 
   async createInvoice(chatId, planType, user) {
-    // Получаем язык из TrialPeriod, если есть
-    let lang = user.language_code;
-    if (user.id) {
+    // Приоритет текущему языку Telegram, а не сохраненному
+    let lang = 'en'; // по умолчанию английский
+    
+    // Сначала проверяем текущий язык Telegram
+    if (user.language_code && user.language_code.startsWith('ru')) {
+      lang = 'ru';
+    }
+    
+    // Только если нет текущего языка Telegram, берем сохраненный
+    if (!user.language_code && user.id) {
       const trial = await TrialPeriod.findOne({ userId: user.id.toString() });
       if (trial?.userInfo?.languageCode) {
         lang = trial.userInfo.languageCode;
       }
     }
-    if (!lang) lang = 'en';
+    
+    console.log('🔍 createInvoice - user.language_code:', user.language_code);
+    console.log('🔍 createInvoice - final lang:', lang);
     const texts = this.getTexts(lang);
     
     try {
@@ -561,12 +570,13 @@ ${texts.allFeaturesAvailable}
       await invoice.save();
       console.log('Инвойс создан:', { payload, userId: user.id, planType });
 
-      // Отправляем инвойс через Telegram Bot API
+      // Отправляем инвойс через Telegram Bot API с динамическим label
+      const payLabel = lang === 'ru' ? 'Заплатить' : 'Pay';
       await this.bot.sendInvoice(chatId, plan.title, plan.title,
         payload,
         '', // provider_token пустой для Stars
         'XTR', // Stars
-        [{ label: 'Pay', amount: plan.amount }]
+        [{ label: payLabel, amount: plan.amount }]
       );
 
       // Используем уже объявленную переменную texts
@@ -574,7 +584,7 @@ ${texts.allFeaturesAvailable}
       
     } catch (error) {
       console.error('Ошибка создания инвойса:', error);
-      const isEnglish = user.language_code && user.language_code.startsWith('en');
+      const isEnglish = lang === 'en';
       const errorMessage = isEnglish ? 
         '❌ Failed to create invoice. Please try again later or contact support.' :
         '❌ Не удалось создать инвойс. Попробуйте позже или обратитесь в поддержку.';
