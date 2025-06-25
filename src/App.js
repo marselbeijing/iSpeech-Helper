@@ -7,10 +7,9 @@ import { telegramColors } from './styles/TelegramStyles';
 
 import './i18n';
 import { useTranslation } from 'react-i18next';
-import { initTelegramWebApp } from './services/telegram';
+import { initTelegramWebApp, getCurrentUser, getUserLanguageFromDatabase } from './services/telegram';
 import telegramAnalytics from '@telegram-apps/analytics';
 import { initAudio } from './services/sound';
-import { getCurrentUser } from './services/telegram';
 
 // Trial period components
 import TrialWelcomeModal from './components/TrialWelcomeModal';
@@ -195,6 +194,37 @@ const App = () => {
     if (savedSettings) {
       updateTheme(savedSettings.darkMode || false);
     }
+
+    // Загружаем язык пользователя из базы данных бота
+    const loadUserLanguage = async () => {
+      try {
+        const user = getCurrentUser();
+        if (user?.id) {
+          console.log('🌐 Загружаем язык пользователя из базы данных...');
+          const userLanguage = await getUserLanguageFromDatabase(user.id);
+          
+          if (userLanguage) {
+            console.log('✅ Язык пользователя найден в базе данных:', userLanguage);
+            // Устанавливаем язык в i18n
+            await i18n.changeLanguage(userLanguage);
+            console.log('✅ Язык интерфейса установлен:', userLanguage);
+          } else {
+            console.log('⚠️ Язык пользователя не найден в базе данных, используем язык по умолчанию');
+            // Если язык не найден, используем язык пользователя из Telegram
+            if (user.language_code) {
+              const defaultLang = user.language_code.startsWith('ru') ? 'ru' : 'en';
+              await i18n.changeLanguage(defaultLang);
+              console.log('✅ Установлен язык по умолчанию:', defaultLang);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('❌ Ошибка загрузки языка пользователя:', error);
+      }
+    };
+
+    // Загружаем язык пользователя
+    loadUserLanguage();
 
     // Загружаем статус пробного периода
     const loadTrialStatus = async () => {

@@ -195,4 +195,37 @@ router.get('/check-access/:userId', async (req, res) => {
   }
 });
 
+// Получение языка пользователя из базы данных
+router.get('/user-language/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    console.log('🌐 Запрос языка пользователя:', userId);
+    
+    // Ищем пробный период пользователя
+    const trial = await TrialPeriod.findOne({ userId });
+    
+    if (trial && trial.userInfo && trial.userInfo.languageCode) {
+      console.log('✅ Язык найден в базе данных:', trial.userInfo.languageCode);
+      return res.json({ 
+        language: trial.userInfo.languageCode,
+        found: true 
+      });
+    }
+
+    console.log('⚠️ Язык не найден в базе данных для пользователя:', userId);
+    res.json({ 
+      language: null,
+      found: false 
+    });
+
+  } catch (error) {
+    console.error('❌ Ошибка получения языка пользователя:', error);
+    res.status(500).json({ 
+      error: 'Внутренняя ошибка сервера',
+      language: null,
+      found: false 
+    });
+  }
+});
+
 module.exports = router; 
