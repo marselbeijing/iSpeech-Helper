@@ -247,14 +247,37 @@ class TelegramStarsBot {
 
 По вопросам, связанным с платежами и подписками, обращайтесь:
 📧 Email: support@ispeechhelper.com
-💬 Telegram: @ispeechhelper_support
-
-Мы ответим в течение 24 часов.
-
-⚠️ Внимание: Поддержка Telegram не сможет помочь с вопросами по платежам в этом боте.
-      `;
-
+`;
       await this.bot.sendMessage(chatId, supportMessage);
+    });
+
+    // Команда /reset_lang для сброса языка
+    this.bot.onText(/\/reset_lang/, async (msg) => {
+      const userId = msg.from.id.toString();
+      try {
+        // Удаляем сохраненный язык из базы данных
+        await TrialPeriod.findOneAndUpdate(
+          { userId: userId },
+          { $unset: { 'userInfo.languageCode': '' } }
+        );
+        
+        console.log('🔄 Language reset for user:', userId);
+        
+        // Отправляем выбор языка заново
+        this.bot.sendMessage(msg.chat.id, 'Language reset! Choose your language / Язык сброшен! Выберите язык:', {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                { text: 'Русский', callback_data: 'set_lang_ru_start' },
+                { text: 'English', callback_data: 'set_lang_en_start' }
+              ]
+            ]
+          }
+        });
+      } catch (error) {
+        console.error('Error resetting language:', error);
+        this.bot.sendMessage(msg.chat.id, 'Error resetting language / Ошибка сброса языка');
+      }
     });
 
     // Команды покупки подписок
@@ -597,13 +620,16 @@ ${texts.allFeaturesAvailable}
   async sendSubscriptionOffer(chatId, planType, user) {
     // Получаем язык из TrialPeriod, если есть
     let lang = user.language_code;
+    console.log('🔍 sendSubscriptionOffer - user.language_code:', user.language_code);
     if (user.id) {
       const trial = await TrialPeriod.findOne({ userId: user.id.toString() });
       if (trial?.userInfo?.languageCode) {
         lang = trial.userInfo.languageCode;
+        console.log('🔍 sendSubscriptionOffer - saved lang from DB:', lang);
       }
     }
     if (!lang) lang = 'en';
+    console.log('🔍 sendSubscriptionOffer - final lang:', lang);
     const texts = this.getTexts(lang);
     
     const PLANS = {
