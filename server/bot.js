@@ -75,7 +75,7 @@ class TelegramStarsBot {
       quarterlyButton: isEnglish ? '📅 3 months (699 ⭐)' : '📅 3 месяца (699 ⭐)',
       yearlyButton: isEnglish ? '📅 12 months (1999 ⭐)' : '📅 12 месяцев (1999 ⭐)',
       openAppButton: isEnglish ? '🚀 Open App' : '🚀 Открыть приложение',
-      buyButton: isEnglish ? '💳 Buy' : '💳 Купить за',
+      buyButton: isEnglish ? '💳 Buy' : '💳 Pay',
       backButton: isEnglish ? '🔙 Back to selection' : '🔙 Назад к выбору',
       monthlyTitle: isEnglish
         ? `🪄 Premium Monthly Subscription  💰 Price: 299 ⭐ stars  ⏰ Duration: 30 days  📝 Full access to all features for 1 month`
