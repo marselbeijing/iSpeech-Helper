@@ -126,6 +126,9 @@ const BreathingExercises = () => {
           setPostponeTime();
           setShowModal(false);
         }}
+        onPostponeComplete={() => {
+          checkAccess();
+        }}
         trialExpired={blocked || (trialData?.trial?.isActive === false)}
       />
     );

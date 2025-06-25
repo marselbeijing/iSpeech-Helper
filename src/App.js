@@ -552,6 +552,18 @@ const App = () => {
         onStartTrial={handleStartTrial}
         onBuyPremium={handleBuyPremium}
         onPostpone={handlePostpone}
+        onPostponeComplete={() => {
+          // Перепроверяем статус триала после отложения
+          const loadTrialStatus = async () => {
+            try {
+              const status = await getTrialStatus();
+              setTrialData(status);
+            } catch (error) {
+              console.error('Ошибка обновления статуса триала:', error);
+            }
+          };
+          loadTrialStatus();
+        }}
         trialExpired={trialData?.trial?.isActive === false}
       />
     </ThemeProvider>
