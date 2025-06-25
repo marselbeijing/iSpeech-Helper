@@ -237,6 +237,7 @@ export const getTrialTexts = (language = 'ru') => {
     buyPremiumButton: isEnglish ? 'Buy Premium' : 'Купить Премиум',
     closeButton: isEnglish ? 'Close' : 'Закрыть',
     chipText: isEnglish ? '3 DAYS FREE' : '3 ДНЯ БЕСПЛАТНО',
+    freeTrialChip: isEnglish ? '3 DAYS FREE' : '3 ДНЯ БЕСПЛАТНО',
     premiumFeatures: isEnglish ? 'Premium features include:' : 'В премиум подписку входит:',
     feature1: isEnglish ? '🎯 All speech exercises' : '🎯 Все упражнения для речи',
     feature2: isEnglish ? '🫁 Breathing exercises' : '🫁 Дыхательные упражнения', 

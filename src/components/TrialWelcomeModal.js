@@ -19,12 +19,9 @@ import { getCurrentUser } from '../services/telegram';
 
 const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExpired }) => {
   const theme = useTheme();
-  
-  console.log('DEBUG: до useTranslation');
   const { i18n } = useTranslation();
-  console.log('DEBUG: после useTranslation');
   
-  // Определяем язык: тестовый язык > язык пользователя > язык i18n
+  // Определяем язык: i18n > тестовый язык > язык пользователя > fallback
   const testLanguage = localStorage.getItem('testLanguage');
   let user = null;
   try {
@@ -33,27 +30,28 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExp
     console.error('Error getting user:', e);
     user = null;
   }
-  const userLanguage = testLanguage || user?.language_code || i18n.language || 'ru';
-  console.log('DEBUG: testLanguage', testLanguage);
+  
+  // Приоритет: i18n.language > testLanguage > user.language_code > 'ru'
+  const currentLanguage = i18n.language || testLanguage || user?.language_code || 'ru';
   
   // Логируем для отладки
   React.useEffect(() => {
     if (open) {
       console.log('🌐 Язык модального окна:', {
+        i18nLanguage: i18n.language,
         testLanguage,
         userLanguage: user?.language_code,
-        i18nLanguage: i18n.language,
-        finalLanguage: userLanguage,
-        isEnglish: userLanguage?.startsWith('en')
+        finalLanguage: currentLanguage,
+        isEnglish: currentLanguage?.startsWith('en')
       });
     }
-  }, [open, testLanguage, user?.language_code, i18n.language, userLanguage]);
+  }, [open, i18n.language, testLanguage, user?.language_code, currentLanguage]);
 
   let texts = {};
   try {
-    texts = getTrialTexts(userLanguage);
+    texts = getTrialTexts(currentLanguage);
   } catch (e) {
-    console.error('Error in getTrialTexts:', e, userLanguage);
+    console.error('Error in getTrialTexts:', e, currentLanguage);
     texts = {};
   }
 
