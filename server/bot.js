@@ -151,19 +151,6 @@ class TelegramStarsBot {
       }
     });
 
-    // Обработка callback_query (inline кнопки)
-    this.bot.on('callback_query', async (query) => {
-      try {
-        await this.handleCallbackQuery(query);
-      } catch (error) {
-        console.error('Ошибка обработки callback_query:', error);
-        await this.bot.answerCallbackQuery(query.id, {
-          text: 'Произошла ошибка. Попробуйте еще раз.',
-          show_alert: true
-        });
-      }
-    });
-
     // Команда /start
     this.bot.onText(/\/start(.*)/, async (msg) => {
       const chatId = msg.chat.id;
@@ -195,48 +182,60 @@ class TelegramStarsBot {
       });
     });
 
-    // Обработка выбора языка через inline-кнопки при старте
+    // Обработка callback_query (inline кнопки)
     this.bot.on('callback_query', async (query) => {
-      if (query.data === 'set_lang_en_start' || query.data === 'set_lang_ru_start') {
-        const lang = query.data === 'set_lang_en_start' ? 'en' : 'ru';
-        await TrialPeriod.findOneAndUpdate(
-          { userId: query.from.id.toString() },
-          { $set: { 'userInfo.languageCode': lang } },
-          { upsert: true }
-        );
-        const texts = this.getTexts(lang);
+      try {
+        // Обработка выбора языка при старте
+        if (query.data === 'set_lang_en_start' || query.data === 'set_lang_ru_start') {
+          const lang = query.data === 'set_lang_en_start' ? 'en' : 'ru';
+          await TrialPeriod.findOneAndUpdate(
+            { userId: query.from.id.toString() },
+            { $set: { 'userInfo.languageCode': lang } },
+            { upsert: true }
+          );
+          const texts = this.getTexts(lang);
 
-        // Проверяем, был ли start-параметр с покупкой
-        let startParam = null;
-        if (query.message && query.message.reply_to_message && query.message.reply_to_message.text) {
-          const parts = query.message.reply_to_message.text.split(' ');
-          if (parts.length > 1) startParam = parts[1];
-        }
-        if (!startParam && query.message && query.message.text) {
-          const parts = query.message.text.split(' ');
-          if (parts.length > 1) startParam = parts[1];
-        }
-        if (startParam && startParam.startsWith('buy_')) {
-          const planType = startParam.replace('buy_', '');
-          await this.sendSubscriptionOffer(query.message.chat.id, planType, { language_code: lang });
-        } else {
-          // Обычное приветствие с кнопками
-          this.bot.sendMessage(query.message.chat.id, texts.welcomeMessage, {
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  { text: texts.openAppButton, web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' } }
-                ],
-                [
-                  { text: texts.learnAboutSubscriptionButton, callback_data: 'subscription_menu' }
+          // Проверяем, был ли start-параметр с покупкой
+          let startParam = null;
+          if (query.message && query.message.reply_to_message && query.message.reply_to_message.text) {
+            const parts = query.message.reply_to_message.text.split(' ');
+            if (parts.length > 1) startParam = parts[1];
+          }
+          if (!startParam && query.message && query.message.text) {
+            const parts = query.message.text.split(' ');
+            if (parts.length > 1) startParam = parts[1];
+          }
+          if (startParam && startParam.startsWith('buy_')) {
+            const planType = startParam.replace('buy_', '');
+            await this.sendSubscriptionOffer(query.message.chat.id, planType, { language_code: lang });
+          } else {
+            // Обычное приветствие с кнопками
+            await this.bot.sendMessage(query.message.chat.id, texts.welcomeMessage, {
+              reply_markup: {
+                inline_keyboard: [
+                  [
+                    { text: texts.openAppButton, web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' } }
+                  ],
+                  [
+                    { text: texts.learnAboutSubscriptionButton, callback_data: 'subscription_menu' }
+                  ]
                 ]
-              ]
-            }
-          });
+              }
+            });
+          }
+          await this.bot.answerCallbackQuery(query.id);
+          return;
         }
-        return;
+
+        // Обработка других callback_query
+        await this.handleCallbackQuery(query);
+      } catch (error) {
+        console.error('Ошибка обработки callback_query:', error);
+        await this.bot.answerCallbackQuery(query.id, {
+          text: 'Произошла ошибка. Попробуйте еще раз.',
+          show_alert: true
+        });
       }
-      // ... существующая обработка других callback_query ...
     });
 
     // Команда /paysupport - обязательная для платежных ботов
