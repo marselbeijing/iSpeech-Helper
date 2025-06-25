@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { getTrialTexts } from '../services/trial';
 import { getCurrentUser } from '../services/telegram';
 
-const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExpired, onSnooze }) => {
+const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExpired }) => {
   const theme = useTheme();
   
   console.log('DEBUG: до useTranslation');
@@ -63,8 +63,6 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExp
       onBuyPremium(); // Вызываем переданную функцию
     }
   };
-
-  const isEnglish = userLanguage?.startsWith('en');
 
   return (
     <Dialog
@@ -179,66 +177,36 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExp
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ 
-        flexDirection: 'column', 
-        gap: 2, 
-        p: 3, 
-        pt: 0 
-      }}>
+      <DialogActions sx={{ p: 3, pt: 1, gap: 1, flexDirection: 'column' }}>
         {!trialExpired && (
           <Button
-            variant="contained"
-            color="primary"
-            fullWidth
             onClick={onStartTrial}
+            variant="contained"
             size="large"
-            sx={{
+            fullWidth
+            sx={{ 
               background: `linear-gradient(45deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-              fontSize: '1.1rem',
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '0.9rem',
               py: 1.5,
-              fontWeight: 'bold'
+              mb: 1
             }}
           >
-            {texts.startTrial}
+            {texts.startTrialButton}
           </Button>
         )}
-        
         <Button
-          variant="contained"
-          color="secondary"
-          fullWidth
-          onClick={onBuyPremium}
-          size="large"
-          sx={{
-            fontSize: '1.1rem',
-            py: 1.5,
-            fontWeight: 'bold'
+          variant="outlined"
+          color="primary"
+          onClick={handleBuyPremiumClick}
+          sx={{ 
+            fontSize: '0.9rem',
+            py: 1.5
           }}
         >
-          {texts.buyPremium}
+          {texts.buyNowButton}
         </Button>
-        
-        {trialExpired && (
-          <Button
-            variant="outlined"
-            color="primary"
-            fullWidth
-            onClick={() => {
-              if (onSnooze) {
-                onSnooze(8); // Отложить на 8 часов
-              }
-              onClose();
-            }}
-            size="medium"
-            sx={{
-              fontSize: '0.9rem',
-              py: 1,
-              opacity: 0.8
-            }}
-                     >
-             {isEnglish ? 'Remind me later (8 hours)' : 'Напомнить позже (8 часов)'}
-           </Button>
-        )}
       </DialogActions>
     </Dialog>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Container,
@@ -21,7 +21,6 @@ import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import { commonStyles } from '../styles/TelegramStyles';
 import BackgroundAnimation from '../components/BackgroundAnimation';
-import PageContainer from '../components/PageContainer';
 import { useTranslation } from 'react-i18next';
 import usePremiumAccess from '../hooks/usePremiumAccess';
 import TrialWelcomeModal from '../components/TrialWelcomeModal';
@@ -30,15 +29,25 @@ const Home = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const { t } = useTranslation();
-  const { loading, blocked, shouldShowModal, hideModal, snoozeModalReminder, trialData } = usePremiumAccess();
-  const [showModal, setShowModal] = useState(false);
+  const { blocked, loading, trialData, checkAccess } = usePremiumAccess();
+  const [showModal, setShowModal] = React.useState(false);
 
+  // Блокировка прокрутки на странице
+  React.useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, []);
 
-
-  // Синхронизируем локальное состояние с хуком
-  useEffect(() => {
-    setShowModal(shouldShowModal);
-  }, [shouldShowModal]);
+  React.useEffect(() => {
+    if (!loading && blocked) {
+      setShowModal(true);
+    }
+  }, [loading, blocked]);
 
   const menuItems = [
     {
@@ -102,22 +111,11 @@ const Home = () => {
     return (
       <TrialWelcomeModal
         open={showModal}
-        onClose={() => {
-          hideModal();
-          setShowModal(false);
-        }}
-        onStartTrial={() => {
-          hideModal();
-          setShowModal(false);
-        }}
+        onClose={() => setShowModal(false)}
+        onStartTrial={() => setShowModal(false)}
         onBuyPremium={() => {
-          hideModal();
           setShowModal(false);
           navigate('/account');
-        }}
-        onSnooze={(hours) => {
-          snoozeModalReminder(hours);
-          setShowModal(false);
         }}
         trialExpired={blocked || (trialData?.trial?.isActive === false)}
       />
@@ -125,12 +123,53 @@ const Home = () => {
   }
 
   return (
-    <PageContainer>
-      <BackgroundAnimation />
-      <Container maxWidth="sm" sx={{
-        ...commonStyles.pageContainer,
-        py: 2,
+    <Box sx={{
+      height: '100vh',
+      maxHeight: '100vh',
+      background: theme.palette.background.default,
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      pb: 7,
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+    }}>
+      {/* Фоновая анимация (zIndex 1) */}
+      <Box sx={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 1,
+        pointerEvents: 'none',
       }}>
+        <BackgroundAnimation />
+      </Box>
+
+      {/* Основной контент (zIndex 2) */}
+      <Box sx={{
+        position: 'relative',
+        zIndex: 2,
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
+        <Container maxWidth="sm" sx={{
+          ...commonStyles.pageContainer,
+          py: 2,
+          flex: 1,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          position: 'relative',
+          height: 'calc(100vh - 56px)',
+          background: 'transparent',
+        }}>
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -179,7 +218,7 @@ const Home = () => {
               </Typography>
             </Paper>
           </motion.div>
-          <Grid container spacing={2} sx={{ mt: 1 }}>
+          <Grid container spacing={2} justifyContent="center" alignItems="center" sx={{ overflow: 'hidden', flex: 1, textAlign: 'center' }}>
             {menuItems.map((item, index) => (
               <Grid item xs={6} key={item.path} sx={{ display: 'flex', justifyContent: 'center' }}>
                 <motion.div
@@ -227,7 +266,8 @@ const Home = () => {
             ))}
           </Grid>
         </Container>
-    </PageContainer>
+      </Box>
+    </Box>
   );
 };
 
