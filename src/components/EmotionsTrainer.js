@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Container,
   Box,
@@ -31,13 +31,10 @@ const EmotionsTrainer = () => {
   const [currentEmotion, setCurrentEmotion] = useState(null);
   const [currentPhrase, setCurrentPhrase] = useState('');
 
-  const { blocked, loading, trialData, shouldShowModal, hideModal, snoozeModalReminder, tryUseFeature } = usePremiumAccess();
+  const { blocked, trialData } = usePremiumAccess();
   const [showModal, setShowModal] = useState(false);
 
-  // Синхронизируем локальное состояние с хуком
-  useEffect(() => {
-    setShowModal(shouldShowModal);
-  }, [shouldShowModal]);
+
 
   React.useEffect(() => {
     getRandomEmotionAndPhrase();
@@ -52,20 +49,9 @@ const EmotionsTrainer = () => {
   };
 
   const handleNextClick = () => {
-    // Проверяем доступ перед использованием функции
-    if (!tryUseFeature('next_phrase')) {
-      return; // Доступ заблокирован, модальное окно уже показано
-    }
-    
-    if (settings.soundEffects) {
-      playSound('click');
-    }
+    getRandomEmotionAndPhrase();
+    playSound('click');
     vibrate('click');
-    
-    setCurrentIndex(prevIndex => {
-      const nextIndex = (prevIndex + 1) % currentLanguagePhrases.length;
-      return nextIndex;
-    });
   };
 
   const handleBackClick = () => {

@@ -87,7 +87,7 @@ class TelegramStarsBot {
         ? `🪄 Premium Annual Subscription  💰 Price: 1999 ⭐ stars  ⏰ Duration: 365 days  📝 Full access to all features for 1 year (40% off)`
         : `🪄 Годовая подписка Premium  💰 Стоимость: 1999 ⭐ звезд  ⏰ Длительность: 365 дней  📝 Полный доступ ко всем функциям на 1 год (скидка 40%)`,
       duration30: isEnglish ? '30 days' : '30 дней',
-      duration90: isEnglish ? '90 days' : '90 дней',
+      duration90: isEnglish ? '90 days' : '90 дней', 
       duration365: isEnglish ? '365 days' : '365 дней',
       description1: isEnglish ? 'Full access to all features for 1 month' : 'Полный доступ ко всем функциям на 1 месяц',
       description3: isEnglish ? 'Full access to all features for 3 months (20% off)' : 'Полный доступ ко всем функциям на 3 месяца (скидка 20%)',
@@ -117,7 +117,7 @@ class TelegramStarsBot {
       currentBalanceCheck: isEnglish ? '💰 You can check your current balance in the app in the "Referral Program" section.' : '💰 Ваш текущий баланс можно посмотреть в приложении в разделе "Партнерская программа".',
       subscriptionNames: {
         monthly: isEnglish ? 'monthly' : 'месячную',
-        quarterly: isEnglish ? 'quarterly' : 'квартальную',
+        quarterly: isEnglish ? 'quarterly' : 'квартальную', 
         yearly: isEnglish ? 'annual' : 'годовую'
       },
       welcomeMessage: isEnglish

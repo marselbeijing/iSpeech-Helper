@@ -15,6 +15,8 @@ import { vibrate } from '../services/vibration';
 import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
 import usePremiumAccess from '../hooks/usePremiumAccess';
+import TrialWelcomeModal from './TrialWelcomeModal';
+import { useNavigate } from 'react-router-dom';
 
 const tongueTwistersRU = {
   beginner: [
@@ -167,20 +169,17 @@ const TongueTwisters = () => {
   const [currentTwister, setCurrentTwister] = useState('');
   const [isVisible, setIsVisible] = useState(true);
   const textBoxRef = useRef(null);
-  const { blocked, loading, trialData, shouldShowModal, hideModal, snoozeModalReminder, tryUseFeature } = usePremiumAccess();
+  const { blocked, trialData, triggerModalOnAction } = usePremiumAccess();
   const [showModal, setShowModal] = useState(false);
-
-  // Синхронизируем локальное состояние с хуком
-  useEffect(() => {
-    setShowModal(shouldShowModal);
-  }, [shouldShowModal]);
+  const navigate = useNavigate();
 
   const getRandomTwister = React.useCallback((lvl = level) => {
-    // Проверяем доступ перед использованием функции
-    if (!tryUseFeature('random_tongue_twister')) {
-      return; // Доступ заблокирован, модальное окно уже показано
+    // Проверяем премиум-доступ перед выполнением действия
+    if (blocked && triggerModalOnAction()) {
+      setShowModal(true);
+      return;
     }
-    
+
     setIsVisible(false);
     setTimeout(() => {
       const arr = i18n.language === 'ru' ? tongueTwistersRU[lvl] || tongueTwistersRU.beginner : tongueTwistersEN[lvl] || tongueTwistersEN.beginner;
@@ -196,7 +195,11 @@ const TongueTwisters = () => {
         }
       }, 350);
     }, 300);
-  }, [level, i18n.language, tryUseFeature]);
+  }, [level, i18n.language, blocked, triggerModalOnAction]);
+
+  useEffect(() => {
+    getRandomTwister(level);
+  }, [level, i18n.language, getRandomTwister]);
 
   const handleBackClick = () => {
     playSound('click');
@@ -207,6 +210,21 @@ const TongueTwisters = () => {
   const handleExerciseComplete = () => {
     updateProgress('tongueTwister');
   };
+
+  if (showModal) {
+    return (
+      <TrialWelcomeModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onStartTrial={() => setShowModal(false)}
+        onBuyPremium={() => {
+          setShowModal(false);
+          navigate('/account');
+        }}
+        trialExpired={blocked || (trialData?.trial?.isActive === false)}
+      />
+    );
+  }
 
   return (
     <Box sx={{ 
@@ -395,7 +413,7 @@ const TongueTwisters = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => getRandomTwister(level)}
+                onClick={() => getRandomTwister()}
                 sx={{
                   py: 1,
                   px: 2.5,

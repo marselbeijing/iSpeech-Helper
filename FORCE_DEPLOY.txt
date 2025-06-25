@@ -1,14 +1,1 @@
 Force deploy: Sat Jun 21 14:20:19 +05 2025
-
-DEPLOY_TIMESTAMP: 2025-01-29T11:15:00Z
-ISSUE: Белый экран из-за ошибки setupDebugFunctions
-SOLUTION: Удалён вызов несуществующей функции setupDebugFunctions() из App.js
-STATUS: Исправление применено, ожидаем обновления кэша
-LATEST_COMMIT: 46e9696 - Исправление белого экрана
-
-=== ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ ===
-ПРОБЛЕМА: setupDebugFunctions is not defined на строке 205
-РЕШЕНИЕ: Функция удалена из App.js в коммите 46e9696
-СТАТУС: Ожидаем очистки кэша браузера и Vercel
-ВРЕМЯ: 2025-01-29T11:15:00Z
-ВЕРСИЯ: Исправленная (без setupDebugFunctions)

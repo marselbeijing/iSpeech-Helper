@@ -29,15 +29,11 @@ const AnalyticsTest = () => {
     checkAnalyticsStatus();
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-    
-    return () => {
-      document.body.style.overflow = 'auto';
-      document.documentElement.style.overflow = 'auto';
-    };
-  }, []);
+  React.useEffect(() => {
+    if (!loading && blocked) {
+      setShowModal(true);
+    }
+  }, [loading, blocked]);
 
   const checkAnalyticsStatus = () => {
     const status = {

@@ -24,8 +24,8 @@ const BreathingExercises = () => {
   const [currentPhase, setCurrentPhase] = useState('inhale'); // inhale, hold, exhale, rest
   const [totalCycles] = useState(5);
   const { t, i18n } = useTranslation();
-  const { blocked, loading, trialData, shouldShowModal, hideModal, snoozeModalReminder, tryUseFeature } = usePremiumAccess();
-  const [showModal, setShowModal] = useState(false);
+  const { blocked, trialData, triggerModalOnAction } = usePremiumAccess();
+  const [showModal, setShowModal] = React.useState(false);
 
   const phases = useMemo(() => ({
     inhale: { duration: 4, label: t('breathing_inhale') },
@@ -49,38 +49,24 @@ const BreathingExercises = () => {
     return () => clearTimeout(timer);
   }, [isPlaying, currentPhase, phases, totalCycles]);
 
-  useEffect(() => {
-    setShowModal(shouldShowModal);
-  }, [shouldShowModal]);
-
   const startExercise = () => {
-    if (!tryUseFeature('start_breathing_exercise')) {
+    // Проверяем премиум-доступ перед выполнением действия
+    if (blocked && triggerModalOnAction()) {
+      setShowModal(true);
       return;
     }
-    
-    if (settings.soundEffects) {
-      playSound('click');
-    }
-    vibrate('click');
-    
+
     setIsPlaying(true);
-    setCurrentCycle(0);
-    setPhase('inhale');
-    setTimeLeft(inhaleTime);
     setCurrentPhase('inhale');
+    playSound('click');
+    vibrate('click');
   };
 
   const stopExercise = () => {
-    if (settings.soundEffects) {
-      playSound('click');
-    }
-    vibrate('click');
-    
     setIsPlaying(false);
-    setCurrentCycle(0);
-    setPhase('inhale');
-    setTimeLeft(inhaleTime);
     setCurrentPhase('inhale');
+    playSound('click');
+    vibrate('click');
     handleExerciseComplete();
   };
 
@@ -124,6 +110,8 @@ const BreathingExercises = () => {
   const handleExerciseComplete = () => {
     updateProgress('breathing');
   };
+
+
 
   if (showModal) {
     return (

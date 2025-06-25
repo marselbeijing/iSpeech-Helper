@@ -11,7 +11,6 @@ import { initTelegramWebApp } from './services/telegram';
 import telegramAnalytics from '@telegram-apps/analytics';
 import { initAudio } from './services/sound';
 import { getCurrentUser } from './services/telegram';
-import { clearTrialCache, resetModalSettings } from './utils/clearTrialCache';
 
 // Trial period components
 import TrialWelcomeModal from './components/TrialWelcomeModal';
@@ -132,12 +131,6 @@ const App = () => {
 
   // Безопасная инициализация Telegram WebApp и загрузка настроек
   useEffect(() => {
-    // Принудительно очищаем кэш модального окна при загрузке
-    console.log('🧹 Принудительная очистка кэша модального окна при загрузке...');
-    localStorage.removeItem('trialExpiredModalLastShown');
-    localStorage.removeItem('trialModalSnoozedUntil');
-    console.log('✅ Кэш модального окна очищен при загрузке');
-
     // Инициализируем Telegram WebApp безопасно
     try {
       initTelegramWebApp();
@@ -169,8 +162,9 @@ const App = () => {
         console.log('👤 Текущий пользователь:', user);
         
         if (!user?.id) {
-          console.log('ℹ️ Пользователь не найден, но НЕ показываем модальное окно автоматически');
-          // НЕ показываем модальное окно автоматически
+          console.log('❌ Пользователь не найден, показываем модальное окно для демонстрации');
+          // Для демонстрации показываем окно даже без пользователя
+          setShowWelcomeModal(true);
           return;
         }
         
@@ -178,28 +172,26 @@ const App = () => {
         console.log('📊 Статус пробного периода получен:', status);
         setTrialData(status);
         
-        // НЕ показываем приветственное окно автоматически
-        // Оно будет показано только при попытке использовать премиум-функции
-        console.log('ℹ️ Приветственное окно НЕ показываем автоматически:', {
-          hasActiveSubscription: status.hasActiveSubscription,
-          hasSeenWelcome: status.trial?.hasSeenWelcome
-        });
+        // Показываем приветственное окно если пользователь его еще не видел
+        if (!status.hasActiveSubscription && status.trial && !status.trial.hasSeenWelcome) {
+          console.log('🎉 Показываем приветственное окно пробного периода');
+          setShowWelcomeModal(true);
+        } else {
+          console.log('ℹ️ Приветственное окно не показываем:', {
+            hasActiveSubscription: status.hasActiveSubscription,
+            hasSeenWelcome: status.trial?.hasSeenWelcome
+          });
+        }
       } catch (error) {
         console.error('❌ Ошибка загрузки статуса пробного периода:', error);
-        // В случае ошибки НЕ показываем окно автоматически
-        console.log('ℹ️ Ошибка загрузки, но НЕ показываем модальное окно автоматически');
+        // В случае ошибки показываем окно для демонстрации
+        console.log('🎭 Показываем демо-окно из-за ошибки');
+        setShowWelcomeModal(true);
       }
     };
 
     // Загружаем статус с небольшой задержкой чтобы Telegram WebApp успел инициализироваться
     setTimeout(loadTrialStatus, 1000);
-
-    // Добавляем функции для отладки в глобальную область видимости
-    if (typeof window !== 'undefined') {
-      window.clearTrialCache = clearTrialCache;
-      window.resetModalSettings = resetModalSettings;
-      console.log('🛠️ Функции отладки доступны: window.clearTrialCache() и window.resetModalSettings()');
-    }
 
     // Добавляем обработчик для инициализации аудио после первого клика
     const handleFirstUserInteraction = async () => {
@@ -454,8 +446,6 @@ const App = () => {
       divider: themeMode === 'dark' ? telegramColors.dark.divider : telegramColors.light.divider,
     },
   });
-
-  // Функции отладки уже определены в index.js
 
   return (
     <ThemeProvider theme={theme}>

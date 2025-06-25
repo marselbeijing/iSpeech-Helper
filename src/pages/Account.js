@@ -159,16 +159,16 @@ const Account = () => {
         try {
           const status = await getTrialStatus();
           setTrialData(status);
-          // НЕ показываем модальное окно автоматически на странице аккаунта
-          // Пользователь должен иметь возможность просматривать информацию о подписке
-          console.log('ℹ️ Статус пробного периода загружен, но модальное окно НЕ показываем:', {
-            hasActiveSubscription: status.hasActiveSubscription,
-            trialActive: status.trial?.isActive
-          });
+          // Если нет подписки и триал неактивен — показываем окно покупки
+          if (!status.hasActiveSubscription && (!status.trial || status.trial.isActive === false)) {
+            setShowBuyModal(true);
+          } else {
+            setShowBuyModal(false);
+          }
         } catch (error) {
           console.error('Ошибка загрузки данных пробного периода:', error);
-          // При ошибке НЕ показываем модальное окно автоматически
-          console.log('ℹ️ Ошибка загрузки, но модальное окно НЕ показываем автоматически');
+          // При ошибке — блокируем доступ и предлагаем купить подписку
+          setShowBuyModal(true);
         }
       };
       loadTrialData();
@@ -234,8 +234,11 @@ const Account = () => {
     }
   }, [user]);
 
-  // НЕ показываем модальное окно автоматически на странице аккаунта
-  // Пользователь должен иметь возможность просматривать информацию о подписке
+  useEffect(() => {
+    if (!premiumLoading && blocked) {
+      setShowModal(true);
+    }
+  }, [premiumLoading, blocked]);
 
   const handlePurchase = async (type) => {
     try {

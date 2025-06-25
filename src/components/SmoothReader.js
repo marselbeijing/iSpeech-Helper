@@ -42,8 +42,8 @@ const SmoothReader = () => {
   const lastActiveRef = useRef(null);
   const startTimeRef = useRef(null);
   const navigate = useNavigate();
-  const { blocked, loading, trialData, shouldShowModal, hideModal, snoozeModalReminder, tryUseFeature } = usePremiumAccess();
-  const [showModal, setShowModal] = useState(false);
+  const { blocked, trialData, triggerModalOnAction } = usePremiumAccess();
+  const [showModal, setShowModal] = React.useState(false);
   
   // Используем истории в зависимости от текущего языка
   const currentLanguageStories = stories[i18n.language] || stories.en;
@@ -85,44 +85,24 @@ const SmoothReader = () => {
     }
   }, [currentIndex]);
 
-  // Синхронизируем локальное состояние с хуком
-  useEffect(() => {
-    setShowModal(shouldShowModal);
-  }, [shouldShowModal]);
-
-  const startReading = () => {
-    setCurrentIndex(0);
-    setIsPlaying(true);
-  };
-
-  const stopReading = () => {
-    setIsPlaying(false);
-    if (currentIndex >= totalLetters) {
-      handleExerciseComplete();
-    }
-  };
-
-  const generateRandomStory = () => {
-    let nextIndex = Math.floor(Math.random() * currentLanguageStories.length);
-    // Исключаем повтор текущей истории
-    if (nextIndex === storyIndex) {
-      nextIndex = (nextIndex + 1) % currentLanguageStories.length;
-    }
-    setStoryIndex(nextIndex);
-    setCurrentIndex(0);
-    setIsPlaying(false);
-  };
-
   const handlePlayPause = () => {
-    // Проверяем доступ перед использованием функции
-    if (!tryUseFeature('play_pause')) {
-      return; // Доступ заблокирован, модальное окно уже показано
+    // Проверяем премиум-доступ перед выполнением действия
+    if (blocked && triggerModalOnAction()) {
+      setShowModal(true);
+      return;
     }
-    
+
     if (isPlaying) {
-      stopReading();
+      setIsPlaying(false);
+      if (currentIndex >= totalLetters) {
+        handleExerciseComplete();
+      }
     } else {
-      startReading();
+      if (currentIndex >= totalLetters) {
+        setCurrentIndex(0);
+      }
+      startTimeRef.current = Date.now();
+      setIsPlaying(true);
     }
   };
 
@@ -131,12 +111,20 @@ const SmoothReader = () => {
   };
 
   const handleRandomStory = () => {
-    // Проверяем доступ перед использованием функции
-    if (!tryUseFeature('random_text')) {
-      return; // Доступ заблокирован, модальное окно уже показано
+    // Проверяем премиум-доступ перед выполнением действия
+    if (blocked && triggerModalOnAction()) {
+      setShowModal(true);
+      return;
     }
-    
-    generateRandomStory();
+
+    let nextIndex = Math.floor(Math.random() * currentLanguageStories.length);
+    // Исключаем повтор текущей истории
+    if (nextIndex === storyIndex) {
+      nextIndex = (nextIndex + 1) % currentLanguageStories.length;
+    }
+    setStoryIndex(nextIndex);
+    setCurrentIndex(0);
+    setIsPlaying(false);
   };
 
   const handleExerciseComplete = () => {

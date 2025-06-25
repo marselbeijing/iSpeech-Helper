@@ -1,6 +1,1 @@
 Sat Jun 21 11:45:02 +05 2025
-DEPLOY_TIMESTAMP: 2025-01-29T10:55:00Z
-ISSUE: Vercel использует старый коммит 9a7fbac вместо нового 6cfbbcf
-SOLUTION: Создан файл services/api.js для совместимости
-STATUS: Принудительное обновление для синхронизации с Vercel
-LATEST_COMMIT: 6cfbbcf - Создание временного файла services/api.js
