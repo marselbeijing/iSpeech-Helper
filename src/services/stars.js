@@ -1,8 +1,38 @@
 import { getCurrentUser } from './telegram';
+import i18n from '../i18n';
 import { getStarsBalance as getReferralStarsBalance } from './referral';
 
 // Глобальное состояние для предотвращения множественных попапов
 let isPopupOpen = false;
+
+// Функция для получения текстов в зависимости от языка
+const getTexts = (language = i18n.language) => {
+  const isEnglish = language && language.startsWith('en');
+  return {
+    purchaseTitle: isEnglish ? '💳 Purchase Subscription' : '💳 Покупка подписки',
+    cost: isEnglish ? 'Cost:' : 'Стоимость:',
+    stars: isEnglish ? 'stars' : 'звезд',
+    forPurchase: isEnglish ? 'To purchase, go to @iSpeechHelper_bot and write:' : 'Для покупки перейдите в @iSpeechHelper_bot и напишите:',
+    orStart: isEnglish ? 'Or simply write /start to choose a subscription.' : 'Или просто напишите /start для выбора подписки.',
+    linkCopied: isEnglish ? 'Link copied to clipboard! Paste it in Telegram to go to the bot.' : 'Ссылка скопирована в буфер обмена! Вставьте её в Telegram для перехода к боту.',
+    redirectedToBot: isEnglish ? 'Redirected to bot for purchase' : 'Перенаправлен в бота для покупки',
+    failedToOpenBot: isEnglish ? 'Failed to open bot automatically' : 'Не удалось открыть бота автоматически',
+    allMethodsFailed: isEnglish ? `Failed to automatically open the bot.
+
+Go manually to @iSpeechHelper_bot and write:
+/buy_` : `Не удалось автоматически открыть бота. 
+
+Перейдите вручную в @iSpeechHelper_bot и напишите:
+/buy_`,
+    orStartForSelection: isEnglish ? 'Or simply /start to choose subscription.' : 'Или просто /start для выбора подписки.',
+    monthlyTitle: isEnglish ? 'Monthly Subscription' : 'Месячная подписка',
+    quarterlyTitle: isEnglish ? 'Quarterly Subscription' : 'Квартальная подписка',
+    yearlyTitle: isEnglish ? 'Annual Subscription' : 'Годовая подписка',
+    monthlyDescription: isEnglish ? 'Access to all features for 30 days.' : 'Доступ ко всем функциям на 30 дней.',
+    quarterlyDescription: isEnglish ? 'Access to all features for 90 days.' : 'Доступ ко всем функциям на 90 дней.',
+    yearlyDescription: isEnglish ? 'Access to all features for 365 days.' : 'Доступ ко всем функциям на 365 дней.'
+  };
+};
 
 // Заглушки для работы со звездами
 export const getStarsBalance = async () => {
@@ -27,23 +57,23 @@ export const SUBSCRIPTION_PLANS = {
   monthly: {
     stars: 299,
     duration: 30,
-    title: 'Месячная подписка',
+    get title() { return getTexts().monthlyTitle; },
     amount: 299,
-    description: 'Доступ ко всем функциям на 30 дней.'
+    get description() { return getTexts().monthlyDescription; }
   },
   quarterly: {
     stars: 699,
     duration: 90,
-    title: 'Квартальная подписка',
+    get title() { return getTexts().quarterlyTitle; },
     amount: 699,
-    description: 'Доступ ко всем функциям на 90 дней.'
+    get description() { return getTexts().quarterlyDescription; }
   },
   yearly: {
     stars: 1999,
     duration: 365,
-    title: 'Годовая подписка',
+    get title() { return getTexts().yearlyTitle; },
     amount: 1999,
-    description: 'Доступ ко всем функциям на 365 дней.'
+    get description() { return getTexts().yearlyDescription; }
   }
 };
 
@@ -121,16 +151,19 @@ export const purchaseWithStars = async (planType) => {
     console.log('openInvoice содержит баг в текущей версии Telegram WebApp');
     console.log('Используем альтернативный подход через бота...');
 
+    // Получаем тексты для текущего языка
+    const texts = getTexts();
+
     // Создаем сообщение с инструкциями
     const message = `💫 ${plan.title}
 
-💰 Стоимость: ${plan.amount} ⭐ звезд
+💰 ${texts.cost} ${plan.amount} ⭐ ${texts.stars}
 📝 ${plan.description}
 
-🤖 Для покупки перейдите в @iSpeechHelper_bot и напишите:
+🤖 ${texts.forPurchase}
 /buy_${planType}
 
-Или просто напишите /start для выбора подписки.`;
+${texts.orStart}`;
 
     // Показываем popup с выбором действий
     if (typeof webApp.showPopup === 'function') {
@@ -139,7 +172,7 @@ export const purchaseWithStars = async (planType) => {
       
       return new Promise((resolve) => {
         webApp.showPopup({
-          title: '💳 Покупка подписки',
+          title: texts.purchaseTitle,
           message: message,
           buttons: [
             {
@@ -280,7 +313,7 @@ export const purchaseWithStars = async (planType) => {
                   console.log('✅ Ссылка скопирована в буфер обмена');
                   // Показываем дополнительное уведомление
                   if (typeof webApp.showAlert === 'function') {
-                    webApp.showAlert('Ссылка скопирована в буфер обмена! Вставьте её в Telegram для перехода к боту.');
+                    webApp.showAlert(texts.linkCopied);
                   }
                   opened = true;
                 }).catch((clipError) => {
@@ -295,12 +328,9 @@ export const purchaseWithStars = async (planType) => {
             if (!opened) {
               console.error('❌ Все способы открытия бота не сработали');
               if (typeof webApp.showAlert === 'function') {
-                webApp.showAlert(`Не удалось автоматически открыть бота. 
-                
-Перейдите вручную в @iSpeechHelper_bot и напишите:
-/buy_${planType}
+                webApp.showAlert(`${texts.allMethodsFailed}${planType}
 
-Или просто /start для выбора подписки.`);
+${texts.orStartForSelection}`);
               }
             }
             
@@ -318,7 +348,7 @@ export const purchaseWithStars = async (planType) => {
               success: false,
               cancelled: false,
               redirected: opened,
-              message: opened ? 'Перенаправлен в бота для покупки' : 'Не удалось открыть бота автоматически'
+              message: opened ? texts.redirectedToBot : texts.failedToOpenBot
             });
           } else {
             resolve({
@@ -350,7 +380,7 @@ export const purchaseWithStars = async (planType) => {
             success: false,
             cancelled: false,
             redirected: true,
-            message: 'Перенаправлен в бота для покупки'
+            message: texts.redirectedToBot
           });
         });
       });
@@ -379,7 +409,7 @@ export const purchaseWithStars = async (planType) => {
         success: false,
         cancelled: false,
         redirected: true,
-        message: 'Перенаправлен в бота для покупки'
+        message: texts.redirectedToBot
       };
     }
 
