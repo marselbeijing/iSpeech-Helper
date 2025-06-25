@@ -49,7 +49,6 @@ const Account = () => {
 
   // Trial period state
   const [trialData, setTrialData] = useState(null);
-  const [showBuyModal, setShowBuyModal] = useState(false);
 
   // Инициализация пользователя (только один раз)
   useEffect(() => {
@@ -152,16 +151,8 @@ const Account = () => {
         try {
           const status = await getTrialStatus();
           setTrialData(status);
-          // Если нет подписки и триал неактивен — показываем окно покупки
-          if (!status.hasActiveSubscription && (!status.trial || status.trial.isActive === false)) {
-            setShowBuyModal(true);
-          } else {
-            setShowBuyModal(false);
-          }
         } catch (error) {
           console.error('Ошибка загрузки данных пробного периода:', error);
-          // При ошибке — блокируем доступ и предлагаем купить подписку
-          setShowBuyModal(true);
         }
       };
       loadTrialData();
@@ -279,8 +270,6 @@ const Account = () => {
     }
   };
 
-
-
   if (loading) {
     return (
       <Box sx={{ 
@@ -305,44 +294,6 @@ const Account = () => {
             <CircularProgress color="primary" />
           </Box>
         </Container>
-      </Box>
-    );
-  }
-
-  if (showBuyModal) {
-    return (
-      <Box sx={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: theme.palette.background.default }}>
-        <Paper sx={{ p: 4, maxWidth: 400, textAlign: 'center' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 2 }}>
-            <Box 
-              component="span" 
-              sx={{ 
-                color: 'error.main', 
-                fontSize: '1.5rem',
-                display: 'flex',
-                alignItems: 'center'
-              }}
-            >
-              🕐
-            </Box>
-            <Typography variant="h6" color="error.main" sx={{ fontWeight: 'bold' }}>
-              Trial period expired
-            </Typography>
-          </Box>
-          <Typography variant="body1" sx={{ mb: 3 }}>
-            Subscribe now to continue using all features
-          </Typography>
-          <Button variant="contained" color="primary" size="large" onClick={() => {
-            setShowBuyModal(false);
-            // Прокрутка к блоку подписок
-            const subscriptionBlock = document.querySelector('[data-subscription-block]');
-            if (subscriptionBlock) {
-              subscriptionBlock.scrollIntoView({ behavior: 'smooth' });
-            }
-          }}>
-            Buy Premium
-          </Button>
-        </Paper>
       </Box>
     );
   }
