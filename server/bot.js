@@ -154,6 +154,37 @@ class TelegramStarsBot {
     // Обработка callback_query (inline кнопки)
     this.bot.on('callback_query', async (query) => {
       try {
+        // Специальная обработка выбора языка при старте
+        if (query.data === 'set_lang_en_start' || query.data === 'set_lang_ru_start') {
+          const lang = query.data === 'set_lang_en_start' ? 'en' : 'ru';
+          await TrialPeriod.findOneAndUpdate(
+            { userId: query.from.id.toString() },
+            { $set: { 'userInfo.languageCode': lang } },
+            { upsert: true }
+          );
+          const texts = this.getTexts(lang);
+
+          // Обычное приветствие с кнопками
+          await this.bot.editMessageText(texts.welcomeMessage, {
+            chat_id: query.message.chat.id,
+            message_id: query.message.message_id,
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  { text: texts.openAppButton, web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' } }
+                ],
+                [
+                  { text: texts.learnAboutSubscriptionButton, callback_data: 'subscription_menu' }
+                ]
+              ]
+            }
+          });
+          
+          await this.bot.answerCallbackQuery(query.id);
+          return;
+        }
+        
+        // Остальные callback_query обрабатываем через основной метод (он сам отвечает на callback)
         await this.handleCallbackQuery(query);
       } catch (error) {
         console.error('Ошибка обработки callback_query:', error);
@@ -169,6 +200,7 @@ class TelegramStarsBot {
       const chatId = msg.chat.id;
       const startParam = msg.text.split(' ')[1];
       let userLang = 'en';
+      
       // Пытаемся получить язык из сохранённого профиля
       let trialPeriod = await TrialPeriod.findOne({ userId: msg.from.id.toString() });
       if (trialPeriod?.userInfo?.languageCode) {
@@ -176,14 +208,16 @@ class TelegramStarsBot {
       } else if (msg.from.language_code) {
         userLang = msg.from.language_code.startsWith('ru') ? 'ru' : 'en';
       }
+      
       // Если есть параметр покупки — сразу показываем экран покупки
       if (startParam && startParam.startsWith('buy_')) {
         const planType = startParam.replace('buy_', '');
         await this.sendSubscriptionOffer(chatId, planType, { language_code: userLang });
         return;
       }
+      
       // Если нет параметра — показываем выбор языка
-      this.bot.sendMessage(chatId, 'Выберите язык / Choose your language', {
+      await this.bot.sendMessage(chatId, 'Выберите язык / Choose your language', {
         reply_markup: {
           inline_keyboard: [
             [
@@ -193,50 +227,6 @@ class TelegramStarsBot {
           ]
         }
       });
-    });
-
-    // Обработка выбора языка через inline-кнопки при старте
-    this.bot.on('callback_query', async (query) => {
-      if (query.data === 'set_lang_en_start' || query.data === 'set_lang_ru_start') {
-        const lang = query.data === 'set_lang_en_start' ? 'en' : 'ru';
-        await TrialPeriod.findOneAndUpdate(
-          { userId: query.from.id.toString() },
-          { $set: { 'userInfo.languageCode': lang } },
-          { upsert: true }
-        );
-        const texts = this.getTexts(lang);
-
-        // Проверяем, был ли start-параметр с покупкой
-        let startParam = null;
-        if (query.message && query.message.reply_to_message && query.message.reply_to_message.text) {
-          const parts = query.message.reply_to_message.text.split(' ');
-          if (parts.length > 1) startParam = parts[1];
-        }
-        if (!startParam && query.message && query.message.text) {
-          const parts = query.message.text.split(' ');
-          if (parts.length > 1) startParam = parts[1];
-        }
-        if (startParam && startParam.startsWith('buy_')) {
-          const planType = startParam.replace('buy_', '');
-          await this.sendSubscriptionOffer(query.message.chat.id, planType, { language_code: lang });
-        } else {
-          // Обычное приветствие с кнопками
-          this.bot.sendMessage(query.message.chat.id, texts.welcomeMessage, {
-            reply_markup: {
-              inline_keyboard: [
-                [
-                  { text: texts.openAppButton, web_app: { url: process.env.WEBAPP_URL || 'https://i-speech-helper-uce4.vercel.app/' } }
-                ],
-                [
-                  { text: texts.learnAboutSubscriptionButton, callback_data: 'subscription_menu' }
-                ]
-              ]
-            }
-          });
-        }
-        return;
-      }
-      // ... существующая обработка других callback_query ...
     });
 
     // Команда /paysupport - обязательная для платежных ботов
@@ -480,10 +470,8 @@ ${texts.allFeaturesAvailable}
       }
     } catch (error) {
       console.error('❌ Ошибка в handleCallbackQuery:', error);
-      await this.bot.answerCallbackQuery(id, {
-        text: 'Произошла ошибка. Попробуйте еще раз.',
-        show_alert: true
-      });
+      // Не отвечаем на callback здесь, так как это делается в основном обработчике
+      throw error;
     }
   }
 
