@@ -151,7 +151,37 @@ const App = () => {
     // Добавляем функции для тестирования в глобальную область
     if (typeof window !== 'undefined') {
       window.resetTrial = resetTrialPeriod;
-      window.clearAllData = clearAllBrowserData;
+      window.clearAllData = () => {
+        console.log('🧹 Начинаем максимальную очистку браузера...');
+        
+        // Очищаем localStorage полностью
+        if (typeof localStorage !== 'undefined') {
+          localStorage.clear();
+          console.log('🗑 LocalStorage полностью очищен');
+        }
+        
+        // Очищаем sessionStorage полностью
+        if (typeof sessionStorage !== 'undefined') {
+          sessionStorage.clear();
+          console.log('🗑 SessionStorage полностью очищен');
+        }
+        
+        // Очищаем все cookies
+        if (typeof document !== 'undefined') {
+          document.cookie.split(";").forEach(function(c) { 
+            document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+          });
+          console.log('🗑 Все cookies очищены');
+        }
+        
+        console.log('✅ Максимальная очистка завершена');
+        console.log('🔄 Перезагружаем страницу через 2 секунды...');
+        
+        // Перезагружаем страницу
+        setTimeout(() => {
+          window.location.reload(true);
+        }, 2000);
+      };
       window.setExpiredTrial = setExpiredTrial;
       
       console.log('🔧 Доступные функции для тестирования:');
