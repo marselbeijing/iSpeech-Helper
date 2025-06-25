@@ -618,17 +618,23 @@ ${texts.allFeaturesAvailable}
   }
 
   async sendSubscriptionOffer(chatId, planType, user) {
-    // Получаем язык из TrialPeriod, если есть
-    let lang = user.language_code;
-    console.log('🔍 sendSubscriptionOffer - user.language_code:', user.language_code);
-    if (user.id) {
+    // Приоритет текущему языку Telegram, а не сохраненному
+    let lang = 'en'; // по умолчанию английский
+    
+    // Сначала проверяем текущий язык Telegram
+    if (user.language_code && user.language_code.startsWith('ru')) {
+      lang = 'ru';
+    }
+    
+    // Только если нет текущего языка Telegram, берем сохраненный
+    if (!user.language_code && user.id) {
       const trial = await TrialPeriod.findOne({ userId: user.id.toString() });
       if (trial?.userInfo?.languageCode) {
         lang = trial.userInfo.languageCode;
-        console.log('🔍 sendSubscriptionOffer - saved lang from DB:', lang);
       }
     }
-    if (!lang) lang = 'en';
+    
+    console.log('🔍 sendSubscriptionOffer - user.language_code:', user.language_code);
     console.log('🔍 sendSubscriptionOffer - final lang:', lang);
     const texts = this.getTexts(lang);
     
