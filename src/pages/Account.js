@@ -313,7 +313,7 @@ const Account = () => {
     return (
       <Box sx={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: theme.palette.background.default }}>
         <Paper sx={{ p: 4, maxWidth: 400, textAlign: 'center' }}>
-          <Typography variant="h6" align="center" sx={{ mb: 2 }}>
+          <Typography variant="h6" align="center" sx={{ mb: 2, textAlign: 'center' }}>
             {t('trial_expired') || 'Пробный период завершён'}
           </Typography>
           <Typography variant="body1" sx={{ mb: 3 }}>
