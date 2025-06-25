@@ -90,7 +90,7 @@ router.post('/create-invoice', async (req, res) => {
           payload,
           '', // provider_token - пустой для Telegram Stars
           'XTR', // currency
-          [{ label: plan.title, amount: plan.amount }], // prices
+          [{ label: 'Pay', amount: plan.amount }], // prices
           {
             start_parameter: `premium_${planType.toLowerCase()}`,
             photo_url: 'https://i-speech-helper-uce4.vercel.app/assets/telegram-star.png',
