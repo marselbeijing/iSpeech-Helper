@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { getTrialStatus } from '../services/trial';
 import { getCurrentUser } from '../services/telegram';
-import { getUserSubscriptionStatus, getTrialData } from '../services/api';
+import { checkSubscriptionStatus } from '../services/subscription';
 
 // Функции для управления частотой показа модального окна
 const MODAL_COOLDOWN_HOURS = 4; // Не показывать чаще 1 раза в 4 часа
@@ -60,15 +60,19 @@ export default function usePremiumAccess() {
         return;
       }
 
-      const [status, trial] = await Promise.all([
-        getUserSubscriptionStatus(user.id),
-        getTrialData(user.id)
+      const [subscriptionStatus, trialStatus] = await Promise.all([
+        checkSubscriptionStatus(),
+        getTrialStatus()
       ]);
 
-      setTrialData(trial);
+      setTrialData(trialStatus);
 
-      const isBlocked = !status.hasActiveSubscription && 
-                       (!status.trialActive || status.trialExpired);
+      // Адаптируем данные под ожидаемую структуру
+      const hasActiveSubscription = subscriptionStatus?.isActive || trialStatus?.hasActiveSubscription || false;
+      const trialActive = trialStatus?.trial?.isActive || false;
+      const trialExpired = !trialActive;
+
+      const isBlocked = !hasActiveSubscription && trialExpired;
       
       // Если модальное окно отложено, даём временный доступ
       const hasTemporaryAccess = isModalSnoozed();
