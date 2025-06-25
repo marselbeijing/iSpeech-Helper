@@ -11,6 +11,41 @@ import { initTelegramWebApp, getCurrentUser, getUserLanguageFromDatabase } from 
 import telegramAnalytics from '@telegram-apps/analytics';
 import { initAudio } from './services/sound';
 
+// Подавляем ошибки WebSocket и Telegram Client
+const originalConsoleError = console.error;
+console.error = function(...args) {
+  const message = args.join(' ');
+  if (
+    message.includes('WebSocket connection') ||
+    message.includes('PromisedWebSockets') ||
+    message.includes('MTProtoSender') ||
+    message.includes('TelegramClient') ||
+    message.includes('_updateLoop') ||
+    message.includes('TIMEOUT') ||
+    message.includes('fallback connection') ||
+    message.includes('zws2-1.web.telegram.org') ||
+    message.includes('launch parameters') ||
+    message.includes('telegram-apps-sdk')
+  ) {
+    return; // Подавляем эти ошибки
+  }
+  originalConsoleError.apply(console, args);
+};
+
+// Подавляем предупреждения о версии Telegram WebApp
+const originalConsoleWarn = console.warn;
+console.warn = function(...args) {
+  const message = args.join(' ');
+  if (
+    message.includes('Header color is not supported') ||
+    message.includes('Background color is not supported') ||
+    message.includes('version 6.0')
+  ) {
+    return; // Подавляем эти предупреждения
+  }
+  originalConsoleWarn.apply(console, args);
+};
+
 // Trial period components
 import TrialWelcomeModal from './components/TrialWelcomeModal';
 import { 
