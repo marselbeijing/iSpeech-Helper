@@ -488,15 +488,11 @@ ${texts.allFeaturesAvailable}
   }
 
   async createInvoice(chatId, planType, user) {
-    // Получаем язык из TrialPeriod, если есть
-    let lang = user.language_code;
-    if (user.id) {
-      const trial = await TrialPeriod.findOne({ userId: user.id.toString() });
-      if (trial?.userInfo?.languageCode) {
-        lang = trial.userInfo.languageCode;
-      }
+    // Всегда используем текущий язык из Telegram, а не сохраненный
+    let lang = 'en';
+    if (user.language_code && user.language_code.startsWith('ru')) {
+      lang = 'ru';
     }
-    if (!lang) lang = 'en';
     const texts = this.getTexts(lang);
     
     try {
@@ -595,15 +591,11 @@ ${texts.allFeaturesAvailable}
   }
 
   async sendSubscriptionOffer(chatId, planType, user) {
-    // Получаем язык из TrialPeriod, если есть
-    let lang = user.language_code;
-    if (user.id) {
-      const trial = await TrialPeriod.findOne({ userId: user.id.toString() });
-      if (trial?.userInfo?.languageCode) {
-        lang = trial.userInfo.languageCode;
-      }
+    // Всегда используем текущий язык из Telegram, а не сохраненный
+    let lang = 'en';
+    if (user.language_code && user.language_code.startsWith('ru')) {
+      lang = 'ru';
     }
-    if (!lang) lang = 'en';
     const texts = this.getTexts(lang);
     
     const PLANS = {
