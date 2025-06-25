@@ -497,6 +497,10 @@ ${texts.allFeaturesAvailable}
       }
     }
     if (!lang) lang = 'en';
+    
+    // Принудительно устанавливаем английский язык для пользователя
+    user.language_code = 'en';
+    
     const texts = this.getTexts(lang);
     
     try {
