@@ -24,6 +24,7 @@ import BackgroundAnimation from '../components/BackgroundAnimation';
 import { useTranslation } from 'react-i18next';
 import usePremiumAccess from '../hooks/usePremiumAccess';
 import TrialWelcomeModal from '../components/TrialWelcomeModal';
+import { setPostponeTime } from '../services/trial';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -116,6 +117,10 @@ const Home = () => {
         onBuyPremium={() => {
           setShowModal(false);
           navigate('/account');
+        }}
+        onPostpone={() => {
+          setPostponeTime();
+          setShowModal(false);
         }}
         trialExpired={blocked || (trialData?.trial?.isActive === false)}
       />

@@ -14,7 +14,7 @@ import { getCurrentUser } from './services/telegram';
 
 // Trial period components
 import TrialWelcomeModal from './components/TrialWelcomeModal';
-import { getTrialStatus, markWelcomeSeen, resetTrialPeriod } from './services/trial';
+import { getTrialStatus, markWelcomeSeen, resetTrialPeriod, setPostponeTime } from './services/trial';
 
 // Components
 import Root from './components/Root';
@@ -423,6 +423,11 @@ const App = () => {
       console.error('Ошибка при закрытии приветствия:', error);
     }
   };
+
+  const handlePostpone = () => {
+    setPostponeTime();
+    setShowWelcomeModal(false);
+  };
   
   // Создаем тему на основе настроек
   const theme = createTheme({
@@ -522,6 +527,7 @@ const App = () => {
         onClose={handleCloseWelcome}
         onStartTrial={handleStartTrial}
         onBuyPremium={handleBuyPremium}
+        onPostpone={handlePostpone}
         trialExpired={trialData?.trial?.isActive === false}
       />
     </ThemeProvider>

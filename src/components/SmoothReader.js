@@ -11,6 +11,7 @@ import stories from '../data/stories';
 import { ArrowBack } from '@mui/icons-material';
 import usePremiumAccess from '../hooks/usePremiumAccess';
 import TrialWelcomeModal from './TrialWelcomeModal';
+import { setPostponeTime } from '../services/trial';
 
 const MIN_SPEED = 1;
 const MAX_SPEED = 100;
@@ -146,6 +147,10 @@ const SmoothReader = () => {
         onBuyPremium={() => {
           setShowModal(false);
           navigate('/account');
+        }}
+        onPostpone={() => {
+          setPostponeTime();
+          setShowModal(false);
         }}
         trialExpired={blocked || (trialData?.trial?.isActive === false)}
       />

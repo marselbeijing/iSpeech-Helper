@@ -21,6 +21,7 @@ import { getUserStats, saveUserStats, DEFAULT_STATS } from '../services/storage'
 import { useTranslation } from 'react-i18next';
 import usePremiumAccess from '../hooks/usePremiumAccess';
 import TrialWelcomeModal from '../components/TrialWelcomeModal';
+import { setPostponeTime } from '../services/trial';
 
 const Progress = () => {
   const theme = useTheme();
@@ -68,6 +69,10 @@ const Progress = () => {
         onBuyPremium={() => {
           setShowModal(false);
           navigate('/account');
+        }}
+        onPostpone={() => {
+          setPostponeTime();
+          setShowModal(false);
         }}
         trialExpired={blocked || (trialData?.trial?.isActive === false)}
       />

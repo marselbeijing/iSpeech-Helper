@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { getTrialTexts } from '../services/trial';
 import { getCurrentUser } from '../services/telegram';
 
-const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExpired }) => {
+const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExpired, onPostpone }) => {
   const theme = useTheme();
   
   console.log('DEBUG: до useTranslation');
@@ -207,6 +207,19 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExp
         >
           {texts.buyNowButton}
         </Button>
+        {trialExpired && (
+          <Button
+            variant="text"
+            color="primary"
+            onClick={onPostpone}
+            sx={{ 
+              fontSize: '0.9rem',
+              py: 1.5
+            }}
+          >
+            {texts.postponeButton}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

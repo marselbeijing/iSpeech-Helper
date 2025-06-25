@@ -13,6 +13,7 @@ import { styled } from '@mui/material/styles';
 import usePremiumAccess from '../hooks/usePremiumAccess';
 import TrialWelcomeModal from '../components/TrialWelcomeModal';
 import { useNavigate } from 'react-router-dom';
+import { setPostponeTime } from '../services/trial';
 
 const gradientAnimation = keyframes`
   0% { background-position: 0% 50% }
@@ -54,6 +55,10 @@ const Assistant = () => {
         onBuyPremium={() => {
           setShowModal(false);
           navigate('/account');
+        }}
+        onPostpone={() => {
+          setPostponeTime();
+          setShowModal(false);
         }}
         trialExpired={blocked || (trialData?.trial?.isActive === false)}
       />

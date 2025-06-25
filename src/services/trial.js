@@ -188,6 +188,32 @@ export const resetTrialPeriod = () => {
   console.log('🔄 Пробный период сброшен');
 };
 
+// Функции для работы с отложенным показом модального окна
+const POSTPONE_KEY = 'trialModalPostponed';
+
+export const setPostponeTime = () => {
+  const postponeUntil = new Date(Date.now() + 2 * 60 * 60 * 1000); // 2 часа
+  localStorage.setItem(POSTPONE_KEY, postponeUntil.toISOString());
+  console.log('⏰ Модальное окно отложено до:', postponeUntil);
+};
+
+export const isPostponed = () => {
+  const postponeUntil = localStorage.getItem(POSTPONE_KEY);
+  if (!postponeUntil) return false;
+  
+  const now = new Date();
+  const postponeTime = new Date(postponeUntil);
+  
+  if (now < postponeTime) {
+    console.log('⏰ Модальное окно отложено до:', postponeTime);
+    return true;
+  }
+  
+  // Время истекло, удаляем запись
+  localStorage.removeItem(POSTPONE_KEY);
+  return false;
+};
+
 // Проверка доступа к функции
 export const checkAccess = async () => {
   try {
@@ -251,6 +277,9 @@ export const getTrialTexts = (language = 'ru') => {
     subscriptionNote: isEnglish ? 
       'After the trial period ends, you will need to purchase a subscription to continue using all features' :
       'После окончания пробного периода нужно будет оформить подписку для продолжения использования всех функций',
+    
+    // Кнопка отложить
+    postponeButton: isEnglish ? 'Postpone for 2 hours' : 'Отложить на 2 часа',
     
     // Единицы времени для таймера
     timeUnits: {

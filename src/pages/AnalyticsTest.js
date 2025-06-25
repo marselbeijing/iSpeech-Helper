@@ -13,6 +13,7 @@ import { CheckCircle, Error } from '@mui/icons-material';
 import usePremiumAccess from '../hooks/usePremiumAccess';
 import TrialWelcomeModal from '../components/TrialWelcomeModal';
 import { useNavigate } from 'react-router-dom';
+import { setPostponeTime } from '../services/trial';
 
 const AnalyticsTest = () => {
   const [analyticsStatus, setAnalyticsStatus] = useState({
@@ -118,6 +119,10 @@ const AnalyticsTest = () => {
         onBuyPremium={() => {
           setShowModal(false);
           navigate('/account');
+        }}
+        onPostpone={() => {
+          setPostponeTime();
+          setShowModal(false);
         }}
         trialExpired={blocked || (trialData?.trial?.isActive === false)}
       />

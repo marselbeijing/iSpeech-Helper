@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next';
 import usePremiumAccess from '../hooks/usePremiumAccess';
 import TrialWelcomeModal from './TrialWelcomeModal';
 import { useNavigate } from 'react-router-dom';
+import { setPostponeTime } from '../services/trial';
 
 // Кастомный шарик для Slider
 const CustomThumb = styled('span')(({ theme, ownerState }) => ({
@@ -178,6 +179,10 @@ const MetronomeReader = () => {
         onBuyPremium={() => {
           setShowModal(false);
           navigate('/account');
+        }}
+        onPostpone={() => {
+          setPostponeTime();
+          setShowModal(false);
         }}
         trialExpired={blocked || (trialData?.trial?.isActive === false)}
       />
