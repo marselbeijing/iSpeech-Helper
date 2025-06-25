@@ -21,6 +21,7 @@ import { playSound } from '../services/sound';
 import { vibrate } from '../services/vibration';
 import { commonStyles } from '../styles/TelegramStyles';
 import BackgroundAnimation from '../components/BackgroundAnimation';
+import PageContainer from '../components/PageContainer';
 import { useTranslation } from 'react-i18next';
 import usePremiumAccess from '../hooks/usePremiumAccess';
 import TrialWelcomeModal from '../components/TrialWelcomeModal';
@@ -32,16 +33,7 @@ const Home = () => {
   const { loading, blocked, shouldShowModal, hideModal, snoozeModalReminder, trialData } = usePremiumAccess();
   const [showModal, setShowModal] = useState(false);
 
-  // Блокировка прокрутки на странице
-  useEffect(() => {
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-    
-    return () => {
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
-    };
-  }, []);
+
 
   // Синхронизируем локальное состояние с хуком
   useEffect(() => {
@@ -133,50 +125,12 @@ const Home = () => {
   }
 
   return (
-    <Box sx={{ 
-      height: '100vh', 
-      width: '100%', 
-      overflow: 'hidden',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: theme.palette.background.default
-    }}>
-      {/* Фоновая анимация (zIndex 1) */}
-      <Box sx={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        zIndex: 1,
-        pointerEvents: 'none',
+    <PageContainer>
+      <BackgroundAnimation />
+      <Container maxWidth="sm" sx={{
+        ...commonStyles.pageContainer,
+        py: 2,
       }}>
-        <BackgroundAnimation />
-      </Box>
-
-      {/* Основной контент (zIndex 2) */}
-      <Box sx={{
-        position: 'relative',
-        zIndex: 2,
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-      }}>
-        <Container maxWidth="sm" sx={{
-          ...commonStyles.pageContainer,
-          py: 2,
-          flex: 1,
-          overflow: 'hidden',
-          display: 'flex',
-          flexDirection: 'column',
-          position: 'relative',
-          height: 'calc(100vh - 56px)',
-          background: 'transparent',
-        }}>
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -225,7 +179,7 @@ const Home = () => {
               </Typography>
             </Paper>
           </motion.div>
-          <Grid container spacing={2} justifyContent="center" alignItems="center" sx={{ overflow: 'hidden', flex: 1, textAlign: 'center' }}>
+          <Grid container spacing={2} sx={{ mt: 1 }}>
             {menuItems.map((item, index) => (
               <Grid item xs={6} key={item.path} sx={{ display: 'flex', justifyContent: 'center' }}>
                 <motion.div
@@ -273,8 +227,7 @@ const Home = () => {
             ))}
           </Grid>
         </Container>
-      </Box>
-    </Box>
+    </PageContainer>
   );
 };
 
