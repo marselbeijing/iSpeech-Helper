@@ -717,12 +717,17 @@ Benefits:
                   document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
                 });
                 
+                // Сброс состояния пользователя
+                setUser(null);
+                setSubscription(null);
+                setTrialData(null);
+                
                 console.log('✅ Все данные очищены');
                 alert('Данные очищены! Страница перезагрузится через 2 секунды.');
                 
-                // Перезагрузка страницы
+                // Перезагрузка страницы с полной очисткой кеша
                 setTimeout(() => {
-                  window.location.reload(true);
+                  window.location.href = window.location.href;
                 }, 2000);
               }
             }}
