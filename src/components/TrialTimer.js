@@ -95,15 +95,24 @@ const TrialTimer = ({ trialData, onBuyPremium }) => {
       />
 
       <Box sx={{ position: 'relative', zIndex: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: isExpired ? 'center' : 'space-between', mb: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <TimeIcon color={isExpired ? 'error' : 'primary'} />
-            <Typography variant="h6" fontWeight="bold" color={isExpired ? 'error' : 'primary'}>
-              {isExpired ? texts.trialExpired : texts.trialActive}
+        {isExpired ? (
+          // Когда триал истек - центрируем иконку и текст
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 2 }}>
+            <TimeIcon color="error" />
+            <Typography variant="h6" fontWeight="bold" color="error">
+              {texts.trialExpired}
             </Typography>
           </Box>
-          
-          {!isExpired && (
+        ) : (
+          // Когда триал активен - обычное расположение
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <TimeIcon color="primary" />
+              <Typography variant="h6" fontWeight="bold" color="primary">
+                {texts.trialActive}
+              </Typography>
+            </Box>
+            
             <Chip
               icon={<StarIcon />}
               label="FREE"
@@ -111,8 +120,8 @@ const TrialTimer = ({ trialData, onBuyPremium }) => {
               size="small"
               sx={{ fontWeight: 'bold' }}
             />
-          )}
-        </Box>
+          </Box>
+        )}
 
         {isExpired ? (
           <Box sx={{ textAlign: 'center' }}>
