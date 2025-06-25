@@ -3,9 +3,11 @@ import { getTrialStatus } from '../services/trial';
 import { checkSubscriptionStatus } from '../services/subscription';
 import { getCurrentUser } from '../services/telegram';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 
 export const useAccessControl = () => {
   const { i18n } = useTranslation();
+  const location = useLocation();
   const [hasAccess, setHasAccess] = useState(true);
   const [showBlockModal, setShowBlockModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,10 +37,12 @@ export const useAccessControl = () => {
         setHasAccess(true);
       } else {
         setHasAccess(false);
-        // Показываем модальное окно через 4 секунды после загрузки
-        setTimeout(() => {
-          setShowInitialModal(true);
-        }, 4000);
+        // Показываем модальное окно через 4 секунды после загрузки, но не на странице Account
+        if (location.pathname !== '/account') {
+          setTimeout(() => {
+            setShowInitialModal(true);
+          }, 4000);
+        }
       }
     } catch (error) {
       console.error('Ошибка проверки доступа:', error);
@@ -46,7 +50,7 @@ export const useAccessControl = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     checkAccess();
@@ -54,12 +58,13 @@ export const useAccessControl = () => {
 
   // Функция для проверки доступа к конкретной функции
   const checkFeatureAccess = useCallback(() => {
-    if (!hasAccess) {
+    // Не показываем модальное окно на странице Account
+    if (!hasAccess && location.pathname !== '/account') {
       setShowBlockModal(true);
       return false;
     }
-    return true;
-  }, [hasAccess]);
+    return hasAccess || location.pathname === '/account';
+  }, [hasAccess, location.pathname]);
 
   // Получение текстов для модального окна
   const getTexts = useCallback(() => {
