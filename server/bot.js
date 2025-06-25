@@ -501,6 +501,15 @@ ${texts.allFeaturesAvailable}
     // Принудительно устанавливаем английский язык для пользователя
     user.language_code = 'en';
     
+    // Также обновляем язык в базе данных
+    if (user.id) {
+      await TrialPeriod.findOneAndUpdate(
+        { userId: user.id.toString() },
+        { $set: { 'userInfo.languageCode': 'en' } },
+        { upsert: true }
+      );
+    }
+    
     const texts = this.getTexts(lang);
     
     try {
@@ -540,7 +549,7 @@ ${texts.allFeaturesAvailable}
       });
 
       await invoice.save();
-      console.log('Инвойс создан:', { payload, userId: user.id, planType });
+      console.log('Инвойс создан:', { payload, userId: user.id, planType, userLang: lang, userLanguageCode: user.language_code });
 
       // Отправляем инвойс через Telegram Bot API
       await this.bot.sendInvoice(chatId, plan.title, plan.title,
