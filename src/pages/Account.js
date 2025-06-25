@@ -313,11 +313,24 @@ const Account = () => {
     return (
       <Box sx={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: theme.palette.background.default }}>
         <Paper sx={{ p: 4, maxWidth: 400, textAlign: 'center' }}>
-          <Typography variant="h6" align="center" sx={{ mb: 2, textAlign: 'center' }}>
-            {t('trial_expired') || 'Пробный период завершён'}
-          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 2 }}>
+            <Box 
+              component="span" 
+              sx={{ 
+                color: 'error.main', 
+                fontSize: '1.5rem',
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              🕐
+            </Box>
+            <Typography variant="h6" color="error.main" sx={{ fontWeight: 'bold' }}>
+              Trial period expired
+            </Typography>
+          </Box>
           <Typography variant="body1" sx={{ mb: 3 }}>
-            {t('subscribe_to_continue') || 'Оформите подписку, чтобы продолжить пользоваться всеми функциями приложения.'}
+            Subscribe now to continue using all features
           </Typography>
           <Button variant="contained" color="primary" size="large" onClick={() => {
             setShowBuyModal(false);
@@ -327,7 +340,7 @@ const Account = () => {
               subscriptionBlock.scrollIntoView({ behavior: 'smooth' });
             }
           }}>
-            {t('buy') || 'Купить подписку'}
+            Buy Premium
           </Button>
         </Paper>
       </Box>
