@@ -31,20 +31,8 @@ class TelegramStarsBot {
     
     // Обработка ошибок polling - минимальное логирование
     this.bot.on('polling_error', (error) => {
-      // Игнорируем частые сетевые ошибки и конфликты
-      if (
-        error.code === 'EFATAL' || 
-        error.code === 'ENOTFOUND' || 
-        error.code === 'ETIMEDOUT' ||
-        error.code === 'ETELEGRAM' ||
-        (error.message && error.message.includes('409 Conflict')) ||
-        (error.message && error.message.includes('terminated by other getUpdates'))
-      ) {
-        return; // Не логируем эти ошибки
-      }
-      
-      // Логируем только критические ошибки
-      console.error('❌ Критическая ошибка Telegram bot:', error.code, error.message);
+      // Полностью подавляем все ошибки polling для продакшена
+      return; // Не логируем polling ошибки
     });
     
     // Обработка ошибок webhook
