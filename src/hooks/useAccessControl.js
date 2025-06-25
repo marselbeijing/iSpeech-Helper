@@ -37,8 +37,9 @@ export const useAccessControl = () => {
         setHasAccess(true);
       } else {
         setHasAccess(false);
-        // Показываем модальное окно через 4 секунды после загрузки, но не на странице Account
-        if (location.pathname !== '/account') {
+        // Показываем модальное окно блокировки только если пользователь уже видел приветствие
+        // Если не видел - приветственное окно покажется в App.js
+        if (location.pathname !== '/account' && trialStatus.trial && trialStatus.trial.hasSeenWelcome) {
           setTimeout(() => {
             setShowInitialModal(true);
           }, 4000);
@@ -57,10 +58,19 @@ export const useAccessControl = () => {
   }, [checkAccess]);
 
   // Функция для проверки доступа к конкретной функции
-  const checkFeatureAccess = useCallback(() => {
+  const checkFeatureAccess = useCallback(async () => {
     // Не показываем модальное окно на странице Account
     if (!hasAccess && location.pathname !== '/account') {
-      setShowBlockModal(true);
+      // Проверяем, видел ли пользователь приветствие
+      try {
+        const trialStatus = await getTrialStatus();
+        if (trialStatus.trial && trialStatus.trial.hasSeenWelcome) {
+          setShowBlockModal(true);
+        }
+        // Если не видел приветствие - не показываем блокировку
+      } catch (error) {
+        console.error('Ошибка проверки статуса пробного периода:', error);
+      }
       return false;
     }
     return hasAccess || location.pathname === '/account';

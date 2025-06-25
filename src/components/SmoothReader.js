@@ -95,8 +95,8 @@ const SmoothReader = () => {
     }
   }, [currentIndex]);
 
-  const handlePlayPause = () => {
-    if (!checkFeatureAccess()) return;
+  const handlePlayPause = async () => {
+    if (!(await checkFeatureAccess())) return;
     
     if (isPlaying) {
       setIsPlaying(false);
@@ -112,13 +112,13 @@ const SmoothReader = () => {
     }
   };
 
-  const handleSliderChange = (_, value) => {
-    if (!checkFeatureAccess()) return;
+  const handleSliderChange = async (_, value) => {
+    if (!(await checkFeatureAccess())) return;
     setSpeed(value);
   };
 
-  const handleRandomStory = () => {
-    if (!checkFeatureAccess()) return;
+  const handleRandomStory = async () => {
+    if (!(await checkFeatureAccess())) return;
     
     let nextIndex = Math.floor(Math.random() * currentLanguageStories.length);
     // Исключаем повтор текущей истории

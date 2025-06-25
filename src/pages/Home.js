@@ -92,8 +92,8 @@ const Home = () => {
     },
   ];
 
-  const handleClick = (path) => {
-    if (!checkFeatureAccess()) return;
+  const handleClick = async (path) => {
+    if (!(await checkFeatureAccess())) return;
     
     playSound('click');
     vibrate('click');
