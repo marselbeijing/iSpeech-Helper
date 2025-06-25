@@ -14,7 +14,7 @@ import { getCurrentUser } from './services/telegram';
 
 // Trial period components
 import TrialWelcomeModal from './components/TrialWelcomeModal';
-import { getTrialStatus, markWelcomeSeen, resetTrialPeriod } from './services/trial';
+import { getTrialStatus, markWelcomeSeen, resetTrialPeriod, setExpiredTrial } from './services/trial';
 
 // Components
 import Root from './components/Root';
@@ -196,6 +196,15 @@ const App = () => {
 
     // Загружаем статус с небольшой задержкой чтобы Telegram WebApp успел инициализироваться
     setTimeout(loadTrialStatus, 1000);
+
+    // Добавляем функции тестирования в window для доступа из консоли
+    if (typeof window !== 'undefined') {
+      window.resetTrial = resetTrialPeriod;
+      window.setExpiredTrial = setExpiredTrial;
+      console.log('🧪 Функции тестирования доступны:');
+      console.log('- window.resetTrial() - сброс пробного периода');
+      console.log('- window.setExpiredTrial() - установка истёкшего триала');
+    }
 
     // Добавляем обработчик для инициализации аудио после первого клика
     const handleFirstUserInteraction = async () => {

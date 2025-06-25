@@ -25,7 +25,7 @@ const getTrialStartDate = () => {
 // Функция для расчета оставшегося времени пробного периода
 const calculateTrialTimeLeft = (startDate) => {
   const start = new Date(startDate);
-  const end = new Date(start.getTime() + 3 * 24 * 60 * 60 * 1000); // 3 дня
+  const end = new Date(start.getTime() + 15 * 60 * 1000); // 15 минут для тестирования
   const now = new Date();
   
   const timeLeftMs = end.getTime() - now.getTime();
@@ -185,7 +185,47 @@ export const markWelcomeSeen = async () => {
 export const resetTrialPeriod = () => {
   localStorage.removeItem(TRIAL_START_DATE_KEY);
   localStorage.removeItem(TRIAL_WELCOME_SEEN_KEY);
-  console.log('🔄 Пробный период сброшен');
+  
+  // Дополнительная очистка всех связанных ключей
+  const keysToRemove = [
+    'telegramUser',
+    'trialStartDate', 
+    'trialWelcomeSeen',
+    'userProgress',
+    'testLanguage'
+  ];
+  
+  keysToRemove.forEach(key => {
+    if (localStorage.getItem(key)) {
+      localStorage.removeItem(key);
+      console.log(`🗑 Удален ключ: ${key}`);
+    }
+  });
+  
+  console.log('🔄 Пробный период полностью сброшен');
+  
+  // Перезагружаем страницу для применения изменений
+  if (typeof window !== 'undefined') {
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  }
+};
+
+// Функция для тестирования истёкшего триала
+export const setExpiredTrial = () => {
+  // Устанавливаем дату начала триала на 20 минут назад
+  const expiredStartDate = new Date(Date.now() - 20 * 60 * 1000).toISOString();
+  localStorage.setItem(TRIAL_START_DATE_KEY, expiredStartDate);
+  localStorage.setItem(TRIAL_WELCOME_SEEN_KEY, 'true');
+  console.log('⏰ Установлен истёкший пробный период');
+  
+  // Перезагружаем страницу
+  if (typeof window !== 'undefined') {
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  }
 };
 
 // Проверка доступа к функции
@@ -229,15 +269,15 @@ export const getTrialTexts = (language = 'ru') => {
   
   return {
     welcomeTitle: isEnglish ? 'Welcome to iSpeech Helper!' : 'Добро пожаловать в iSpeech Helper!',
-    welcomeDescription: isEnglish ? 'Get 3 days of premium features for free!' : 'Получите 3 дня премиум-функций бесплатно!',
-    trialDescription: isEnglish ? 'Try all premium features for free for 3 days.' : 'Попробуйте все премиум-функции бесплатно в течение 3 дней.',
+    welcomeDescription: isEnglish ? 'Get 15 minutes of premium features for free!' : 'Получите 15 минут премиум-функций бесплатно!',
+    trialDescription: isEnglish ? 'Try all premium features for free for 15 minutes.' : 'Попробуйте все премиум-функции бесплатно в течение 15 минут.',
     trialExpired: isEnglish ? 'Trial period expired' : 'Пробный период истёк',
     subscribeNow: isEnglish ? 'Subscribe to continue using premium features.' : 'Оформите подписку, чтобы продолжить использовать премиум-функции.',
     startTrialButton: isEnglish ? 'Start Free Trial' : 'Начать бесплатный период',
     buyPremiumButton: isEnglish ? 'Buy Premium' : 'Купить Премиум',
     closeButton: isEnglish ? 'Close' : 'Закрыть',
-    chipText: isEnglish ? '3 DAYS FREE' : '3 ДНЯ БЕСПЛАТНО',
-    freeTrialChip: isEnglish ? '3 DAYS FREE' : '3 ДНЯ БЕСПЛАТНО',
+    chipText: isEnglish ? '15 MIN FREE' : '15 МИН БЕСПЛАТНО',
+    freeTrialChip: isEnglish ? '15 MIN FREE' : '15 МИН БЕСПЛАТНО',
     premiumFeatures: isEnglish ? 'Premium features include:' : 'В премиум подписку входит:',
     feature1: isEnglish ? '🎯 All speech exercises' : '🎯 Все упражнения для речи',
     feature2: isEnglish ? '🫁 Breathing exercises' : '🫁 Дыхательные упражнения', 
