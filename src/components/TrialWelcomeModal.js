@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { getTrialTexts } from '../services/trial';
 import { getCurrentUser } from '../services/telegram';
 
-const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExpired, onPostpone }) => {
+const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExpired, onPostpone, onPostponeComplete }) => {
   const theme = useTheme();
   
   console.log('DEBUG: до useTranslation');
@@ -61,6 +61,15 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExp
     onClose(); // Закрываем модальное окно
     if (onBuyPremium) {
       onBuyPremium(); // Вызываем переданную функцию
+    }
+  };
+
+  const handlePostponeClick = () => {
+    if (onPostpone) {
+      onPostpone(); // Устанавливаем отложение
+    }
+    if (onPostponeComplete) {
+      onPostponeComplete(); // Уведомляем о завершении отложения
     }
   };
 
@@ -211,7 +220,7 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium, trialExp
           <Button
             variant="text"
             color="primary"
-            onClick={onPostpone}
+            onClick={handlePostponeClick}
             sx={{ 
               fontSize: '0.9rem',
               py: 1.5

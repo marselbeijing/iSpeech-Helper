@@ -152,6 +152,10 @@ const SmoothReader = () => {
           setPostponeTime();
           setShowModal(false);
         }}
+        onPostponeComplete={() => {
+          // Перепроверяем доступ после отложения
+          checkAccess();
+        }}
         trialExpired={blocked || (trialData?.trial?.isActive === false)}
       />
     );

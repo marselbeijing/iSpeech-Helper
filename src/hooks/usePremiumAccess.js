@@ -15,13 +15,23 @@ export default function usePremiumAccess() {
       // Проверяем отложенное время
       const postponed = isPostponed();
       
+      console.log('🔒 Проверка доступа usePremiumAccess:', {
+        hasActiveSubscription: status.hasActiveSubscription,
+        trialIsActive: status.trial?.isActive,
+        postponed: postponed
+      });
+      
       if (!status.hasActiveSubscription && (!status.trial?.isActive)) {
         // Если модальное окно отложено, не блокируем доступ
-        setBlocked(!postponed);
+        const shouldBlock = !postponed;
+        setBlocked(shouldBlock);
+        console.log('🔒 Доступ заблокирован:', shouldBlock, 'причина: триал истёк, отложено:', postponed);
       } else {
         setBlocked(false);
+        console.log('🔓 Доступ разрешён: есть подписка или активный триал');
       }
     } catch (e) {
+      console.error('❌ Ошибка проверки доступа:', e);
       setBlocked(true);
     } finally {
       setLoading(false);

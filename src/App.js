@@ -14,7 +14,7 @@ import { getCurrentUser } from './services/telegram';
 
 // Trial period components
 import TrialWelcomeModal from './components/TrialWelcomeModal';
-import { getTrialStatus, markWelcomeSeen, resetTrialPeriod, setPostponeTime } from './services/trial';
+import { getTrialStatus, markWelcomeSeen, resetTrialPeriod, setPostponeTime, isPostponed } from './services/trial';
 
 // Components
 import Root from './components/Root';
@@ -172,14 +172,38 @@ const App = () => {
         console.log('📊 Статус пробного периода получен:', status);
         setTrialData(status);
         
-        // Показываем приветственное окно если пользователь его еще не видел
-        if (!status.hasActiveSubscription && status.trial && !status.trial.hasSeenWelcome) {
-          console.log('🎉 Показываем приветственное окно пробного периода');
-          setShowWelcomeModal(true);
+        // Проверяем отложенное время
+        const postponed = isPostponed();
+        console.log('⏰ Модальное окно отложено:', postponed);
+        
+        // Показываем модальное окно в двух случаях:
+        // 1. Пользователь не видел приветствие (новый пользователь)
+        // 2. Триал истёк и модальное окно не отложено
+        const shouldShowModal = !status.hasActiveSubscription && (
+          (!status.trial?.hasSeenWelcome) || 
+          (status.trial?.isActive === false && !postponed)
+        );
+        
+        if (shouldShowModal) {
+          const isTrialExpired = status.trial?.isActive === false;
+          console.log('🎉 Показываем модальное окно:', {
+            isNewUser: !status.trial?.hasSeenWelcome,
+            isTrialExpired: isTrialExpired,
+            postponed: postponed
+          });
+          
+          // Для истёкшего триала показываем через 4 секунды
+          if (isTrialExpired) {
+            setTimeout(() => setShowWelcomeModal(true), 4000);
+          } else {
+            setShowWelcomeModal(true);
+          }
         } else {
-          console.log('ℹ️ Приветственное окно не показываем:', {
+          console.log('ℹ️ Модальное окно не показываем:', {
             hasActiveSubscription: status.hasActiveSubscription,
-            hasSeenWelcome: status.trial?.hasSeenWelcome
+            hasSeenWelcome: status.trial?.hasSeenWelcome,
+            isTrialActive: status.trial?.isActive,
+            postponed: postponed
           });
         }
       } catch (error) {
