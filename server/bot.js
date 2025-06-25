@@ -67,7 +67,7 @@ class TelegramStarsBot {
     return {
       invoiceCreated: isEnglish
         ? `✨ Invoice created! Click the «Pay» button above to complete the payment.`
-        : `✨ Инвойс создан! Нажмите кнопку «Pay» выше для оплаты.`,
+        : `✨ Инвойс создан! Нажмите кнопку «Заплатить» выше для оплаты.`,
       subscriptionMenu: isEnglish
         ? `💫 Choose your iSpeech Helper subscription (Full access to all features):\n🔸 1 month — 299 ⭐ (30 days access)\n🔸 3 months — 699 ⭐ (−20%)\n🔸 12 months — 1999 ⭐ (−40%)`
         : `💫 Выберите подписку iSpeech Helper (Полный доступ ко всем функциям):\n🔸 1 месяц — 299 ⭐ (30 дней доступа)\n🔸 3 месяца — 699 ⭐ (−20%)\n🔸 12 месяцев — 1999 ⭐ (−40%)`,
