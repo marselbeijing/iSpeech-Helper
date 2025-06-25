@@ -172,32 +172,18 @@ const App = () => {
         console.log('📊 Статус пробного периода получен:', status);
         setTrialData(status);
         
-        // Показываем модальное окно в двух случаях:
-        // 1. Пользователь не видел приветствие (новый пользователь)
-        // 2. Триал истёк и модальное окно не отложено
-        const shouldShowModal = !status.hasActiveSubscription && (
-          (!status.trial?.hasSeenWelcome) || 
-          (status.trial?.isActive === false)
-        );
+        // Показываем модальное окно только для новых пользователей
+        // Для истёкшего триала модальное окно показывается только при попытке использовать функции
+        const shouldShowModal = !status.hasActiveSubscription && !status.trial?.hasSeenWelcome;
         
         if (shouldShowModal) {
-          const isTrialExpired = status.trial?.isActive === false;
-          console.log('🎉 Показываем модальное окно:', {
-            isNewUser: !status.trial?.hasSeenWelcome,
-            isTrialExpired: isTrialExpired,
-          });
-          
-          // Для истёкшего триала показываем через 4 секунды
-          if (isTrialExpired) {
-            setTimeout(() => setShowWelcomeModal(true), 4000);
-          } else {
-            setShowWelcomeModal(true);
-          }
+          console.log('🎉 Показываем приветственное модальное окно для нового пользователя');
+          setShowWelcomeModal(true);
         } else {
-          console.log('ℹ️ Модальное окно не показываем:', {
+          console.log('ℹ️ Модальное окно не показываем при загрузке:', {
             hasActiveSubscription: status.hasActiveSubscription,
             hasSeenWelcome: status.trial?.hasSeenWelcome,
-            isTrialActive: status.trial?.isActive,
+            isTrialActive: status.trial?.isActive
           });
         }
       } catch (error) {
