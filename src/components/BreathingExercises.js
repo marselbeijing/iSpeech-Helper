@@ -14,6 +14,8 @@ import { vibrate } from '../services/vibration';
 import { useNavigate } from 'react-router-dom';
 import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
+import { useAccessControl } from '../hooks/useAccessControl';
+import AccessBlockModal from './AccessBlockModal';
 
 const BreathingExercises = () => {
   const theme = useTheme();

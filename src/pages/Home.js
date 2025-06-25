@@ -22,11 +22,25 @@ import { vibrate } from '../services/vibration';
 import { commonStyles } from '../styles/TelegramStyles';
 import BackgroundAnimation from '../components/BackgroundAnimation';
 import { useTranslation } from 'react-i18next';
+import { useAccessControl } from '../hooks/useAccessControl';
+import AccessBlockModal from '../components/AccessBlockModal';
 
 const Home = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const { t } = useTranslation();
+  
+  // Контроль доступа
+  const { 
+    hasAccess, 
+    isLoading, 
+    showBlockModal, 
+    showInitialModal,
+    setShowBlockModal, 
+    setShowInitialModal,
+    checkFeatureAccess, 
+    getTexts 
+  } = useAccessControl();
 
   // Блокировка прокрутки на странице
   React.useEffect(() => {
@@ -79,6 +93,8 @@ const Home = () => {
   ];
 
   const handleClick = (path) => {
+    if (!checkFeatureAccess()) return;
+    
     playSound('click');
     vibrate('click');
     navigate(path);
@@ -242,6 +258,16 @@ const Home = () => {
           </Grid>
         </Container>
       </Box>
+      
+      {/* Модальное окно блокировки доступа */}
+      <AccessBlockModal 
+        open={showBlockModal || showInitialModal}
+        onClose={() => {
+          setShowBlockModal(false);
+          setShowInitialModal(false);
+        }}
+        texts={getTexts()}
+      />
     </Box>
   );
 };

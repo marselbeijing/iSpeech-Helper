@@ -9,6 +9,8 @@ import { updateProgress } from '../services/storage';
 import { useTranslation } from 'react-i18next';
 import stories from '../data/stories';
 import { ArrowBack } from '@mui/icons-material';
+import { useAccessControl } from '../hooks/useAccessControl';
+import AccessBlockModal from './AccessBlockModal';
 
 const MIN_SPEED = 1;
 const MAX_SPEED = 100;
@@ -40,6 +42,18 @@ const SmoothReader = () => {
   const lastActiveRef = useRef(null);
   const startTimeRef = useRef(null);
   const navigate = useNavigate();
+  
+  // Контроль доступа
+  const { 
+    hasAccess, 
+    isLoading, 
+    showBlockModal, 
+    showInitialModal,
+    setShowBlockModal, 
+    setShowInitialModal,
+    checkFeatureAccess, 
+    getTexts 
+  } = useAccessControl();
   
   // Используем истории в зависимости от текущего языка
   const currentLanguageStories = stories[i18n.language] || stories.en;
@@ -82,6 +96,8 @@ const SmoothReader = () => {
   }, [currentIndex]);
 
   const handlePlayPause = () => {
+    if (!checkFeatureAccess()) return;
+    
     if (isPlaying) {
       setIsPlaying(false);
       if (currentIndex >= totalLetters) {
@@ -97,10 +113,13 @@ const SmoothReader = () => {
   };
 
   const handleSliderChange = (_, value) => {
+    if (!checkFeatureAccess()) return;
     setSpeed(value);
   };
 
   const handleRandomStory = () => {
+    if (!checkFeatureAccess()) return;
+    
     let nextIndex = Math.floor(Math.random() * currentLanguageStories.length);
     // Исключаем повтор текущей истории
     if (nextIndex === storyIndex) {
@@ -393,6 +412,16 @@ const SmoothReader = () => {
           </Box>
         </motion.div>
       </Container>
+      
+      {/* Модальные окна блокировки доступа */}
+      <AccessBlockModal 
+        open={showBlockModal || showInitialModal}
+        onClose={() => {
+          setShowBlockModal(false);
+          setShowInitialModal(false);
+        }}
+        texts={getTexts()}
+      />
     </Box>
   );
 };
