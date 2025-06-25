@@ -247,37 +247,14 @@ class TelegramStarsBot {
 
 По вопросам, связанным с платежами и подписками, обращайтесь:
 📧 Email: support@ispeechhelper.com
-`;
-      await this.bot.sendMessage(chatId, supportMessage);
-    });
+💬 Telegram: @ispeechhelper_support
 
-    // Команда /reset_lang для сброса языка
-    this.bot.onText(/\/reset_lang/, async (msg) => {
-      const userId = msg.from.id.toString();
-      try {
-        // Удаляем сохраненный язык из базы данных
-        await TrialPeriod.findOneAndUpdate(
-          { userId: userId },
-          { $unset: { 'userInfo.languageCode': '' } }
-        );
-        
-        console.log('🔄 Language reset for user:', userId);
-        
-        // Отправляем выбор языка заново
-        this.bot.sendMessage(msg.chat.id, 'Language reset! Choose your language / Язык сброшен! Выберите язык:', {
-          reply_markup: {
-            inline_keyboard: [
-              [
-                { text: 'Русский', callback_data: 'set_lang_ru_start' },
-                { text: 'English', callback_data: 'set_lang_en_start' }
-              ]
-            ]
-          }
-        });
-      } catch (error) {
-        console.error('Error resetting language:', error);
-        this.bot.sendMessage(msg.chat.id, 'Error resetting language / Ошибка сброса языка');
-      }
+Мы ответим в течение 24 часов.
+
+⚠️ Внимание: Поддержка Telegram не сможет помочь с вопросами по платежам в этом боте.
+      `;
+
+      await this.bot.sendMessage(chatId, supportMessage);
     });
 
     // Команды покупки подписок
@@ -511,24 +488,15 @@ ${texts.allFeaturesAvailable}
   }
 
   async createInvoice(chatId, planType, user) {
-    // Приоритет текущему языку Telegram, а не сохраненному
-    let lang = 'en'; // по умолчанию английский
-    
-    // Сначала проверяем текущий язык Telegram
-    if (user.language_code && user.language_code.startsWith('ru')) {
-      lang = 'ru';
-    }
-    
-    // Только если нет текущего языка Telegram, берем сохраненный
-    if (!user.language_code && user.id) {
+    // Получаем язык из TrialPeriod, если есть
+    let lang = user.language_code;
+    if (user.id) {
       const trial = await TrialPeriod.findOne({ userId: user.id.toString() });
       if (trial?.userInfo?.languageCode) {
         lang = trial.userInfo.languageCode;
       }
     }
-    
-    console.log('🔍 createInvoice - user.language_code:', user.language_code);
-    console.log('🔍 createInvoice - final lang:', lang);
+    if (!lang) lang = 'en';
     const texts = this.getTexts(lang);
     
     try {
@@ -570,13 +538,12 @@ ${texts.allFeaturesAvailable}
       await invoice.save();
       console.log('Инвойс создан:', { payload, userId: user.id, planType });
 
-      // Отправляем инвойс через Telegram Bot API с динамическим label
-      const payLabel = lang === 'ru' ? 'Заплатить' : 'Pay';
+      // Отправляем инвойс через Telegram Bot API
       await this.bot.sendInvoice(chatId, plan.title, plan.title,
         payload,
         '', // provider_token пустой для Stars
         'XTR', // Stars
-        [{ label: payLabel, amount: plan.amount }]
+        [{ label: 'Pay', amount: plan.amount }]
       );
 
       // Используем уже объявленную переменную texts
@@ -584,7 +551,7 @@ ${texts.allFeaturesAvailable}
       
     } catch (error) {
       console.error('Ошибка создания инвойса:', error);
-      const isEnglish = lang === 'en';
+      const isEnglish = user.language_code && user.language_code.startsWith('en');
       const errorMessage = isEnglish ? 
         '❌ Failed to create invoice. Please try again later or contact support.' :
         '❌ Не удалось создать инвойс. Попробуйте позже или обратитесь в поддержку.';
@@ -628,24 +595,15 @@ ${texts.allFeaturesAvailable}
   }
 
   async sendSubscriptionOffer(chatId, planType, user) {
-    // Приоритет текущему языку Telegram, а не сохраненному
-    let lang = 'en'; // по умолчанию английский
-    
-    // Сначала проверяем текущий язык Telegram
-    if (user.language_code && user.language_code.startsWith('ru')) {
-      lang = 'ru';
-    }
-    
-    // Только если нет текущего языка Telegram, берем сохраненный
-    if (!user.language_code && user.id) {
+    // Получаем язык из TrialPeriod, если есть
+    let lang = user.language_code;
+    if (user.id) {
       const trial = await TrialPeriod.findOne({ userId: user.id.toString() });
       if (trial?.userInfo?.languageCode) {
         lang = trial.userInfo.languageCode;
       }
     }
-    
-    console.log('🔍 sendSubscriptionOffer - user.language_code:', user.language_code);
-    console.log('🔍 sendSubscriptionOffer - final lang:', lang);
+    if (!lang) lang = 'en';
     const texts = this.getTexts(lang);
     
     const PLANS = {
