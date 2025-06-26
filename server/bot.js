@@ -153,33 +153,45 @@ class TelegramStarsBot {
 
     // Команда /start
     this.bot.onText(/\/start(.*)/, async (msg) => {
-      const chatId = msg.chat.id;
-      const startParam = msg.text.split(' ')[1];
-      let userLang = 'en';
-      // Пытаемся получить язык из сохранённого профиля
-      let trialPeriod = await TrialPeriod.findOne({ userId: msg.from.id.toString() });
-      if (trialPeriod?.userInfo?.languageCode) {
-        userLang = trialPeriod.userInfo.languageCode;
-      } else if (msg.from.language_code) {
-        userLang = msg.from.language_code.startsWith('ru') ? 'ru' : 'en';
-      }
-      // Если есть параметр покупки — сразу показываем экран покупки
-      if (startParam && startParam.startsWith('buy_')) {
-        const planType = startParam.replace('buy_', '');
-        await this.sendSubscriptionOffer(chatId, planType, { language_code: userLang });
-        return;
-      }
-      // Если нет параметра — показываем выбор языка
-      this.bot.sendMessage(chatId, 'Выберите язык / Choose your language', {
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: 'Русский', callback_data: 'set_lang_ru_start' },
-              { text: 'English', callback_data: 'set_lang_en_start' }
-            ]
-          ]
+      try {
+        console.log('📱 /start command received:', { userId: msg.from.id, chatId: msg.chat.id, text: msg.text });
+        const chatId = msg.chat.id;
+        const startParam = msg.text.split(' ')[1];
+        let userLang = 'en';
+        // Пытаемся получить язык из сохранённого профиля
+        let trialPeriod = await TrialPeriod.findOne({ userId: msg.from.id.toString() });
+        if (trialPeriod?.userInfo?.languageCode) {
+          userLang = trialPeriod.userInfo.languageCode;
+        } else if (msg.from.language_code) {
+          userLang = msg.from.language_code.startsWith('ru') ? 'ru' : 'en';
         }
-      });
+        // Если есть параметр покупки — сразу показываем экран покупки
+        if (startParam && startParam.startsWith('buy_')) {
+          const planType = startParam.replace('buy_', '');
+          await this.sendSubscriptionOffer(chatId, planType, { language_code: userLang });
+          return;
+        }
+        // Если нет параметра — показываем выбор языка
+        console.log('🌐 Sending language selection message to chatId:', chatId);
+        await this.bot.sendMessage(chatId, 'Выберите язык / Choose your language', {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                { text: 'Русский', callback_data: 'set_lang_ru_start' },
+                { text: 'English', callback_data: 'set_lang_en_start' }
+              ]
+            ]
+          }
+        });
+        console.log('✅ Language selection message sent successfully');
+      } catch (error) {
+        console.error('❌ Error in /start command:', error);
+        try {
+          await this.bot.sendMessage(msg.chat.id, 'Произошла ошибка. Попробуйте еще раз. / An error occurred. Please try again.');
+        } catch (sendError) {
+          console.error('❌ Failed to send error message:', sendError);
+        }
+      }
     });
 
     // Обработка callback_query (inline кнопки)
