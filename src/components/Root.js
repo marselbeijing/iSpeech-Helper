@@ -3,7 +3,6 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
 import { Box } from '@mui/material';
 import NavigationBar from './NavigationBar';
-import YandexMetrika from './YandexMetrika';
 
 // Создаем контекст для навигации
 const NavigationContext = createContext();
@@ -39,7 +38,6 @@ const Root = () => {
           paddingBottom: '66px',
         }}
       >
-        <YandexMetrika />
         <Box
           component="main"
           sx={{
