@@ -4,6 +4,7 @@ import { ThemeProvider, createTheme, CssBaseline, Box, Button } from '@mui/mater
 import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
+import { TrackGroups, TwaAnalyticsProvider } from '@tonsolutions/telemetree-react';
 
 import './i18n';
 import { useTranslation } from 'react-i18next';
@@ -498,119 +499,125 @@ const App = () => {
   });
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <RouterProvider router={router} />
-      
-      {/* Временная кнопка для тестирования */}
-      {process.env.NODE_ENV === 'development' && (
-        <Box 
-          sx={{ 
-            position: 'fixed', 
-            top: 10, 
-            right: 10, 
-            zIndex: 9999,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 1
-          }}
-        >
-          <Button 
-            variant="contained" 
-            size="small" 
-            onClick={() => {
-              localStorage.removeItem('trialWelcomeSeen');
-              // Симулируем русского пользователя
-              localStorage.setItem('testLanguage', 'ru');
-              setShowWelcomeModal(true);
+    <TwaAnalyticsProvider
+      projectId="846989d7-5b58-4f6a-93ba-715073e6b596"
+      apiKey="b6efef23-b414-42d9-ba9b-e011acf410f5"
+      trackGroup={TrackGroups.MEDIUM}
+    >
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <RouterProvider router={router} />
+        
+        {/* Временная кнопка для тестирования */}
+        {process.env.NODE_ENV === 'development' && (
+          <Box 
+            sx={{ 
+              position: 'fixed', 
+              top: 10, 
+              right: 10, 
+              zIndex: 9999,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1
             }}
-            sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
           >
-            🇷🇺 RU
-          </Button>
-          <Button 
-            variant="contained" 
-            size="small" 
-            onClick={() => {
-              localStorage.removeItem('trialWelcomeSeen');
-              // Симулируем английского пользователя
-              localStorage.setItem('testLanguage', 'en');
-              setShowWelcomeModal(true);
-            }}
-            sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
-          >
-            🇺🇸 EN
-          </Button>
-          <Button 
-            variant="outlined" 
-            size="small" 
-            onClick={() => {
-              // Сбрасываем язык на английский по умолчанию
-              localStorage.removeItem('testLanguage');
-              localStorage.removeItem('lang'); // Сбрасываем i18n язык
-              window.location.reload();
-            }}
-            sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
-          >
-            🔄 EN Default
-          </Button>
-          <Button 
-            variant="outlined" 
-            size="small" 
-            onClick={() => {
-              console.log('=== ОТЛАДОЧНАЯ ИНФОРМАЦИЯ ===');
-              console.log('Trial data:', trialData);
-              console.log('localStorage trialStartDate:', localStorage.getItem('trialStartDate'));
-              console.log('localStorage trialWelcomeSeen:', localStorage.getItem('trialWelcomeSeen'));
-              console.log('localStorage testLanguage:', localStorage.getItem('testLanguage'));
-              console.log('Current time:', new Date().toISOString());
-              
-              // Проверяем расчет времени
-              const startDate = localStorage.getItem('trialStartDate');
-              if (startDate) {
-                const start = new Date(startDate);
-                const end = new Date(start.getTime() + 3 * 24 * 60 * 60 * 1000);
-                const now = new Date();
-                const timeLeftMs = end.getTime() - now.getTime();
+            <Button 
+              variant="contained" 
+              size="small" 
+              onClick={() => {
+                localStorage.removeItem('trialWelcomeSeen');
+                // Симулируем русского пользователя
+                localStorage.setItem('testLanguage', 'ru');
+                setShowWelcomeModal(true);
+              }}
+              sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
+            >
+              🇷🇺 RU
+            </Button>
+            <Button 
+              variant="contained" 
+              size="small" 
+              onClick={() => {
+                localStorage.removeItem('trialWelcomeSeen');
+                // Симулируем английского пользователя
+                localStorage.setItem('testLanguage', 'en');
+                setShowWelcomeModal(true);
+              }}
+              sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
+            >
+              🇺🇸 EN
+            </Button>
+            <Button 
+              variant="outlined" 
+              size="small" 
+              onClick={() => {
+                // Сбрасываем язык на английский по умолчанию
+                localStorage.removeItem('testLanguage');
+                localStorage.removeItem('lang'); // Сбрасываем i18n язык
+                window.location.reload();
+              }}
+              sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
+            >
+              🔄 EN Default
+            </Button>
+            <Button 
+              variant="outlined" 
+              size="small" 
+              onClick={() => {
+                console.log('=== ОТЛАДОЧНАЯ ИНФОРМАЦИЯ ===');
+                console.log('Trial data:', trialData);
+                console.log('localStorage trialStartDate:', localStorage.getItem('trialStartDate'));
+                console.log('localStorage trialWelcomeSeen:', localStorage.getItem('trialWelcomeSeen'));
+                console.log('localStorage testLanguage:', localStorage.getItem('testLanguage'));
+                console.log('Current time:', new Date().toISOString());
                 
-                console.log('Start date:', start.toISOString());
-                console.log('End date:', end.toISOString());
-                console.log('Current time:', now.toISOString());
-                console.log('Time left (ms):', timeLeftMs);
-                console.log('Is active:', timeLeftMs > 0);
-              }
-              console.log('=============================');
-            }}
-            sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
-          >
-            📊 Лог
-          </Button>
-          <Button 
-            variant="contained" 
-            color="error"
-            size="small" 
-            onClick={async () => {
-              await resetTrialPeriod();
-              setShowWelcomeModal(true);
-              // Обновляем данные
-              const status = await getTrialStatus();
-              setTrialData(status);
-            }}
-            sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
-          >
-            🔄 Сброс
-          </Button>
-        </Box>
-      )}
-      
-      {/* Модальное окно приветствия пробного периода */}
-      <TrialWelcomeModal
-        open={showWelcomeModal}
-        onClose={handleCloseWelcome}
-        onStartTrial={handleStartTrial}
-        onBuyPremium={handleBuyPremium}
-      />
-    </ThemeProvider>
+                // Проверяем расчет времени
+                const startDate = localStorage.getItem('trialStartDate');
+                if (startDate) {
+                  const start = new Date(startDate);
+                  const end = new Date(start.getTime() + 3 * 24 * 60 * 60 * 1000);
+                  const now = new Date();
+                  const timeLeftMs = end.getTime() - now.getTime();
+                  
+                  console.log('Start date:', start.toISOString());
+                  console.log('End date:', end.toISOString());
+                  console.log('Current time:', now.toISOString());
+                  console.log('Time left (ms):', timeLeftMs);
+                  console.log('Is active:', timeLeftMs > 0);
+                }
+                console.log('=============================');
+              }}
+              sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
+            >
+              📊 Лог
+            </Button>
+            <Button 
+              variant="contained" 
+              color="error"
+              size="small" 
+              onClick={async () => {
+                await resetTrialPeriod();
+                setShowWelcomeModal(true);
+                // Обновляем данные
+                const status = await getTrialStatus();
+                setTrialData(status);
+              }}
+              sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
+            >
+              🔄 Сброс
+            </Button>
+          </Box>
+        )}
+        
+        {/* Модальное окно приветствия пробного периода */}
+        <TrialWelcomeModal
+          open={showWelcomeModal}
+          onClose={handleCloseWelcome}
+          onStartTrial={handleStartTrial}
+          onBuyPremium={handleBuyPremium}
+        />
+      </ThemeProvider>
+    </TwaAnalyticsProvider>
   );
 };
 
