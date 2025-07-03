@@ -31,6 +31,7 @@ import MetronomeReader from './components/MetronomeReader';
 import EmotionsTrainer from './components/EmotionsTrainer';
 import AnalyticsTest from './pages/AnalyticsTest';
 import ProtectedComponent from './components/ProtectedComponent';
+import YandexMetrika from './components/YandexMetrika';
 
 const TELEGRAM_ANALYTICS_TOKEN = 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=';
 
@@ -500,6 +501,7 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <YandexMetrika />
       <RouterProvider router={router} />
       
       {/* Временная кнопка для тестирования */}
