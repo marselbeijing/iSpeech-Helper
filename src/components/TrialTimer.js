@@ -106,13 +106,13 @@ const TrialTimer = ({ trialData, onBuyPremium }) => {
         ) : (
           // Когда триал активен - обычное расположение
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <TimeIcon color="primary" />
               <Typography variant="h6" fontWeight="bold" color="primary">
                 {texts.trialActive}
-              </Typography>
-            </Box>
-            
+            </Typography>
+          </Box>
+          
             <Chip
               icon={<StarIcon />}
               label="FREE"
@@ -121,7 +121,7 @@ const TrialTimer = ({ trialData, onBuyPremium }) => {
               sx={{ fontWeight: 'bold' }}
             />
           </Box>
-        )}
+          )}
 
         {isExpired ? (
           <Box sx={{ textAlign: 'center' }}>

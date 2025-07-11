@@ -197,9 +197,9 @@ const Account = () => {
             try {
               const status = await checkSubscriptionStatus();
               setSubscription(status);
-            } catch (error) {
+    } catch (error) {
               console.log('Ошибка проверки подписки при возврате:', error);
-            }
+    }
           }, 1000); // Небольшая задержка для корректной проверки
         }
       }
@@ -372,7 +372,6 @@ const Account = () => {
               <Typography variant="body2" color="text.secondary" mb={2} textAlign="center">
                 @{user.username}
               </Typography>
-              
               {/* Статус подписки */}
               {subscription && (
                 <Box sx={{ mb: 2, textAlign: 'center' }}>
@@ -387,7 +386,6 @@ const Account = () => {
                   </Typography>
                 </Box>
               )}
-
               {/* Таймер пробного периода */}
               {trialData && !trialData.hasActiveSubscription && trialData.trial && (
                 <Box sx={{ mb: 3 }}>
@@ -403,10 +401,47 @@ const Account = () => {
                   />
                 </Box>
               )}
-
+              {/* Баннер аккаунта */}
+              <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mb: 2 }}>
+                <a href="https://t.me/ispeechhelper" target="_blank" rel="noopener noreferrer" style={{ width: '100%' }}>
+                  <img
+                    src="/account-banner.png"
+                    alt="Account Banner"
+                    style={{
+                      maxWidth: '100%',
+                      borderRadius: 16,
+                      boxShadow: '0 2px 12px rgba(60,60,120,0.10)',
+                      marginTop: 8,
+                      cursor: 'pointer',
+                      width: '100%',
+                      display: 'block',
+                    }}
+                  />
+                </a>
+              </Box>
             </>
           ) : (
-            <TelegramLogin />
+            <>
+              <TelegramLogin />
+              {/* Баннер аккаунта для неавторизованных */}
+              <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mb: 2 }}>
+                <a href="https://t.me/ispeechhelper" target="_blank" rel="noopener noreferrer" style={{ width: '100%' }}>
+                  <img
+                    src="/account-banner.png"
+                    alt="Account Banner"
+                    style={{
+                      maxWidth: '100%',
+                      borderRadius: 16,
+                      boxShadow: '0 2px 12px rgba(60,60,120,0.10)',
+                      marginTop: 8,
+                      cursor: 'pointer',
+                      width: '100%',
+                      display: 'block',
+                    }}
+                  />
+                </a>
+              </Box>
+            </>
           )}
           <Button
             variant="outlined"

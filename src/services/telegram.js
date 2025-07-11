@@ -63,14 +63,14 @@ export const getCurrentUser = () => {
   
   // Возвращаем демо-пользователя с английским языком по умолчанию
   const testLanguage = localStorage.getItem('testLanguage') || 'en'; // По умолчанию английский
-  return {
-    id: 'demo_user',
-    firstName: 'Demo',
-    lastName: 'User',
-    username: 'demo',
-    language_code: testLanguage,
-    photo_url: null
-  };
+    return {
+      id: 'demo_user',
+      firstName: 'Demo',
+      lastName: 'User',
+      username: 'demo',
+      language_code: testLanguage,
+      photo_url: null
+    };
 };
 
 // Function to logout

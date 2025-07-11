@@ -212,8 +212,8 @@ export const markWelcomeSeen = async () => {
 // Функция для сброса пробного периода (для тестирования)
 export const resetTrialPeriod = async () => {
   try {
-    localStorage.removeItem(TRIAL_START_DATE_KEY);
-    localStorage.removeItem(TRIAL_WELCOME_SEEN_KEY);
+  localStorage.removeItem(TRIAL_START_DATE_KEY);
+  localStorage.removeItem(TRIAL_WELCOME_SEEN_KEY);
     console.log('🔄 Локальный пробный период сброшен');
     
     // Принудительно создаем новую дату начала пробного периода

@@ -84,6 +84,7 @@ app.use('/api', require('./routes/payments'));
 app.use('/api/telegram', require('./routes/telegram'));
 app.use('/api/referral', require('./routes/referral'));
 app.use('/api/trial', require('./routes/trial'));
+app.use('/api/admin', require('./routes/admin'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {

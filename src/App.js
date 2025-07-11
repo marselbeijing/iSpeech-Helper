@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline, Box, Button } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import baseTheme from './theme';
 import { getUserSettings } from './services/storage';
 import { telegramColors } from './styles/TelegramStyles';
 import { TrackGroups, TwaAnalyticsProvider } from '@tonsolutions/telemetree-react';
+import { init } from '@telegram-apps/sdk-react';
 
 import './i18n';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +16,7 @@ import { getCurrentUser } from './services/telegram';
 
 // Trial period components
 import TrialWelcomeModal from './components/TrialWelcomeModal';
-import { getTrialStatus, markWelcomeSeen, resetTrialPeriod } from './services/trial';
+import { getTrialStatus, markWelcomeSeen } from './services/trial';
 
 // Components
 import Root from './components/Root';
@@ -31,7 +32,7 @@ import TongueTwisters from './components/TongueTwisters';
 import MetronomeReader from './components/MetronomeReader';
 import EmotionsTrainer from './components/EmotionsTrainer';
 import AnalyticsTest from './pages/AnalyticsTest';
-import ProtectedComponent from './components/ProtectedComponent';
+// import ProtectedComponent from './components/ProtectedComponent';
 
 const TELEGRAM_ANALYTICS_TOKEN = 'eyJhcHBfbmFtZSI6ImlzcGVlY2hoZWxwZXIiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2lTcGVlY2hIZWxwZXJfYm90L2lzcGVlY2giLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9pLXNwZWVjaC1oZWxwZXItdWNlNC52ZXJjZWwuYXBwLyJ9!B5PY86VQG7rW63+lZ9B1t642VCbXoDEdKO/UH9tQHCU=';
 
@@ -107,6 +108,57 @@ const App = () => {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [trialData, setTrialData] = useState(null);
   
+  // Безопасное использование хуков SDK
+  const [initData, setInitData] = useState(null);
+  const [launchParams, setLaunchParams] = useState(null);
+  
+  // Инициализация SDK
+  useEffect(() => {
+    try {
+      // Инициализируем SDK
+      init();
+      console.log('✅ Telegram SDK инициализирован');
+    } catch (error) {
+      console.log('⚠️ Ошибка инициализации SDK:', error.message);
+    }
+  }, []);
+  
+  // Получение данных через window.Telegram как fallback
+  useEffect(() => {
+    try {
+      // Используем window.Telegram для получения данных
+      if (window.Telegram?.WebApp?.initDataUnsafe) {
+        const webAppData = window.Telegram.WebApp.initDataUnsafe;
+        setInitData({
+          queryId: webAppData.query_id,
+          user: webAppData.user,
+          chatType: webAppData.chat_type,
+          chatInstance: webAppData.chat_instance,
+          startParam: webAppData.start_param,
+          authDate: webAppData.auth_date,
+          hash: webAppData.hash,
+        });
+        
+        setLaunchParams({
+          platform: window.Telegram.WebApp.platform,
+        });
+      }
+    } catch (error) {
+      console.log('Ошибка получения данных Telegram:', error.message);
+    }
+  }, []);
+
+  const telegramWebAppData = {
+    query_id: initData?.queryId,
+    user: initData?.user,
+    chat_type: initData?.chatType,
+    chat_instance: initData?.chatInstance,
+    start_param: initData?.startParam,
+    auth_date: initData?.authDate,
+    hash: initData?.hash,
+    platform: launchParams?.platform,
+  };
+  
   // Функция для проверки доступности функций Telegram WebApp
   const isTelegramWebAppAvailable = () => {
     return window.Telegram && window.Telegram.WebApp;
@@ -170,18 +222,18 @@ const App = () => {
           return;
         }
         
-        const status = await getTrialStatus();
-        console.log('📊 Статус пробного периода получен:', status);
-        setTrialData(status);
+        // Получаем статус пробного периода
+        const trialStatus = await getTrialStatus(user);
+        // trialData удалён как неиспользуемый
         
         // Показываем приветственное окно если пользователь его еще не видел
-        if (!status.hasActiveSubscription && status.trial && !status.trial.hasSeenWelcome) {
+        if (!trialStatus.hasActiveSubscription && trialStatus.trial && !trialStatus.trial.hasSeenWelcome) {
           console.log('🎉 Показываем приветственное окно пробного периода');
           setShowWelcomeModal(true);
         } else {
           console.log('ℹ️ Приветственное окно не показываем:', {
-            hasActiveSubscription: status.hasActiveSubscription,
-            hasSeenWelcome: status.trial?.hasSeenWelcome
+            hasActiveSubscription: trialStatus.hasActiveSubscription,
+            hasSeenWelcome: trialStatus.trial?.hasSeenWelcome
           });
         }
       } catch (error) {
@@ -291,137 +343,78 @@ const App = () => {
       return false;
     };
 
-    // Инициализация Telegram Analytics SDK
+    // Инициализация аналитики
     const initAnalytics = () => {
       try {
-        // Проверяем, что мы в Telegram WebApp, а не в локальной разработке
-        if (!window.Telegram?.WebApp || process.env.NODE_ENV === 'development') {
-          console.log('⚠️ Пропускаем инициализацию Telegram Analytics (локальная разработка или вне Telegram)');
+        // Проверяем, что мы действительно в Telegram WebApp
+        const isInTelegram = !!(
+          window.Telegram?.WebApp?.initDataUnsafe?.user ||
+          window.Telegram?.WebApp?.platform ||
+          window.location.search.includes('tgWebAppPlatform')
+        );
+
+        if (!isInTelegram) {
+          console.log('📱 Приложение запущено вне Telegram, пропускаем инициализацию Analytics');
           return;
         }
-        
-        console.log('🔍 Проверка доступности telegramAnalytics:', typeof telegramAnalytics);
-        console.log('🔍 Методы SDK:', Object.keys(telegramAnalytics));
-        
+
+        if (!TELEGRAM_ANALYTICS_TOKEN) {
+          console.log('⚠️ Токен Analytics не найден');
+          return;
+        }
+
+        // Инициализация только если есть все необходимые данные
         telegramAnalytics.init({
           token: TELEGRAM_ANALYTICS_TOKEN,
-          appName: 'ispeechhelper',
+          debug: process.env.NODE_ENV === 'development'
         });
         
-        console.log('✅ Telegram Analytics SDK инициализирован успешно');
-        console.log('📊 Токен:', TELEGRAM_ANALYTICS_TOKEN.substring(0, 20) + '...');
-        
-        // Делаем SDK доступным в консоли для тестирования
-        window.telegramAnalyticsSDK = telegramAnalytics;
-        window.TELEGRAM_ANALYTICS_TOKEN = TELEGRAM_ANALYTICS_TOKEN;
-        
-        // Проверяем доступность Telegram WebApp
-        if (checkTelegramWebApp()) {
-          console.log('🌐 Приложение работает в Telegram WebApp контексте');
-        } else {
-          console.log('🌐 Приложение работает в обычном браузере');
-          // Ждем загрузки Telegram WebApp (для браузерной версии)
-          let attempts = 0;
-          const maxAttempts = 10;
-          const checkInterval = setInterval(() => {
-            attempts++;
-            if (checkTelegramWebApp()) {
-              console.log('✅ Telegram WebApp загружен после ожидания');
-              clearInterval(checkInterval);
-            } else if (attempts >= maxAttempts) {
-              console.log('⚠️ Telegram WebApp не загружен после ожидания');
-              clearInterval(checkInterval);
-            }
-          }, 500);
-        }
+        console.log('📊 Telegram Analytics инициализирован успешно');
         
       } catch (error) {
-        console.error('❌ Ошибка инициализации Telegram Analytics SDK:', error);
+        console.warn('⚠️ Analytics недоступен в режиме браузера:', error.message);
+        // Не прерываем выполнение приложения
       }
     };
 
-    // Запускаем инициализацию
+    // Проверяем Telegram WebApp
+    if (checkTelegramWebApp()) {
     initAnalytics();
+    } else {
+      console.log('⚠️ Telegram WebApp недоступен, работаем в режиме браузера');
+    }
 
-    // Настраиваем обработчики событий платежей
+    // Настройка обработчиков платежей
     const setupPaymentHandlers = () => {
-      if (window.Telegram?.WebApp) {
-        const webApp = window.Telegram.WebApp;
-        
+      if (window.Telegram && window.Telegram.WebApp) {
         // Обработчик успешного платежа
-        webApp.onEvent('invoiceStatus', (eventData) => {
-          console.log('📊 Событие платежа получено:', eventData);
+        window.Telegram.WebApp.onEvent('invoiceClosed', (eventData) => {
+          console.log('💰 Платеж завершен:', eventData);
           
           if (eventData.status === 'paid') {
-            console.log('✅ Платеж успешно завершен!');
-            // Можно добавить дополнительную логику обработки успешного платежа
-            
-            // Отправляем событие аналитики
-            if (window.telegramAnalyticsSDK) {
-              try {
-                window.telegramAnalyticsSDK.track('subscription_purchased', {
-                  status: 'success',
-                  payload: eventData.payload
-                });
-              } catch (error) {
-                console.warn('Ошибка отправки аналитики платежа:', error);
-              }
-            }
+            console.log('✅ Платеж успешен!');
+            // Здесь можно добавить логику для обработки успешного платежа
+            // Например, обновить статус подписки
           } else if (eventData.status === 'cancelled') {
-            console.log('❌ Платеж отменен пользователем');
+            console.log('❌ Платеж отменен');
           } else if (eventData.status === 'failed') {
-            console.log('💥 Платеж не удался');
+            console.log('❌ Платеж не удался');
           }
         });
         
-        console.log('💳 Обработчики событий платежей настроены');
+        // Обработчик для popup
+        window.Telegram.WebApp.onEvent('popupClosed', (eventData) => {
+          console.log('🔔 Popup закрыт:', eventData);
+        });
       }
     };
 
     setupPaymentHandlers();
   }, []);
   
-  // Обработчики модального окна пробного периода
   const handleStartTrial = async () => {
     try {
-      console.log('🚀 handleStartTrial начат');
-      
-      // Принудительно создаем дату начала пробного периода если её нет
-      const existingStartDate = localStorage.getItem('trialStartDate');
-      if (!existingStartDate) {
-        const startDate = new Date().toISOString();
-        localStorage.setItem('trialStartDate', startDate);
-        console.log('🆕 Создана дата начала пробного периода:', startDate);
-      }
-      
-      console.log('📝 Отмечаем просмотр приветствия...');
-      await markWelcomeSeen();
-      console.log('✅ Приветствие отмечено');
-      
-      // Сбрасываем пробный период на сервере
-      const user = getCurrentUser();
-      if (user?.id && process.env.NODE_ENV === 'production') {
-        try {
-          console.log('🔄 Сбрасываем пробный период на сервере...');
-          const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://ispeech-backend.onrender.com'}/api/trial/reset/${user.id}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          });
-          
-          if (response.ok) {
-            const result = await response.json();
-            console.log('✅ Пробный период сброшен на сервере:', result);
-          } else {
-            console.log('⚠️ Не удалось сбросить пробный период на сервере');
-          }
-        } catch (error) {
-          console.log('⚠️ Ошибка сброса пробного периода на сервере:', error);
-        }
-      } else if (process.env.NODE_ENV === 'development') {
-        console.log('🔧 Development mode: пропускаем серверный сброс в handleStartTrial');
-      }
+      console.log('🚀 handleStartTrial вызван');
       
       console.log('🔄 Закрываем модальное окно...');
       setShowWelcomeModal(false);
@@ -498,126 +491,36 @@ const App = () => {
     },
   });
 
-  return (
+  // Проверяем, запущено ли приложение в Telegram
+  const isTelegramApp = window.Telegram?.WebApp && initData?.user;
+
+  const AppContent = () => (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <RouterProvider router={router} />
+      
+      {/* Модальное окно приветствия пробного периода */}
+      <TrialWelcomeModal
+        open={showWelcomeModal}
+        onClose={handleCloseWelcome}
+        onStartTrial={handleStartTrial}
+        onBuyPremium={handleBuyPremium}
+      />
+    </ThemeProvider>
+  );
+
+  // Если в Telegram, оборачиваем в TwaAnalyticsProvider, иначе рендерим напрямую
+  return isTelegramApp ? (
     <TwaAnalyticsProvider
       projectId="846989d7-5b58-4f6a-93ba-715073e6b596"
       apiKey="b6efef23-b414-42d9-ba9b-e011acf410f5"
       trackGroup={TrackGroups.MEDIUM}
+      telegramWebAppData={telegramWebAppData}
     >
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <RouterProvider router={router} />
-        
-        {/* Временная кнопка для тестирования */}
-        {process.env.NODE_ENV === 'development' && (
-          <Box 
-            sx={{ 
-              position: 'fixed', 
-              top: 10, 
-              right: 10, 
-              zIndex: 9999,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 1
-            }}
-          >
-            <Button 
-              variant="contained" 
-              size="small" 
-              onClick={() => {
-                localStorage.removeItem('trialWelcomeSeen');
-                // Симулируем русского пользователя
-                localStorage.setItem('testLanguage', 'ru');
-                setShowWelcomeModal(true);
-              }}
-              sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
-            >
-              🇷🇺 RU
-            </Button>
-            <Button 
-              variant="contained" 
-              size="small" 
-              onClick={() => {
-                localStorage.removeItem('trialWelcomeSeen');
-                // Симулируем английского пользователя
-                localStorage.setItem('testLanguage', 'en');
-                setShowWelcomeModal(true);
-              }}
-              sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
-            >
-              🇺🇸 EN
-            </Button>
-            <Button 
-              variant="outlined" 
-              size="small" 
-              onClick={() => {
-                // Сбрасываем язык на английский по умолчанию
-                localStorage.removeItem('testLanguage');
-                localStorage.removeItem('lang'); // Сбрасываем i18n язык
-                window.location.reload();
-              }}
-              sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
-            >
-              🔄 EN Default
-            </Button>
-            <Button 
-              variant="outlined" 
-              size="small" 
-              onClick={() => {
-                console.log('=== ОТЛАДОЧНАЯ ИНФОРМАЦИЯ ===');
-                console.log('Trial data:', trialData);
-                console.log('localStorage trialStartDate:', localStorage.getItem('trialStartDate'));
-                console.log('localStorage trialWelcomeSeen:', localStorage.getItem('trialWelcomeSeen'));
-                console.log('localStorage testLanguage:', localStorage.getItem('testLanguage'));
-                console.log('Current time:', new Date().toISOString());
-                
-                // Проверяем расчет времени
-                const startDate = localStorage.getItem('trialStartDate');
-                if (startDate) {
-                  const start = new Date(startDate);
-                  const end = new Date(start.getTime() + 3 * 24 * 60 * 60 * 1000);
-                  const now = new Date();
-                  const timeLeftMs = end.getTime() - now.getTime();
-                  
-                  console.log('Start date:', start.toISOString());
-                  console.log('End date:', end.toISOString());
-                  console.log('Current time:', now.toISOString());
-                  console.log('Time left (ms):', timeLeftMs);
-                  console.log('Is active:', timeLeftMs > 0);
-                }
-                console.log('=============================');
-              }}
-              sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
-            >
-              📊 Лог
-            </Button>
-            <Button 
-              variant="contained" 
-              color="error"
-              size="small" 
-              onClick={async () => {
-                await resetTrialPeriod();
-                setShowWelcomeModal(true);
-                // Обновляем данные
-                const status = await getTrialStatus();
-                setTrialData(status);
-              }}
-              sx={{ fontSize: '10px', minWidth: 'auto', px: 1 }}
-            >
-              🔄 Сброс
-            </Button>
-          </Box>
-        )}
-        
-        {/* Модальное окно приветствия пробного периода */}
-        <TrialWelcomeModal
-          open={showWelcomeModal}
-          onClose={handleCloseWelcome}
-          onStartTrial={handleStartTrial}
-          onBuyPremium={handleBuyPremium}
-        />
-      </ThemeProvider>
+      <AppContent />
     </TwaAnalyticsProvider>
+  ) : (
+    <AppContent />
   );
 };
 

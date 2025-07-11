@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   Button,
@@ -19,10 +18,7 @@ import { getCurrentUser } from '../services/telegram';
 
 const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
   const theme = useTheme();
-  
-  console.log('DEBUG: до useTranslation');
   const { i18n } = useTranslation();
-  console.log('DEBUG: после useTranslation');
   
   // Определяем язык: тестовый язык > язык пользователя > язык i18n
   const testLanguage = localStorage.getItem('testLanguage');
@@ -34,9 +30,8 @@ const TrialWelcomeModal = ({ open, onClose, onStartTrial, onBuyPremium }) => {
     user = null;
   }
   const userLanguage = testLanguage || user?.language_code || i18n.language || 'en';
-  console.log('DEBUG: testLanguage', testLanguage);
   
-  // Логируем для отладки
+  // Логируем для отладки только при открытии модального окна
   React.useEffect(() => {
     if (open) {
       console.log('🌐 Язык модального окна:', {

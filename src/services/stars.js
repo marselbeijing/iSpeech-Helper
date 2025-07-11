@@ -331,7 +331,7 @@ ${texts.orStart}`;
               console.error('❌ Все способы открытия бота не сработали');
               if (typeof webApp.showAlert === 'function') {
                 webApp.showAlert(`${texts.allMethodsFailed}${planType}
-
+                
 ${texts.orStartForSelection}`);
               }
             }
@@ -396,18 +396,18 @@ ${texts.orStartForSelection}`);
         } else {
           // Обычный showAlert для старых версий
           webApp.showAlert(message, () => {
-            // Сбрасываем флаг когда попап закрыт
-            isPopupOpen = false;
-            
-            // Автоматически открываем бота
-            if (typeof webApp.openTelegramLink === 'function') {
-              webApp.openTelegramLink(botUrlWithStart);
-            }
-            
-            resolve({
-              success: false,
-              cancelled: false,
-              redirected: true,
+          // Сбрасываем флаг когда попап закрыт
+          isPopupOpen = false;
+          
+          // Автоматически открываем бота
+          if (typeof webApp.openTelegramLink === 'function') {
+            webApp.openTelegramLink(botUrlWithStart);
+          }
+          
+          resolve({
+            success: false,
+            cancelled: false,
+            redirected: true,
               message: texts.redirectedToBot
             });
           });
