@@ -3,7 +3,16 @@ const router = express.Router();
 const Subscription = require('../models/Subscription');
 
 // Получение статуса подписки
-router.get('/status/:userId', async (req, res) => {
+router.get('/status/:userId', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+}, async (req, res) => {
   try {
     const { userId } = req.params;
     console.log(`Checking subscription status for user: ${userId}`);

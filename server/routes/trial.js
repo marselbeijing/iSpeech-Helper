@@ -3,20 +3,6 @@ const router = express.Router();
 const TrialPeriod = require('../models/TrialPeriod');
 const Subscription = require('../models/Subscription');
 
-// CORS middleware для всех роутов trial
-router.use((req, res, next) => {
-  console.log(`🛣️ Trial route accessed: ${req.method} ${req.originalUrl} - params:`, req.params, 'query:', req.query);
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-  
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
-});
-
 // Простейший тест endpoint
 router.get('/test', (req, res) => {
   console.log('🧪 Тестовый endpoint вызван');
