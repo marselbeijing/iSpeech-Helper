@@ -366,8 +366,17 @@ const App = () => {
         // Инициализация только если есть все необходимые данные
         telegramAnalytics.init({
           token: TELEGRAM_ANALYTICS_TOKEN,
-          debug: process.env.NODE_ENV === 'development'
+          debug: process.env.NODE_ENV === 'development',
+          app_name: 'iSpeech Helper'
         });
+        
+        // Переопределяю sendEvent, чтобы всегда добавлять app_name
+        if (telegramAnalytics.sendEvent) {
+          const origSendEvent = telegramAnalytics.sendEvent;
+          telegramAnalytics.sendEvent = function(eventType, details = {}) {
+            origSendEvent.call(this, eventType, { ...details, app_name: 'iSpeech Helper' });
+          };
+        }
         
         console.log('📊 Telegram Analytics инициализирован успешно');
         
